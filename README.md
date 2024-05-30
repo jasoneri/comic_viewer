@@ -26,12 +26,17 @@ python app.py
 ```
 
 ### frontend
+> 查查pc局域网ip，并在frontend/src/utils/settings.js中ip部分更改成查的ip（处理前端跨域）<br>
+> 默认端口为8080，配置在frontend/vite.config.js
+
 ```shell
 cd frontend
 npm i
 npm run dev
 ```
-> 默认端口为8080，配置在vite.config.js
 
 ## 使用
-查查你pc局域网ip，手机进ip:8080就行，如预览所示
+手机进 `pc局域网ip:8080` 就行，如预览所示
+
+## 注意事项
+免责声明：关于删除事项，要么自己写功能详见 `backend/api/routes/comic.py[50:9]`，要么直接使用当删除(del)不存在
