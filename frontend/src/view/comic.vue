@@ -124,12 +124,10 @@
         width: 100%;
         justify-content: center;
         .container {
-            width: v-bind(waterfallWidthPx);
             display: flex;
             flex-wrap: wrap;
             position: relative;
             .handler {
-              width: v-bind(waterfallWidthPx);
               display: flex;
               justify-content: center;
             }

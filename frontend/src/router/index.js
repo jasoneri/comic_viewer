@@ -13,7 +13,7 @@ const routes = [{
   path: '/book',
   name: 'book',
   meta: {
-    title: "comic waterfall"
+    title: "comic book"
   },
   component: () => import('@/view/book.vue')
 }]

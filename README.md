@@ -6,12 +6,12 @@
 ## 预览
 ![](https://images.cnblogs.com/cnblogs_com/jsoneri/2401311/o_240530080611_comic_viewer.png)
 
-## 部署
+## 准备
 ### 版本
 > Python==3.12.3（实际3.8也行）<br>
-> node 最新
+> node  // newest
 ### backend
-> 在backend/settings 修改目录，把内容放进comic目录内，示例如下
+> 在`backend/settings`修改目录，把内容放进comic目录内，示例如下
 ```shell
 yourComicPath
 └── GrandBlue碧蓝之海62话
@@ -22,7 +22,6 @@ yourComicPath
 ```shell
 cd backend
 python -m pip install -r requirements.txt
-python app.py
 ```
 
 ### frontend
@@ -32,7 +31,11 @@ python app.py
 ```shell
 cd frontend
 npm i
-npm run dev
+```
+## 部署
+```shell
+cd frontend
+npm start
 ```
 
 ## 使用
