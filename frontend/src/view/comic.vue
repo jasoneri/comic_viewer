@@ -44,20 +44,15 @@
     import {reactive, ref, computed} from 'vue';
     import axios from "axios";
     import {h} from 'vue'
-    import {backend,indexPage,bookList,sort_val,pageSize} from "@/static/store.js";
-    import { RefreshRight } from '@element-plus/icons-vue'
+    import {backend,indexPage,bookList,sortVal,pageSize} from "@/static/store.js";
     import {ElNotification} from "element-plus";
     import topBottom from '@/components/topBottom.vue'
     import TopBtnGroup from '@/components/TopBtnGroup.vue'
     import bookHandleBtn from '@/components/bookHandleBtn.vue'
-    import {useRoute} from "vue-router";
-
-    const route = useRoute()
-    let bookTotal = ref(0)
 
     // ------------------------后端交互 & 数据处理
     const getBooks = async(callBack) => {
-      const params = {sort: sort_val.value};
+      const params = {sort: sortVal.value};
       await axios.get(backend + '/comic/', {params})
         .then(res => {
           let result = res.data.map((_) => {
@@ -69,26 +64,23 @@
           console.log(error);
         })
     }
+    const bookTotal = computed(() => {
+      return bookList.arr.length
+    });
     const pagedBook = computed(() => {
       const start = (indexPage.value - 1) * pageSize;
       const end = start + pageSize;
-      return bookList.slice(start, end);
+      return bookList.arr.slice(start, end);
     });
     // ------------------------渲染相关
     const init = () => {
       getBooks(callBack)
       function callBack(data){
-        bookList.length = 0
-        bookList.splice(0, bookList.length)
-        bookList.push(...data)
-        bookTotal.value = data.length
+        bookList.arr = data
       }
     }
     init()
-    const reload = () => {
-      bookTotal.value = 0
-      init()
-    }
+    const reload = init
     function retainCallBack(done, path){
         notification('已移至保留['+done+']', 'success', path)
         reload()
@@ -110,7 +102,7 @@
       })
     }
     function sv_sort(val){
-      sort_val.value = val
+      sortVal.value = val
       reload()
     }
 

@@ -1,6 +1,6 @@
 <template>
-  <el-button-group  style="width: 100%; height: 100%">
-    <el-button text class="switch" :class="isDark ? 'isDark-switch' : 'noDark-switch'" style="width: 15%; height: 100%" @click="toggleDark">
+  <el-button-group  style="width: 75%; height: 70%">
+    <el-button text class="switch" :class="isDark ? 'isDark-switch' : 'noDark-switch'" style="width: 20%; height: 100%" @click="toggleDark">
       <el-icon v-if="isDark">
         <svg viewBox="0 0 24 24">
           <path
@@ -18,10 +18,11 @@
     </el-button>
 
     <el-button type="primary" :icon="RefreshRight" @click="props.reload"
-               style="width: 65%; height: 100%; margin: 0 auto; display: block; font-size: 18px">
+               style="width: 80%; height: 100%; margin: 0 auto; display: block; font-size: 18px">
       重新加载页面</el-button>
+  </el-button-group>
 
-    <el-select v-model="select_value" placeholder="排序" style="width: 20%;" size="large">
+    <el-select v-model="select_value" placeholder="排序" style="width: 25%;" size="large">
       <el-option
         v-for="item in select_options" style="height: 100%"
         :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled"
@@ -41,12 +42,10 @@
         </template>
       </template>
     </el-select>
-  </el-button-group>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue'
-import type { CheckboxValueType } from 'element-plus'
 import {RefreshRight} from "@element-plus/icons-vue";
 
 const props = defineProps({
@@ -69,7 +68,7 @@ const toggleDark = () => {
 
 const isAdding = ref(false)
 const optionName = ref('')
-const select_value = ref<CheckboxValueType[]>([])
+const select_value = ref([])
 const select_options = ref([
   {value: 'time_desc', label: '时间倒序'},
   {value: 'name_asc', label: '名字顺序'},

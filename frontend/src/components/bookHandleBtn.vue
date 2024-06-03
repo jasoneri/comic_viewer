@@ -17,6 +17,7 @@
     import { Delete, Download, InfoFilled } from '@element-plus/icons-vue'
     import axios from "axios";
     import {backend} from "@/static/store.js";
+    import { ElMessage } from 'element-plus'
     const props = defineProps({
       bookName:{type: String, required: true},
       retainCallBack:{type: Function, required: true},
@@ -31,6 +32,7 @@
         })
         .catch(function (error) {
           console.log(error);
+          ElMessage('此为缓存，【'+book+'】已经处理过了，无法再次处理')
         })
     }
     const retain = (book) => {
