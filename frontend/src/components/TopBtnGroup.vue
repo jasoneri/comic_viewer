@@ -1,5 +1,6 @@
 <template>
-    <el-button text class="switch" :class="isDark ? 'isDark-switch' : 'noDark-switch'" @click="toggleDark">
+  <el-button-group  style="width: 100%; height: 100%">
+    <el-button text class="switch" :class="isDark ? 'isDark-switch' : 'noDark-switch'" style="width: 15%; height: 100%" @click="toggleDark">
       <el-icon v-if="isDark">
         <svg viewBox="0 0 24 24">
           <path
@@ -15,10 +16,42 @@
         </svg>
       </el-icon>
     </el-button>
+
+    <el-button type="primary" :icon="RefreshRight" @click="props.reload"
+               style="width: 65%; height: 100%; margin: 0 auto; display: block; font-size: 18px">
+      重新加载页面</el-button>
+
+    <el-select v-model="select_value" placeholder="排序" style="width: 20%;" size="large">
+      <el-option
+        v-for="item in select_options" style="height: 100%"
+        :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled"
+        @click="emit('send_sort', item.value)"
+      />
+      <template #footer>
+        <el-button v-if="!isAdding" text bg size="small" @click="onAddOption">
+          自定义排序
+        </el-button>
+        <template v-else>
+          <el-input
+            v-model="optionName" class="option-input" size="small"
+            placeholder="自定义: 'time/name'+'_'+'asc/desc'"
+          />
+          <el-button type="primary" size="small" @click="onConfirm">confirm</el-button>
+          <el-button size="small" @click="clear">cancel</el-button>
+        </template>
+      </template>
+    </el-select>
+  </el-button-group>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { CheckboxValueType } from 'element-plus'
+import {RefreshRight} from "@element-plus/icons-vue";
+
+const props = defineProps({
+  reload:{type: Function, required: true},
+})
 const isDark = ref(true)
 const toggleDark = () => {
   isDark.value = !isDark.value
@@ -31,9 +64,34 @@ const toggleDark = () => {
       html.classList.remove("light");
       html.classList.add("dark");
     }
-}
+  }
 }
 
+const isAdding = ref(false)
+const optionName = ref('')
+const select_value = ref<CheckboxValueType[]>([])
+const select_options = ref([
+  {value: 'time_desc', label: '时间倒序'},
+  {value: 'name_asc', label: '名字顺序'},
+])
+const onAddOption = () => {
+  isAdding.value = true
+}
+const onConfirm = () => {
+  if (optionName.value) {
+    select_options.value.push({
+      label: optionName.value,
+      value: optionName.value,
+    })
+    clear()
+  }
+}
+const clear = () => {
+  optionName.value = ''
+  isAdding.value = false
+}
+// 子传父
+const emit = defineEmits(['send_sort'])
 </script>
 
 <style scoped lang="scss">

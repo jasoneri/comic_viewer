@@ -3,7 +3,9 @@
 import hashlib
 import os
 import shutil
-from fastapi import APIRouter
+from enum import Enum
+
+from fastapi import APIRouter, Query
 from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -23,10 +25,22 @@ global cache
 cache = Cache()
 
 
+class QuerySort(Enum):
+    time = lambda x: os.path.getmtime(os.path.join(comic_path, x))
+    name = lambda x: x
+    asc = False
+    desc = True
+
+    def __call__(self, *args, **kwargs):
+        return self.value(*args, **kwargs)
+
+
 @index_router.get("/")
-async def get_books(request: Request):
+async def get_books(request: Request, sort: str = Query(None)):
+    sort = sort or "time_desc"  # 默认时间倒序
+    func, _sort = sort.split("_")
     books = os.listdir(comic_path)
-    return sorted(books, key=lambda x: os.path.getmtime(os.path.join(comic_path, x)), reverse=True)
+    return sorted(books, key=getattr(QuerySort, func), reverse=getattr(QuerySort, _sort).value)
 
 
 @index_router.get("/{book_name}")

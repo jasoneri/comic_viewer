@@ -7,8 +7,9 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "concurrently \"npm run dev\" \"npm run start-backend\"",
-    "start-backend": "python ../backend/app.py"
+    "start": "concurrently \"npm run start-vue\" \"npm run start-python\"",
+    "start-vue": "vite --host",
+    "start-python": "python ../backend/app.py"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",

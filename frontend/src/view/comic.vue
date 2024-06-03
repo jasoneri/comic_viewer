@@ -1,12 +1,7 @@
 <template>
     <el-container>
       <el-header>
-        <el-button-group style="width: 100%; height: 100%; margin: 0 auto; display: block;">
-          <Dark style="width: 15%; height: 100%"/>
-          <el-button type="primary" :icon="RefreshRight" @click="reload"
-                     style="width: 85%; height: 100%; margin: 0 auto; display: block; font-size: 18px">
-            重新加载页面</el-button>
-        </el-button-group>
+        <TopBtnGroup :reload="reload" @send_sort="sv_sort"/>
       </el-header>
       <el-main>
         <el-scrollbar>
@@ -53,19 +48,21 @@
     import { RefreshRight } from '@element-plus/icons-vue'
     import {ElNotification} from "element-plus";
     import topBottom from '@/components/topBottom.vue'
-    import Dark from '@/components/darkModeBtn.vue'
+    import TopBtnGroup from '@/components/TopBtnGroup.vue'
     import bookHandleBtn from '@/components/bookHandleBtn.vue'
     import {useRoute} from "vue-router";
 
     const route = useRoute()
     let bookList = reactive([])
     let bookTotal = ref(0)
+    let sort_val = ref("")
     let currentPage = route.query.page ? ref(parseInt(route.query.page)) : ref(1)
     let pageSize = 20
 
     // ------------------------后端交互 & 数据处理
     const getBooks = async(callBack) => {
-      await axios.get(backend + '/comic/')
+      const params = {sort: sort_val.value};
+      await axios.get(backend + '/comic/', {params})
         .then(res => {
           let result = res.data.map((_) => {
             return { book_name: _}
@@ -115,6 +112,10 @@
         type: _type,
         duration: 3500,
       })
+    }
+    function sv_sort(val){
+      sort_val.value = val
+      reload()
     }
 
 </script>
