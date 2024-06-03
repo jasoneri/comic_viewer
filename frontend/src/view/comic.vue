@@ -41,7 +41,7 @@
     </el-container>
 </template>
 <script setup>
-    import {reactive, ref, computed} from 'vue';
+    import {computed} from 'vue';
     import axios from "axios";
     import {h} from 'vue'
     import {backend,indexPage,bookList,sortVal,pageSize} from "@/static/store.js";

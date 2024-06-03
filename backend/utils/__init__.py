@@ -36,3 +36,13 @@ class BookCursor:
         # 当内容非常非常多时，考虑后端根据游标返回批次内容时使用, 有游标时需要处理tail与step的比较, head递进step再比较tail（step与前端保持一致）
         return [f"/static/{self.book_name}/{pages}"
                 for pages in self._pages[self.head:self.tail]]
+
+
+class BookSort:
+    section_regex = re.compile(r'(\d+)话')
+
+    @classmethod
+    def by_section(cls, book_with_section):
+        _s = cls.section_regex.search(book_with_section)
+        book_name = book_with_section.split('_')[0]
+        return book_name, int(_s.group(1)) if bool(_s) else 0   # 前置使用此方法的是第一本书名，其余避免错误所以兜底0

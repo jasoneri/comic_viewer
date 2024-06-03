@@ -25,7 +25,7 @@
     <el-select v-model="select_value" placeholder="排序" style="width: 25%;" size="large">
       <el-option
         v-for="item in select_options" style="height: 100%"
-        :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled"
+        :key="item.value" :label="item.label" :value="item.value"
         @click="emit('send_sort', item.value)"
       />
       <template #footer>
@@ -102,7 +102,7 @@ const emit = defineEmits(['send_sort'])
   box-sizing: border-box;
   cursor: pointer;
   padding-bottom: 0;
-  padding-top: 0px;
+  padding-top: 0;
 
   background-color: #ebeef5 !important;
   font-size: 12px;

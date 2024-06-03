@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from utils import get_path, BookCursor
+from utils import get_path, BookCursor, BookSort
 
 index_router = APIRouter(prefix='/comic')
 comic_path, handle_path = get_path()
@@ -31,8 +31,9 @@ class QuerySort(Enum):
     asc = False
     desc = True
 
-    def __call__(self, *args, **kwargs):
-        return self.value(*args, **kwargs)
+    @classmethod
+    def check_name(cls, book):
+        cls.name = BookSort.by_section if bool(BookSort.section_regex.search(book)) else lambda x: x
 
 
 @index_router.get("/")
@@ -40,6 +41,7 @@ async def get_books(request: Request, sort: str = Query(None)):
     sort = sort or "time_desc"  # 默认时间倒序
     func, _sort = sort.split("_")
     books = os.listdir(comic_path)
+    QuerySort.check_name(books[0])
     return sorted(books, key=getattr(QuerySort, func), reverse=getattr(QuerySort, _sort).value)
 
 
