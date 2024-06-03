@@ -7,7 +7,7 @@
         <el-scrollbar>
           <div class="demo-pagination-block">
             <el-pagination
-              v-model:current-page="currentPage"
+              v-model:current-page="indexPage"
               :page-size="pageSize" :total="bookTotal"
               layout="prev, pager, next, jumper"
             />
@@ -21,7 +21,7 @@
                                    :bookName="scope.row.book_name"/>
                   </el-button-group>
                   <router-link :style="`font-size: var(--el-font-size-extra-large)`"
-                               :to="{ path: 'book', query: { book: scope.row.book_name, index_page: currentPage }}">
+                               :to="{ path: 'book', query: { book: scope.row.book_name}}">
                     {{ scope.row.book_name }}
                   </router-link>
                 </el-space>
@@ -30,7 +30,7 @@
           </el-table>
           <div class="demo-pagination-block">
             <el-pagination
-                v-model:current-page="currentPage"
+                v-model:current-page="indexPage"
                 :page-size="pageSize" :total="bookTotal"
                 layout="prev, pager, next, jumper"
             />
@@ -43,8 +43,8 @@
 <script setup>
     import {reactive, ref, computed} from 'vue';
     import axios from "axios";
-    import { h } from 'vue'
-    import {backend} from "@/utils/settings.js";
+    import {h} from 'vue'
+    import {backend,indexPage,bookList,sort_val,pageSize} from "@/static/store.js";
     import { RefreshRight } from '@element-plus/icons-vue'
     import {ElNotification} from "element-plus";
     import topBottom from '@/components/topBottom.vue'
@@ -53,11 +53,7 @@
     import {useRoute} from "vue-router";
 
     const route = useRoute()
-    let bookList = reactive([])
     let bookTotal = ref(0)
-    let sort_val = ref("")
-    let currentPage = route.query.page ? ref(parseInt(route.query.page)) : ref(1)
-    let pageSize = 20
 
     // ------------------------后端交互 & 数据处理
     const getBooks = async(callBack) => {
@@ -74,7 +70,7 @@
         })
     }
     const pagedBook = computed(() => {
-      const start = (currentPage.value - 1) * pageSize;
+      const start = (indexPage.value - 1) * pageSize;
       const end = start + pageSize;
       return bookList.slice(start, end);
     });
@@ -82,6 +78,8 @@
     const init = () => {
       getBooks(callBack)
       function callBack(data){
+        bookList.length = 0
+        bookList.splice(0, bookList.length)
         bookList.push(...data)
         bookTotal.value = data.length
       }
@@ -89,8 +87,6 @@
     init()
     const reload = () => {
       bookTotal.value = 0
-      bookList.length = 0
-      bookList.splice(0, bookList.length)
       init()
     }
     function retainCallBack(done, path){

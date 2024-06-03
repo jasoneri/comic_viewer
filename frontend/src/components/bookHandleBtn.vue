@@ -16,7 +16,7 @@
 <script setup>
     import { Delete, Download, InfoFilled } from '@element-plus/icons-vue'
     import axios from "axios";
-    import {backend} from "@/utils/settings.js";
+    import {backend} from "@/static/store.js";
     const props = defineProps({
       bookName:{type: String, required: true},
       retainCallBack:{type: Function, required: true},

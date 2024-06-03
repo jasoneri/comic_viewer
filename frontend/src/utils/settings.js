@@ -1,1 +1,0 @@
-export const backend = "http://192.168.114.514:12345"

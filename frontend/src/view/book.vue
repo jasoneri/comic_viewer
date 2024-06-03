@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-    import {backend} from '@/utils/settings.js'
+    import {backend} from '@/static/store.js'
     import axios from 'axios'
     import {useRoute, useRouter} from 'vue-router'
     import {reactive,markRaw} from "vue";
@@ -65,7 +65,7 @@
         {
           confirmButtonText: 'OK',
           callback: (action) => {
-            router.push({path: '/',query: {page:route.query.index_page}})   // 处理完保持返回书堆的第几页
+            router.push({path: '/'})   // 处理完保持返回书堆的第几页
           },
           center: true,
           icon: markRaw(_ico),
