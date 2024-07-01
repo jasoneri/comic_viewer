@@ -35,7 +35,7 @@
     const router = useRouter()
     const imgUrls = reactive({arr:[]})
     const getBook = async(book, callBack) => {
-      await axios.get(backend + '/comic/' + book)
+      await axios.get(backend + '/comic/' + encodeURIComponent(book))
         .then(res => {
           let result = res.data.map((_) => {
             return backend + _

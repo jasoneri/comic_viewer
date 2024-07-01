@@ -3,7 +3,7 @@
 import os
 import re
 import pathlib
-
+from urllib.parse import quote
 
 basepath = pathlib.Path(__file__).parent
 
@@ -34,7 +34,7 @@ class BookCursor:
 
     def get(self, cursor=None):
         # 当内容非常非常多时，考虑后端根据游标返回批次内容时使用, 有游标时需要处理tail与step的比较, head递进step再比较tail（step与前端保持一致）
-        return [f"/static/{self.book_name}/{pages}"
+        return [f"/static/{quote(self.book_name)}/{pages}"
                 for pages in self._pages[self.head:self.tail]]
 
 

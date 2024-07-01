@@ -26,7 +26,7 @@ cache = Cache()
 
 
 class QuerySort(Enum):
-    time = lambda x: os.path.getmtime(os.path.join(comic_path, x))
+    time = lambda x: os.path.getmtime(comic_path.joinpath(x))
     name = lambda x: x
     asc = False
     desc = True
@@ -62,6 +62,8 @@ class Book(BaseModel):
 @index_router.post("/handle")
 async def handle(request: Request, book: Book):
     book_path = comic_path.joinpath(book.name)
+    with open(handle_path.joinpath("record.txt"), "a+", encoding="utf-8") as f:
+        f.writelines(f"<{book.handle}>{book.name}\n")
     if book.handle == "del":
         raise OSError('请自行寻找删除目录方法，本人并没提供相关删除文件代码并不承担错误删除文件的责任')
         # return {"path": book.name, "handled": f"{book.handle}eted"}
