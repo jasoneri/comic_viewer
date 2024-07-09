@@ -39,10 +39,10 @@ class BookCursor:
 
 
 class BookSort:
-    section_regex = re.compile(r'(\d+)话')
+    section_regex = re.compile(r'(\d+\.?\d?)[话卷]')
 
     @classmethod
     def by_section(cls, book_with_section):
         _s = cls.section_regex.search(book_with_section)
         book_name = book_with_section.split('_')[0]
-        return book_name, int(_s.group(1)) if bool(_s) else 0   # 前置使用此方法的是第一本书名，其余避免错误所以兜底0
+        return book_name, float(_s.group(1)) if bool(_s) else 0   # 前置使用此方法的是第一本书名，其余避免错误所以兜底0
