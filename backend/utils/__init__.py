@@ -4,20 +4,42 @@ import os
 import re
 import pathlib
 from urllib.parse import quote
+import yaml
 
 basepath = pathlib.Path(__file__).parent
+yaml.warnings({'YAMLLoadWarning': False})
 
 
-def get_path():
-    with open(basepath.parent.joinpath('settings'), 'r', encoding='utf-8') as fp:
-        text = fp.read()
-    comic_path = pathlib.Path(re.findall(r'\[comic ([\s\S]*?)\]', text)[0])
-    handle_path = pathlib.Path(re.findall(r'\[handle ([\s\S]*?)\]', text)[0])
-    os.makedirs(comic_path, exist_ok=True)
-    os.makedirs(handle_path, exist_ok=True)
-    os.makedirs(handle_path.joinpath('save'), exist_ok=True)
-    os.makedirs(handle_path.joinpath('remove'), exist_ok=True)
-    return comic_path, handle_path
+class Conf:
+    comic_path = None
+    handle_path = None
+
+    def init(self):
+        with open(basepath.parent.joinpath('settings.yml'), 'r', encoding='utf-8') as f:
+            cfg = f.read()
+        yml_config = yaml.load(cfg, Loader=yaml.FullLoader)
+        self._get_path(yml_config)
+
+    def _get_path(self, yml_config):
+        def makedirs():
+            os.makedirs(comic_path, exist_ok=True)
+            os.makedirs(handle_path, exist_ok=True)
+            os.makedirs(handle_path.joinpath('save'), exist_ok=True)
+            os.makedirs(handle_path.joinpath('remove'), exist_ok=True)
+        comic_path = pathlib.Path(yml_config['comic_path'])
+        handle_path = pathlib.Path(yml_config['handle_path'])
+        makedirs()
+        self.comic_path = comic_path
+        self.handle_path = handle_path
+
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(Conf, "_instance"):
+            Conf._instance = super().__new__(cls, *args, **kwargs)
+            Conf._instance.init()
+        return Conf._instance
+
+
+conf = Conf()
 
 
 class BookCursor:

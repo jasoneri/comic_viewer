@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Response
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
-from api.routes.comic import index_router, comic_path
+from api.routes.comic import index_router, conf
 
 global_whitelist = ['']
 
@@ -41,7 +41,7 @@ def register_static_file(app: FastAPI) -> None:
     生产使用 nginx 静态资源服务
     这里是开发是方便本地
     """
-    app.mount("/static", StaticFiles(directory=str(comic_path)), name="static")
+    app.mount("/static", StaticFiles(directory=str(conf.comic_path)), name="static")
 
 
 def register_router(app: FastAPI) -> None:
