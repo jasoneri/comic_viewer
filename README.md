@@ -30,21 +30,26 @@ python -m pip install -r requirements.txt
 ```
 
 ### frontend
-> 查查pc局域网ip，并在frontend/src/utils/settings.js中ip部分更改成查的ip（处理前端跨域）<br>
 > 默认端口为8080，配置在frontend/vite.config.js
 
 ```shell
 cd frontend
 npm i
 ```
-## 部署
+## 部署运行
 ```shell
 cd frontend
 npm start
 ```
 
 ## 使用
-手机进 `pc局域网ip:8080` 就行，如预览所示
+启动后终端会显示局域网ip与端口 `Network:`行
+
+手机进浏览器照样填地址即可，如预览所示
+
+## 交流
+
+群 437774506
 
 ## 免责声明
 ### 开源许可
