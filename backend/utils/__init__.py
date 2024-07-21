@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os
 import re
 import pathlib
 from urllib.parse import quote
@@ -22,12 +21,12 @@ class Conf:
 
     def _get_path(self, yml_config):
         def makedirs():
-            os.makedirs(comic_path, exist_ok=True)
-            os.makedirs(handle_path, exist_ok=True)
-            os.makedirs(handle_path.joinpath('save'), exist_ok=True)
-            os.makedirs(handle_path.joinpath('remove'), exist_ok=True)
-        comic_path = pathlib.Path(yml_config['comic_path'])
-        handle_path = pathlib.Path(yml_config['handle_path'])
+            comic_path.mkdir(exist_ok=True)
+            handle_path.mkdir(exist_ok=True)
+            handle_path.joinpath('save').mkdir(exist_ok=True)
+            handle_path.joinpath('remove').mkdir(exist_ok=True)
+        comic_path = pathlib.Path(yml_config['path']).joinpath('web')
+        handle_path = comic_path.parent.joinpath(f"{comic_path.stem}_handle")
         makedirs()
         self.comic_path = comic_path
         self.handle_path = handle_path

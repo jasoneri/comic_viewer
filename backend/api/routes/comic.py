@@ -39,13 +39,13 @@ class QuerySort(Enum):
 async def get_books(request: Request, sort: str = Query(None)):
     sort = sort or "time_desc"  # 默认时间倒序
     func, _sort = sort.split("_")
-    books = os.listdir(conf.comic_path)
+    books = list(map(lambda _: _.name, filter(lambda x: x.is_dir(), conf.comic_path.iterdir())))
     QuerySort.check_name(books[0])
     return sorted(books, key=getattr(QuerySort, func), reverse=getattr(QuerySort, _sort).value)
 
 
 @index_router.get("/{book_name}")
-async def get_books(request: Request, book_name: str):
+async def get_book(request: Request, book_name: str):
     book_md5 = hashlib.md5(book_name.encode('utf-8')).hexdigest()
     if not hasattr(cache, book_md5):
         # todo except FileNotFoundError:
