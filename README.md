@@ -1,5 +1,10 @@
-# ComicViewer
-![](https://img.shields.io/badge/Backend-Python3.12-green.svg?colorA=abcdef)  ![](https://img.shields.io/badge/Frontend-Vite+Vue3+elementPlus-blue.svg?colorA=abcdef)  
+<div align="center">
+  <h1 id="koishi">ComicViewer</h1>
+
+![](https://img.shields.io/badge/Backend-Python3.12-green.svg?colorA=abcdef)
+![](https://img.shields.io/badge/Frontend-Vite+Vue3+elementPlus-blue.svg?colorA=abcdef)  
+
+</div>
 
 超简单 fastapi + vue3 项目， pc本地下漫画(或任意图片目录)后用手机浏览器进行局域网阅读
 
@@ -11,10 +16,10 @@
 > Python==3.12.3（实际3.8也行）<br>
 > node  // newest
 ### backend
-> 在`backend/settings`修改目录，把内容放进comic目录内，示例如下
+> 在`backend/settings.yml`修改目录，把内容放进该目录内，示例如下
 ```shell
 yourComicPath
-└── GrandBlue碧蓝之海62话
+└── GrandBlue碧蓝之海_第62话
      ├── 1.jpg
      ├── 2.jpg
      ......
@@ -41,5 +46,8 @@ npm start
 ## 使用
 手机进 `pc局域网ip:8080` 就行，如预览所示
 
-## 注意事项
-免责声明：关于删除事项，要么自己写功能详见 `backend/api/routes/comic.py[50:9]`，要么直接使用当删除(del)不存在
+## 免责声明
+### 开源许可
+详见 [MIT License](https://github.com/jasoneri/comic_viewer/blob/master/LICENSE)
+### 注意事项
+关于删除事项，要么自己写功能详见 `backend/api/routes/comic.py[50:9]`，要么直接使用当删除(del)不存在，所造成的后果与本人无关。
