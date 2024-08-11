@@ -14,7 +14,7 @@ class Conf:
     handle_path = None
 
     def init(self):
-        with open(basepath.parent.joinpath('settings.yml'), 'r', encoding='utf-8') as f:
+        with open(basepath.parent.joinpath('conf.yml'), 'r', encoding='utf-8') as f:
             cfg = f.read()
         yml_config = yaml.load(cfg, Loader=yaml.FullLoader)
         self._get_path(yml_config)
