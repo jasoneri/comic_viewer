@@ -8,9 +8,20 @@
 >  1. 启动 > 默认终端应用程序 > 选择 `windows终端`
 >  2. 启动 > 新建实例行为 > 选择 `附加到最近使用的窗口`
 
-![show-win-terminal-conf](https://github.com/jasoneri/comic_viewer/tree/master/doc/show-win-terminal-conf.jpg)
+![](show-win-terminal-conf.jpg)
+
+## 配置
+配置文件位置 `scripts\backend\conf.yml` (使用记事本等方式打开)
+```yaml
+path: D:\Comic
+```
+按需修改即可放漫画，若联动 `CGS` 漫画下载项目， 需要保持两者的储存目录一致 
 
 ## 运行
 返回根目录双击 `comic_viewer.exe` 即可
 
-![](https://github.com/jasoneri/comic_viewer/blob/master/doc/comic_viewer.jpg)
+![](vue.png)
+
+↑ 等前端开启后，会显示局域网地址，点击或手机上输入相同即可
+
+![](comic_viewer.jpg)
