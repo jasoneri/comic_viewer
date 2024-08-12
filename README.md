@@ -1,22 +1,23 @@
 <div align="center">
   <h1 id="koishi">ComicViewer</h1>
-
-![](https://img.shields.io/badge/Backend-Python3.12-green.svg?colorA=abcdef)
-![](https://img.shields.io/badge/Frontend-Vite+Vue3+elementPlus-blue.svg?colorA=abcdef)  
-
+  <img src="https://img.shields.io/badge/Backend-Python3.12-green.svg?colorA=abcdef" alt="tag">
+  <img src="https://img.shields.io/badge/Frontend-Vite+Vue3+elementPlus-blue.svg?colorA=abcdef" alt="tag">
 </div>
 
 超简单 fastapi + vue3 项目， pc本地下漫画(或任意图片目录)后用手机浏览器进行局域网阅读
 
 ## 预览
-![](https://images.cnblogs.com/cnblogs_com/jsoneri/2401311/o_240530080611_comic_viewer.png)
+![](https://github.com/jasoneri/comic_viewer/blob/master/doc/comic_viewer.jpg)
+
+> 打包好的开箱即用版 → [点击前往下载页面](https://github.com/jasoneri/comic_viewer/releases)，包名 `comic_viewer.7z`<br>
+> 内含另外的 `部署指南` ，无需看以下说明
 
 ## 准备
 ### 版本
-> Python==3.12.3（实际3.8也行）<br>
-> node  // newest
++ Python==3.12.3（实际3.8也行）
++ node  // newest
 ### backend
-> 在`backend/settings.yml`修改目录，把内容放进该目录内，示例如下
+在`backend/conf.yml`修改目录，默认是`D:\Comic`, 把漫画放进该目录内，示例如下
 ```shell
 yourComicPath
 └── GrandBlue碧蓝之海_第62话
@@ -30,8 +31,7 @@ python -m pip install -r requirements.txt
 ```
 
 ### frontend
-> 默认端口为8080，配置在frontend/vite.config.js
-
+默认端口为8080，配置在frontend/vite.config.js
 ```shell
 cd frontend
 npm i
@@ -48,7 +48,6 @@ npm start
 手机进浏览器照样填地址即可，如预览所示
 
 ## 交流
-
 群 437774506
 
 ## 免责声明
