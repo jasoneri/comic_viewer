@@ -26,3 +26,5 @@ if __name__ == '__main__':
             zip_f.extractall(npm_pkg_p)
         os.remove(new_npm_pkg)
         print(Fore.CYAN + "[ 初始化完成 ]")
+    else:
+        print(Fore.CYAN + "[ 无需初始化 ]")

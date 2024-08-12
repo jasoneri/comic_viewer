@@ -40,6 +40,8 @@ async def get_books(request: Request, sort: str = Query(None)):
     sort = sort or "time_desc"  # 默认时间倒序
     func, _sort = sort.split("_")
     books = list(map(lambda _: _.name, filter(lambda x: x.is_dir(), conf.comic_path.iterdir())))
+    if not books:
+        return JSONResponse("no books exists", status_code=404)
     QuerySort.check_name(books[0])
     return sorted(books, key=getattr(QuerySort, func), reverse=getattr(QuerySort, _sort).value)
 

@@ -105,6 +105,8 @@ class Packer:
     @classmethod
     def bat_to_exe(cls):
         def _do(bat_file, exe_file, icon, *args):
+            if exe_file.exists():
+                os.remove(exe_file)
             args_str = " ".join(args)
             command = f"cd {path} && {cls.executor} /bat {bat_file} /exe {exe_file} /icon {icon} /x64 {args_str}"
             error_code = os.system(command)
@@ -114,7 +116,7 @@ class Packer:
                 logger.info(f"[ success {bat_file} ]")
 
         _do(path.joinpath(rf"scripts/launcher/{proj}.bat"), path.joinpath(rf"{proj}.exe"),
-            path.joinpath(rf"scripts/launcher/{proj}.ico"), "/invisible")
+            path.joinpath(rf"scripts/launcher/{proj}.ico"))
         _do(path.joinpath(rf"scripts/launcher/update.bat"), path.joinpath(rf"{proj}-更新.exe"),
             path.joinpath(rf"scripts/launcher/{proj}.ico"))
 
@@ -123,7 +125,7 @@ class Packer:
         import markdown
         with open(path.joinpath(file_path), 'r', encoding='utf-8') as f:
             md_content = f.read()
-        html = markdown.markdown(md_content)
+        html = markdown.markdown(md_content.replace(r"![](", "![](scripts\\doc\\"))
         html_style = f"""<!DOCTYPE html><html><head><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css"></head><body><article class="markdown-body">
         {html}
         </article></body></html>"""
@@ -186,8 +188,8 @@ if __name__ == '__main__':
     # clean()                   # step 0
     Packer.bat_to_exe()  # step 1
     Packer.markdown_to_html('scripts/doc/deploy.md', '部署指南.html')  # step 2
-    packer = Packer(('scripts', f'{proj}.exe', f'{proj}-更新.exe'))
+    packer = Packer(('scripts', f'{proj}.exe', f'{proj}-更新.exe', '部署指南.html'))
     packer.packup(runtime_init=True)  # step 3
     packer.upload('comic_viewer.7z')  # step 4
-    Clean.end_work((f'{proj}.exe', f'{proj}-更新.exe', 'comic_viewer.7z'))  # step 5
+    Clean.end_work((f'{proj}.exe', f'{proj}-更新.exe', 'comic_viewer.7z', '部署指南.html'))  # step 5
     # If error occur, exegesis previous step and run again
