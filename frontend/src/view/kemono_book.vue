@@ -3,7 +3,7 @@
     <el-header>
       <el-button-group style="width: 40%; height: 100%;">
         <bookHandleBtn
-            :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book"  :bookHandlePath="'/comic/handle'"
+            :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book" :bookHandlePath="'/kemono/handle'" :handleApiBodyExtra="{u_s: u_s}"
         />
       </el-button-group>
       <el-button-group style="width: 60%; height: 100%;">
@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-    import {backend,bookList} from '@/static/store.js'
+    import {backend,kemonoBookList} from '@/static/store.js'
     import axios from 'axios'
     import {useRoute,useRouter} from 'vue-router'
     import {reactive,markRaw,computed} from "vue";
@@ -34,8 +34,11 @@
     const route = useRoute()
     const router = useRouter()
     const imgUrls = reactive({arr:[]})
+    const u_s = route.query.u_s
     const getBook = async(book, callBack) => {
-      await axios.get(backend + '/comic/' + encodeURIComponent(book))
+      const params = {u_s: u_s, book: book};
+      debugger;
+      await axios.get(backend + '/kemono/book/', {params})
         .then(res => {
           let result = res.data.map((_) => {
             return backend + _
@@ -47,7 +50,7 @@
         })
     }
     const bookIndex = computed(() => {
-      return bookList.arr.findIndex(item => item.book_name === route.query.book)
+      return kemonoBookList.arr.findIndex(item => item.book === route.query.book)
     });
     const init = (_book) => {
       getBook(_book, callBack)
@@ -58,11 +61,11 @@
     init(route.query.book)
     function triggerInit(_book){
       imgUrls.arr = []
-      router.replace({path:'book',query:{book:_book}})
+      router.replace({path:'kemono_book',query:{u_s: u_s, book:_book}})
       init(_book)
     }
-    function previousBook(){triggerInit(bookList.arr[bookIndex.value-1].book_name)}
-    function nextBook(){triggerInit(bookList.arr[bookIndex.value+1].book_name)}
+    function previousBook(){triggerInit(kemonoBookList.arr[bookIndex.value-1].book)}
+    function nextBook(){triggerInit(kemonoBookList.arr[bookIndex.value+1].book)}
 
     function retainCallBack(done, path) {MsgOpen(done, Finished, path)}
     function removeCallBack(done, path) {MsgOpen(done, Warning, path)}

@@ -46,10 +46,14 @@ preset = {
     "scrapy": ["mime.types"]}
 release_desc = """开箱即用
 ---
-解压双击运行 `comic_viewer.exe`
-
+### 下载
+下面的`comic_viewer.7z`<br>
 下载很慢 ？到压缩包的下载链接右键复制到 https://github.akams.cn/ 上进行下载加速
 
+### 运行
+解压双击运行 `comic_viewer.exe`
+
+### 更新
 一般情况下，使用包内的更新程序 `comic_viewer-更新.exe` 即可<br>
 特殊情况，如运行环境需要变化时，需要在此页面下绿色安装包 (包更新未必是最新，更新日期参照标题) 
 > 绿色包保证 `运行环境` 的更新，更新程序保证 `代码` 的更新，<br>
@@ -116,7 +120,7 @@ class Packer:
                 logger.info(f"[ success {bat_file} ]")
 
         _do(path.joinpath(rf"scripts/launcher/{proj}.bat"), path.joinpath(rf"{proj}.exe"),
-            path.joinpath(rf"scripts/launcher/{proj}.ico"))
+            path.joinpath(rf"scripts/launcher/{proj}.ico"), "/uac-user")
         _do(path.joinpath(rf"scripts/launcher/update.bat"), path.joinpath(rf"{proj}-更新.exe"),
             path.joinpath(rf"scripts/launcher/{proj}.ico"))
 

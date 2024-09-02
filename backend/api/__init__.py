@@ -3,6 +3,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
 from api.routes.comic import index_router, conf
+from api.routes.kemono import index_router as kemono_index_router
 
 global_whitelist = ['']
 
@@ -42,6 +43,7 @@ def register_static_file(app: FastAPI) -> None:
     这里是开发是方便本地
     """
     app.mount("/static", StaticFiles(directory=str(conf.comic_path)), name="static")
+    app.mount("/static_kemono", StaticFiles(directory=str(conf.kemono_path)), name="static_kemono")
 
 
 def register_router(app: FastAPI) -> None:
@@ -52,6 +54,7 @@ def register_router(app: FastAPI) -> None:
     """
     # 项目API
     app.include_router(index_router, prefix="", tags=['comic'])
+    app.include_router(kemono_index_router, prefix="", tags=['kemono'])
 
 
 def register_cors(app: FastAPI) -> None:

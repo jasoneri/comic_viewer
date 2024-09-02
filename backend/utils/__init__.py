@@ -17,6 +17,10 @@ class Conf:
         with open(basepath.parent.joinpath('conf.yml'), 'r', encoding='utf-8') as f:
             cfg = f.read()
         yml_config = yaml.load(cfg, Loader=yaml.FullLoader)
+        for k, v in yml_config.items():
+            if 'path' in k:
+                v = pathlib.Path(v)
+            self.__setattr__(k, v or getattr(self, k, None))
         self._get_path(yml_config)
 
     def _get_path(self, yml_config):
@@ -43,6 +47,7 @@ conf = Conf()
 
 class BookCursor:
     head = 0
+    static = "/static/"
 
     def __init__(self, book_name, pages, sort_func=None):
         self.book_name = book_name
@@ -56,7 +61,7 @@ class BookCursor:
 
     def get(self, cursor=None):
         # 当内容非常非常多时，考虑后端根据游标返回批次内容时使用, 有游标时需要处理tail与step的比较, head递进step再比较tail（step与前端保持一致）
-        return [f"/static/{quote(self.book_name)}/{pages}"
+        return [f"{self.static}{quote(self.book_name)}/{pages}"
                 for pages in self._pages[self.head:self.tail]]
 
 
@@ -68,3 +73,11 @@ class BookSort:
         _s = cls.section_regex.search(book_with_section)
         book_name = book_with_section.split('_')[0]
         return book_name, float(_s.group(1)) if bool(_s) else 0   # 前置使用此方法的是第一本书名，其余避免错误所以兜底0
+
+
+class KemonoBookCursor(BookCursor):
+
+    def __init__(self, u_s, book_name, pages, sort_func=None):
+        self.u_s = u_s
+        super(KemonoBookCursor, self).__init__(book_name, pages, sort_func)
+        self.static = f"/static_kemono/{u_s}/"

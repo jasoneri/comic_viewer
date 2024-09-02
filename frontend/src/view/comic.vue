@@ -18,7 +18,7 @@
                 <el-space wrap :size="'small'">
                   <el-button-group>
                     <bookHandleBtn :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack"
-                                   :bookName="scope.row.book_name"/>
+                                   :bookName="scope.row.book_name" :bookHandlePath="'/comic/handle'" />
                   </el-button-group>
                   <router-link :style="`font-size: var(--el-font-size-extra-large)`"
                                :to="{ path: 'book', query: { book: scope.row.book_name}}">
@@ -41,9 +41,8 @@
     </el-container>
 </template>
 <script setup>
-    import {computed} from 'vue';
+    import {computed,h} from 'vue';
     import axios from "axios";
-    import {h} from 'vue'
     import {backend,indexPage,bookList,sortVal,pageSize} from "@/static/store.js";
     import {ElNotification} from "element-plus";
     import topBottom from '@/components/topBottom.vue'

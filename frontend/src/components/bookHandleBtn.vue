@@ -23,10 +23,14 @@
       retainCallBack:{type: Function, required: true},
       removeCallBack:{type: Function, required: true},
       delCallBack:{type: Function, required: true},
+      bookHandlePath:{type: String, required: true},
+      handleApiBodyExtra:{type: Object, required: false}
     })
 
     const handleBook = async(handle, book, callBack) => {
-      axios.post(backend + '/comic/handle', {handle: handle, name: book})
+      let body = {handle: handle, name: book};
+      body = {...body, ...props.handleApiBodyExtra}
+      axios.post(backend + props.bookHandlePath, body)
         .then(res => {
           callBack(res.data.handled, res.data.path)
         })
