@@ -23,6 +23,7 @@
     </el-container>
 </template>
 <script setup>
+    import {computed} from "vue";
     import axios from "axios";
     import {backend,kemonoArtistsList,sortVal} from "@/static/store.js";
     import topBottom from '@/components/topBottom.vue'
