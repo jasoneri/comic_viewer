@@ -51,7 +51,7 @@ def register_router(app: FastAPI) -> None:
     :return:
     """
     # 项目API
-    app.include_router(index_router, prefix="", tags=['administrator'])
+    app.include_router(index_router, prefix="", tags=['comic'])
 
 
 def register_cors(app: FastAPI) -> None:

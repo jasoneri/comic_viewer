@@ -44,14 +44,15 @@ conf = Conf()
 class BookCursor:
     head = 0
 
-    def __init__(self, book_name, pages):
+    def __init__(self, book_name, pages, sort_func=None):
         self.book_name = book_name
-        self._pages = self._sort(pages)
+        self._pages = self._sort(pages, sort_func)
         self.tail = len(pages)
 
     @staticmethod
-    def _sort(pages):
-        return sorted(pages, key=lambda x: int(re.search(r'\d+', x).group()))
+    def _sort(pages, func=None):
+        func = func or (lambda x: int(re.search(r'\d+', x).group()))
+        return sorted(pages, key=func)
 
     def get(self, cursor=None):
         # 当内容非常非常多时，考虑后端根据游标返回批次内容时使用, 有游标时需要处理tail与step的比较, head递进step再比较tail（step与前端保持一致）
