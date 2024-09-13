@@ -5,7 +5,6 @@ import os
 import shutil
 import json
 
-from loguru import logger
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
 from starlette.requests import Request
@@ -53,7 +52,6 @@ class QuerySort:
         self.time = staticmethod(lambda x: os.path.getmtime(conf.kemono_path.joinpath(f"{u_s}/{x}")))
 
 
-@logger.catch
 async def get_books(u_s, sort):
     sort = sort or "name_desc"
     func, _sort = sort.split("_")
@@ -113,7 +111,6 @@ async def handle(request: Request, book: Book):
     if not os.path.exists(book_path):
         return JSONResponse(status_code=404, content=f"book[{book.name}] not exist]")
     fin_handle_p = conf.kemono_path.joinpath("__handle", book.handle, book.u_s)
-    logger.debug(f"{fin_handle_p=}")
     fin_handle_p.mkdir(exist_ok=True, parents=True)
     _ = shutil.move(book_path, fin_handle_p.joinpath(book.name))
     return {"path": _, "handled": f"{book.handle}d"}
