@@ -20,6 +20,7 @@ class Conf:
         for k, v in yml_config.items():
             if 'path' in k:
                 v = pathlib.Path(v)
+                v.mkdir(parents=True, exist_ok=True)
             self.__setattr__(k, v or getattr(self, k, None))
         self._get_path(yml_config)
 
