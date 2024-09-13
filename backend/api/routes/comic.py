@@ -67,9 +67,11 @@ async def handle(request: Request, book: Book):
     with open(conf.handle_path.joinpath("record.txt"), "a+", encoding="utf-8") as f:
         f.writelines(f"<{book.handle}>{book.name}\n")
     if book.handle == "del":
-        raise OSError('请自行寻找删除目录方法，本人并没提供相关删除文件代码并不承担错误删除文件的责任')
+        ...
+        # shutil.rmtree(book_path)
         # return {"path": book.name, "handled": f"{book.handle}eted"}
-    if not os.path.exists(book_path):
+    elif not os.path.exists(book_path):
         return JSONResponse(status_code=404, content=f"book[{book.name}] not exist]")
-    _ = shutil.move(book_path, conf.handle_path.joinpath(book.handle, book.name))
-    return {"path": _, "handled": f"{book.handle}d"}
+    else:
+        _ = shutil.move(book_path, conf.handle_path.joinpath(book.handle, book.name))
+        return {"path": _, "handled": f"{book.handle}d"}

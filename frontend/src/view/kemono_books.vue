@@ -1,7 +1,7 @@
 <template>
     <el-container>
       <el-header>
-        <TopBtnGroup :reload="reload" :items="bookList" :filtered-items="filteredBookList" @send_sort="sv_sort"/>
+        <TopBtnGroup :reload="reload" @send_sort="sv_sort"/>
       </el-header>
       <el-main>
         <el-scrollbar>
@@ -18,11 +18,11 @@
                 <el-space wrap :size="'small'">
                   <el-button-group>
                     <bookHandleBtn :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack"
-                                   :bookName="scope.row.book_name" :bookHandlePath="'/comic/handle'" />
+                                   :bookName="scope.row.book" :bookHandlePath="'/kemono/handle'" :handleApiBodyExtra="{u_s: u_s}"/>
                   </el-button-group>
                   <router-link :style="`font-size: var(--el-font-size-extra-large)`"
-                               :to="{ path: 'book', query: { book: scope.row.book_name}}">
-                    {{ scope.row.book_name }}
+                               :to="{ path: 'kemono_book', query: {u_s: u_s, book: scope.row.book}}">
+                    {{ scope.row.book }}
                   </router-link>
                 </el-space>
               </template>
@@ -43,19 +43,22 @@
 <script setup>
     import {computed,h} from 'vue';
     import axios from "axios";
-    import {backend,indexPage,bookList,filteredBookList,sortVal,pageSize} from "@/static/store.js";
+    import {backend,indexPage,kemonoBookList,sortVal,pageSize} from "@/static/store.js";
     import {ElNotification} from "element-plus";
     import topBottom from '@/components/topBottom.vue'
     import TopBtnGroup from '@/components/TopBtnGroup.vue'
     import bookHandleBtn from '@/components/bookHandleBtn.vue'
+    import {useRoute} from "vue-router";
 
+    const route = useRoute()
+    const u_s = route.query.u_s
     // ------------------------后端交互 & 数据处理
     const getBooks = async(callBack) => {
-      const params = {sort: sortVal.value};
-      await axios.get(backend + '/comic/', {params})
+      const params = {u_s: u_s, sort: sortVal.value};
+      await axios.get(backend + '/kemono/book/', {params})
         .then(res => {
           let result = res.data.map((_) => {
-            return { book_name: _}
+            return { book: _}
           });
           callBack(result)
         })
@@ -64,19 +67,18 @@
         })
     }
     const bookTotal = computed(() => {
-      return filteredBookList.arr.length
+      return kemonoBookList.arr.length
     });
     const pagedBook = computed(() => {
       const start = (indexPage.value - 1) * pageSize;
       const end = start + pageSize;
-      return filteredBookList.arr.slice(start, end);
+      return kemonoBookList.arr.slice(start, end);
     });
     // ------------------------渲染相关
     const init = () => {
       getBooks(callBack)
       function callBack(data){
-        bookList.arr = data
-        filteredBookList.arr = data
+        kemonoBookList.arr = data
       }
     }
     init()

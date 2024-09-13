@@ -16,10 +16,12 @@
         </svg>
       </el-icon>
     </el-button>
-
     <el-button type="primary" :icon="RefreshRight" @click="props.reload"
-               style="width: 80%; height: 100%; margin: 0 auto; display: block; font-size: 18px">
-      重新加载页面</el-button>
+               style="width: 58%; height: 100%; margin: 0 auto; display: block; font-size: 15px">
+      重新加载</el-button>
+    <el-button type="success" @click="open_filter" style="width: 22%; height: 100%; margin: 0 auto; display: block; font-size: 15px">
+      <el-icon><Filter /></el-icon>
+    </el-button>
   </el-button-group>
 
     <el-select v-model="select_value" placeholder="排序" style="width: 25%;" size="large">
@@ -45,11 +47,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import {RefreshRight} from "@element-plus/icons-vue";
+import {ref} from 'vue'
+import {Filter, RefreshRight} from "@element-plus/icons-vue";
+import {ElMessageBox} from 'element-plus'
 
 const props = defineProps({
   reload:{type: Function, required: true},
+  items: {type: Object, required: false}, filteredItems: {type: Object, required: false}
 })
 const isDark = ref(true)
 const toggleDark = () => {
@@ -73,6 +77,20 @@ const select_options = ref([
   {value: 'time_desc', label: '时间倒序'},
   {value: 'name_asc', label: '名字顺序'},
 ])
+const open_filter = () => {
+  ElMessageBox.prompt('输入关键字', '筛选', {
+    inputPlaceholder: '大小写严格匹配',
+    confirmButtonText: 'OK',
+    cancelButtonText: 'Cancel',
+    roundButton: true
+  })
+    .then(({ value }) => {
+      props.filteredItems.arr = props.items.arr.filter(item => item.book_name.includes(value))
+    })
+    .catch(( v ) => {
+      debugger;
+    })
+}
 const onAddOption = () => {
   isAdding.value = true
 }
@@ -120,7 +138,6 @@ const emit = defineEmits(['send_sort'])
 
 .noDark-switch {
   background-color: rgb(8, 8, 8) !important;
-
   .el-icon {
     color: #fff;
     margin-left: 15px;
