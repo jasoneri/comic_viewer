@@ -11,7 +11,7 @@
 
 ▼ 预览 ▼
 
-![](doc/comic_viewer.jpg)
+![](doc/assets/comic_viewer.jpg)
 
 > 打包好的开箱即用版 → [点击前往下载页面](https://github.com/jasoneri/comic_viewer/releases)，包名 `comic_viewer.7z`<br>
 > 内含另外的 `部署指南` ，无需看以下说明
@@ -71,3 +71,7 @@ npm start
 
 ## 🔰开源许可
 详见 [MIT License](https://github.com/jasoneri/comic_viewer/blob/master/LICENSE)
+
+---
+
+![comic_viewer](https://count.getloli.com/get/@comic_viewer?theme=rule34)

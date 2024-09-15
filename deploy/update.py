@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """code update
 base on client, env-python: embed"""
+import base64
+import json
 import os
 import shutil
 import stat
@@ -23,6 +25,40 @@ headers = {
 }
 
 
+class TokenHandler:
+    gitee_t_url = "https://gitee.com/json_eri/ComicGUISpider/raw/GUI/deploy/t.json"
+    gitee_t_file = existed_proj_p.joinpath('deploy/gitee_t.json')
+
+    def __init__(self):
+        self.token = self.check_token()
+
+    @property
+    def headers(self):
+        return {**headers, 'Authorization': self.token} if self.token else headers
+
+    def check_token(self):
+        if not self.gitee_t_file.exists():
+            self.download_t_file()
+        with open(self.gitee_t_file, 'r', encoding='utf-8') as f:
+            tokens = json.load(f)
+        for _token in tokens:
+            token = f"Bearer {base64.b64decode(_token).decode()}"
+            with httpx.Client(headers={**headers, 'Authorization': token}) as client:
+                resp = client.head(f"https://api.github.com")
+                if str(resp.status_code).startswith('2'):
+                    return token
+        else:
+            print(Fore.RED + ("[ 本地文件的token全部失效，当前将使用无状态去请求github api（受限60请求/小时）]\n"
+                              "下次使用更新会重新下载token文件，还是全部失效的话可截图告知开发者"))
+            os.remove(self.gitee_t_file)
+
+    def download_t_file(self):
+        with open(self.gitee_t_file, 'w', encoding='utf-8') as f:
+            resp = httpx.get(self.gitee_t_url)
+            resp_json = resp.json()
+            json.dump(resp_json, f, ensure_ascii=False)
+
+
 class GitHandler:
     speedup_prefix = "https://gh.llkk.cc/"
 
@@ -30,31 +66,44 @@ class GitHandler:
         self.sess = httpx.Client(proxies=proxies)
         self.commit_api = f"https://api.github.com/repos/{owner}/{proj_name}/commits"
         self.src_url = f"https://api.github.com/repos/{owner}/{proj_name}/zipball/{branch}"
+        t_handler = TokenHandler()
+        self.headers = t_handler.headers
 
     # src_url = f"{self.speedup_prefix}https://github.com/{self.github_author}/{proj_name}/archive/refs/heads/{branch}.zip"
 
+    def normal_req(self, *args, **kwargs):
+        resp = self.sess.get(*args, headers=self.headers, **kwargs)
+        if not str(resp.status_code).startswith("2"):
+            raise ValueError(resp.text)
+        return resp.json()
+
     def get_version_info(self, ver):
-        resp = self.sess.get(f"{self.commit_api}/{ver}", headers=headers)
-        resp_json = resp.json()
+        resp_json = self.normal_req(f"{self.commit_api}/{ver}")
         return resp_json
 
     def check_changed_files(self, ver):
         print(Fore.BLUE + "[ 检查版本中.. ]")
-        resp = self.sess.get(self.commit_api, headers=headers)
-        resp_json = resp.json()
+        resp_json = self.normal_req(self.commit_api)
         vers = list(map(lambda _: _["sha"], resp_json))
         if not ver:
             print(Fore.RED + "[ 没有version文件，准备初始化.. ]")
             return vers[0], []
-        ver_index = vers.index(ver)
+        ver_index = vers.index(ver) if ver in vers else None
         valid_vers = vers[:ver_index]
+        if len(valid_vers) > 10:
+            print(Fore.YELLOW + f"[ 检测到堆积过多待更新版本，将忽略更新消息直接拉至最新版本代码... ]")
+            return vers[0], ["*"]
         files = []
         print(Fore.BLUE + f"[ 检查需要更新的代码中.. ]")
         for _ver in valid_vers:
             resp_json = self.get_version_info(_ver)
             files.extend(list(map(lambda _: _["filename"], resp_json["files"])))
             print(Fore.GREEN + f"[ {_ver[:8]} ] {resp_json['commit']['message']}")
-        return vers[0], list(set(files))
+        out_files = list(set(files))
+        if "deploy/update.py" in out_files:  # make sure update.py must be local-updated
+            out_files.remove("deploy/update.py")
+            out_files.insert(0, "deploy/update.py")
+        return vers[0], out_files
 
     def download_src_code(self, _url=None, zip_name="src.zip"):
         """proj less than 1Mb, actually just take little second"""
@@ -102,7 +151,8 @@ class Proj:
                 if dst.exists():  # fix
                     os.rmdir(dst)
             dst.parent.mkdir(exist_ok=True)
-            shutil.move(src, dst)
+            if src.exists():
+                shutil.move(src, dst)
 
         if not self.first_flag and not self.changed_files:
             print(Fore.CYAN + "[ 代码已是最新.. 若有其他问题向群里反映 ]")
@@ -113,7 +163,8 @@ class Proj:
             zip_f.extractall(temp_p)
         temp_proj_p = next(temp_p.glob(f"{self.github_author}-{self.name}*"))
         # REMARK(2024-08-08):      # f"{self.name}-{self.branch}"  this naming by src_url-"github.com/owner/repo/...zip"
-        if self.first_flag:  # when the first-time use this update(no version-file)
+        if self.first_flag or self.changed_files[0] == "*":
+            # first_flag: when the first-time use this update(no version-file)
             print(Fore.YELLOW + "[ 首次使用更新，初始化覆盖中.. ]")
             _, folders, files = next(os.walk(temp_proj_p))
             all_files = (*folders, *files)
@@ -135,10 +186,16 @@ class Proj:
 def regular_update():
     retry_times = 1
     __ = None
+    try:
+        proj = Proj()
+        proj.check()
+    except Exception as e:
+        __ = traceback.format_exc()
+        print(__)
+        print(Fore.RED + f"[Errno 11001] 是网络问题，重试更新即可。 若其他情况导致更新一直失败请截图发issue或找群反映")
+        return
     while retry_times < 4:
         try:
-            proj = Proj()
-            proj.check()
             proj.local_update()
             proj.end()
             break
