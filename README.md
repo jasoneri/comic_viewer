@@ -33,13 +33,15 @@
 + Python==3.12.3（实际3.8也行）
 + node  // newest
 ### backend
-在`backend/conf.yml`修改目录，默认是`D:\Comic`, 把漫画放进该目录内，示例如下
+在`backend/conf.yml`修改目录，默认是`D:\Comic`, 把漫画放进该目录的`web`文件夹内（自创建），目录树示例如下
 ```shell
-yourComicPath
-└── GrandBlue碧蓝之海_第62话
-     ├── 1.jpg
-     ├── 2.jpg
-     ......
+D:\Comic
+   ├── web_handle   
+   └── web
+        └── GrandBlue碧蓝之海_第62话
+             ├── 1.jpg
+             ├── 2.jpg
+             ......
 ```
 ```shell
 cd backend
@@ -59,9 +61,9 @@ npm start
 ```
 
 ## ✈️使用
-启动后终端会显示局域网ip与端口 `Network:`行
+启动后终端会显示局域网ip与端口 `Network:`行，手机进浏览器照样填地址即可，如预览所示
 
-手机进浏览器照样填地址即可，如预览所示
+想切本的话修改`backend/conf.yml`的`path=`，值改为例如`D:\Comic\本子`（保证内容放路径里的`web`文件夹即可，支持热更改）
 
 > 若需要删除功能，前往`backend/api/routes/comic.py`搜索`book.handle == "del"`，把下面两行解除注释
 > （<kbd># </kbd>去掉，注意去掉<kbd>#</kbd>后空格）
