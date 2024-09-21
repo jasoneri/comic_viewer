@@ -29,7 +29,7 @@ D:\Comic
 ```
 
 > 打包好的开箱即用版 → [点击前往下载页面](https://github.com/jasoneri/comic_viewer/releases)，包名 `comic_viewer.7z`<br>
-> 内含另外的 `部署指南` ，替代下面的准备和部署
+> 内含另外的 `部署指南` ，替代下面的 `准备/部署` 和 `运行`
 
 > 使用可以参考 [CGS的使用指南](https://www.veed.io/view/zh-CN/688ae765-2bfb-4deb-9495-32b24a273373?panel=comments) ，
 > `01:52` 开始
