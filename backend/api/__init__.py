@@ -82,4 +82,6 @@ def register_hook(app: FastAPI) -> None:
     @app.middleware("http")
     async def logger_request(request: Request, call_next) -> Response:
         response = await call_next(request)
+        if request.url.path.startswith("/comic/conf") and request.method == "POST" and response.status_code == 200:
+            app.mount("/static", StaticFiles(directory=str(conf.comic_path)), name="static")
         return response

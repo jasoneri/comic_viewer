@@ -25,7 +25,7 @@
 <script setup>
     import {computed} from "vue";
     import axios from "axios";
-    import {backend,kemonoArtistsList,sortVal} from "@/static/store.js";
+    import {backend,kemonoData,sortVal} from "@/static/store.js";
     import topBottom from '@/components/topBottom.vue'
     import TopBtnGroup from '@/components/TopBtnGroup.vue'
 
@@ -43,13 +43,13 @@
         })
     }
     const pagedArtists = computed(() => {
-      return kemonoArtistsList.arr;
+      return kemonoData.ArtistsList.arr;
     });
     // ------------------------渲染相关
     const init = () => {
       getArtists(callBack)
       function callBack(data){
-        kemonoArtistsList.arr = data
+        kemonoData.ArtistsList.arr = data
       }
     }
     init()

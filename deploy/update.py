@@ -39,8 +39,11 @@ class TokenHandler:
     def check_token(self):
         if not self.gitee_t_file.exists():
             self.download_t_file()
-        with open(self.gitee_t_file, 'r', encoding='utf-8') as f:
-            tokens = json.load(f)
+        try:
+            with open(self.gitee_t_file, 'r', encoding='utf-8') as f:
+                tokens = json.load(f)
+        except json.decoder.JSONDecodeError:
+            tokens = []
         for _token in tokens:
             token = f"Bearer {base64.b64decode(_token).decode()}"
             with httpx.Client(headers={**headers, 'Authorization': token}) as client:

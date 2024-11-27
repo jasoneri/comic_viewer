@@ -1,7 +1,8 @@
 <template>
     <el-container>
       <el-header>
-        <TopBtnGroup :reload="reload" :items="bookList" :filtered-items="filteredBookList" @send_sort="sv_sort"/>
+        <TopBtnGroup :reload="reload" :items="bookList" :filtered-items="filteredBookList" :handle-conf="handleConf"
+                     @send_sort="sv_sort"/>
       </el-header>
       <el-main>
         <el-scrollbar>
@@ -71,6 +72,36 @@
       const end = start + pageSize;
       return filteredBookList.arr.slice(start, end);
     });
+    const handleConf = async(param) => {
+      if (typeof param === "function") {
+        await axios.get(backend + '/comic/conf/')
+          .then(res => {param(res.data);})
+          .catch(function (error) {console.log(error);})
+      } else if (typeof param === "string") {
+        let body = {text: param};
+        await axios.post(backend + '/comic/conf/', body)
+          .then(res => {
+            reload();
+            ElNotification.success({
+              title: '配置更改已成功',
+              message: h('i', { style: 'white-space: pre-wrap; word-wrap: break-word;' }, `改配置后端会对静态资源锚点进行更新\n切换后点第一遍点书读图会404，再点下书就好了\n（目前未解，操作多了一点点而已）`),
+              offset: 100,
+              duration: 7000
+            })
+          })
+          .catch(
+              function (error) {
+                ElNotification.error({
+                  title: 'Error',
+                  message: '处理配置发生错误，自行去终端窗口查看报错堆栈',
+                  offset: 100,
+                })
+              }
+          )
+      } else {
+         console.log("handleConf-param type = " + typeof param);
+      }
+    }
     // ------------------------渲染相关
     const init = () => {
       getBooks(callBack)

@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-    import {backend,kemonoBookList} from '@/static/store.js'
+    import {backend,kemonoData} from '@/static/store.js'
     import axios from 'axios'
     import {useRoute,useRouter} from 'vue-router'
     import {reactive,markRaw,computed} from "vue";
@@ -50,7 +50,7 @@
         })
     }
     const bookIndex = computed(() => {
-      return kemonoBookList.arr.findIndex(item => item.book === route.query.book)
+      return kemonoData.BookList.arr.findIndex(item => item.book === route.query.book)
     });
     const init = (_book) => {
       getBook(_book, callBack)
@@ -64,8 +64,8 @@
       router.replace({path:'kemono_book',query:{u_s: u_s, book:_book}})
       init(_book)
     }
-    function previousBook(){triggerInit(kemonoBookList.arr[bookIndex.value-1].book)}
-    function nextBook(){triggerInit(kemonoBookList.arr[bookIndex.value+1].book)}
+    function previousBook(){triggerInit(kemonoData.BookList.arr[bookIndex.value-1].book)}
+    function nextBook(){triggerInit(kemonoData.BookList.arr[bookIndex.value+1].book)}
 
     function retainCallBack(done, path) {MsgOpen(done, Finished, path)}
     function removeCallBack(done, path) {MsgOpen(done, Warning, path)}

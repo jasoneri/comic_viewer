@@ -1,5 +1,5 @@
 <template>
-  <el-button-group  style="width: 75%; height: 70%">
+  <el-button-group  style="width: 100%; height: 70%">
     <el-button text class="switch" :class="isDark ? 'isDark-switch' : 'noDark-switch'" style="width: 20%; height: 100%" @click="toggleDark">
       <el-icon v-if="isDark">
         <svg viewBox="0 0 24 24">
@@ -17,42 +17,66 @@
       </el-icon>
     </el-button>
     <el-button type="primary" :icon="RefreshRight" @click="props.reload"
-               style="width: 58%; height: 100%; margin: 0 auto; display: block; font-size: 15px">
+               style="width: 65%; height: 100%; margin: 0 auto; display: block; font-size: 15px">
       重新加载</el-button>
-    <el-button type="success" @click="open_filter" style="width: 22%; height: 100%; margin: 0 auto; display: block; font-size: 15px">
-      <el-icon><Filter /></el-icon>
-    </el-button>
+
+    <el-dropdown trigger="click" style="width: 15%;height: 100%;" placement="bottom-end" size="large">
+      <el-button type="success"  @click="menuVisible = true" style="width: 100%;height: 100%;">
+        <el-icon><Menu /></el-icon>
+      </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item :icon="Operation" @click="showConfDialog">配置</el-dropdown-item>
+            <el-dropdown-item :icon="Filter" @click="open_filter">筛选</el-dropdown-item>
+            <el-select v-model="select_value" placeholder="排序" placement="left-start">
+              <el-option
+                v-for="item in select_options" style="height: 100%" :icon="Sort"
+                :key="item.value" :label="item.label" :value="item.value"
+                @click="emit('send_sort', item.value)"
+              />
+              <template #footer>
+                <el-button v-if="!isAdding" text bg size="small" @click="onAddOption">
+                  自定义排序
+                </el-button>
+                <template v-else>
+                  <el-input
+                    v-model="optionName" class="option-input" size="small"
+                    placeholder="自定义: 'time/name'+'_'+'asc/desc'"
+                  />
+                  <el-button type="primary" size="small" @click="onConfirm">confirm</el-button>
+                  <el-button size="small" @click="clear">cancel</el-button>
+                </template>
+              </template>
+            </el-select>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
   </el-button-group>
 
-    <el-select v-model="select_value" placeholder="排序" style="width: 25%;" size="large">
-      <el-option
-        v-for="item in select_options" style="height: 100%"
-        :key="item.value" :label="item.label" :value="item.value"
-        @click="emit('send_sort', item.value)"
-      />
-      <template #footer>
-        <el-button v-if="!isAdding" text bg size="small" @click="onAddOption">
-          自定义排序
-        </el-button>
-        <template v-else>
-          <el-input
-            v-model="optionName" class="option-input" size="small"
-            placeholder="自定义: 'time/name'+'_'+'asc/desc'"
-          />
-          <el-button type="primary" size="small" @click="onConfirm">confirm</el-button>
-          <el-button size="small" @click="clear">cancel</el-button>
-        </template>
-      </template>
-    </el-select>
+  <el-dialog
+      v-model="dialogVisible" title="修改配置" width="80%"
+      align-center center
+    >
+        <el-input type="textarea" v-model="confText"
+                  :rows="5" :input-style='"white-space: nowrap;overflow-x: auto"'/>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleConfDialog(confText)">提交修改</el-button>
+      </div>
+    </template>
+
+    </el-dialog>
 </template>
 
 <script setup>
 import {ref} from 'vue'
-import {Filter, RefreshRight} from "@element-plus/icons-vue";
+import {Filter, RefreshRight, Menu, Sort, Operation} from "@element-plus/icons-vue";
 import {ElMessageBox} from 'element-plus'
 
 const props = defineProps({
   reload:{type: Function, required: true},
+  handleConf:{type: Function, required: false},
   items: {type: Object, required: false}, filteredItems: {type: Object, required: false}
 })
 const isDark = ref(true)
@@ -70,7 +94,9 @@ const toggleDark = () => {
   }
 }
 
+const dialogVisible = ref(false);
 const isAdding = ref(false)
+const confText = ref('')
 const optionName = ref('')
 const select_value = ref([])
 const select_options = ref([
@@ -88,8 +114,25 @@ const open_filter = () => {
       props.filteredItems.arr = props.items.arr.filter(item => item.book_name.includes(value))
     })
     .catch(( v ) => {
-      debugger;
+      // debugger;
     })
+}
+const showConfDialog = () => {
+  function callBack(data){
+    confText.value = data
+    dialogVisible.value = true
+  }
+  if (props.handleConf) {
+    props.handleConf(callBack);
+  }
+}
+const handleConfDialog = (confText_) => {
+  if (confText_) {
+    props.handleConf(confText_);
+    dialogVisible.value = false;
+  } else {
+    this.$message.error('请输入内容');
+  }
 }
 const onAddOption = () => {
   isAdding.value = true

@@ -7,5 +7,7 @@ export let indexPage = ref(1)
  export const filteredBookList = reactive({arr: []})
  export let sortVal = ref("")
 export let pageSize = 20
- export const kemonoArtistsList = reactive({arr: []})
- export const kemonoBookList = reactive({arr: []})
+ export const kemonoData = {
+  ArtistsList: reactive({arr: []}),
+  BookList: reactive({arr: []})
+ }

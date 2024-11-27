@@ -46,6 +46,20 @@ async def get_books(request: Request, sort: str = Query(None)):
     return sorted(books, key=getattr(QuerySort, func), reverse=getattr(QuerySort, _sort).value)
 
 
+class ConfContent(BaseModel):
+    text: str
+
+
+@index_router.get("/conf")
+@index_router.post("/conf")
+async def duel_conf(request: Request, conf_content: ConfContent = None):
+    if request.method == "GET":
+        return conf.get_content()
+    else:
+        conf.update(conf_content.text)
+        return "update conf successfully"
+
+
 @index_router.get("/{book_name}")
 async def get_book(request: Request, book_name: str):
     book_md5 = hashlib.md5(book_name.encode('utf-8')).hexdigest()

@@ -9,12 +9,20 @@ basepath = pathlib.Path(__file__).parent
 yaml.warnings({'YAMLLoadWarning': False})
 
 
+def yaml_update(_f, yaml_string):
+    with open(_f, 'r+', encoding='utf-8') as fp:
+        fp.seek(0)
+        fp.truncate()
+        fp.write(yaml_string)
+
+
 class Conf:
     comic_path = None
     handle_path = None
+    file = basepath.parent.joinpath('conf.yml')
 
     def init(self):
-        with open(basepath.parent.joinpath('conf.yml'), 'r', encoding='utf-8') as f:
+        with open(self.file, 'r', encoding='utf-8') as f:
             cfg = f.read()
         yml_config = yaml.load(cfg, Loader=yaml.FullLoader)
         for k, v in yml_config.items():
@@ -41,6 +49,14 @@ class Conf:
             Conf._instance = super().__new__(cls, *args, **kwargs)
             Conf._instance.init()
         return Conf._instance
+
+    @staticmethod
+    def get_content():
+        return basepath.parent.joinpath('conf.yml').read_text()
+
+    def update(self, cfg_string):
+        yaml_update(self.file, cfg_string)
+        self.init()
 
 
 conf = Conf()

@@ -43,7 +43,7 @@
 <script setup>
     import {computed,h} from 'vue';
     import axios from "axios";
-    import {backend,indexPage,kemonoBookList,sortVal,pageSize} from "@/static/store.js";
+    import {backend,indexPage,kemonoData,sortVal,pageSize} from "@/static/store.js";
     import {ElNotification} from "element-plus";
     import topBottom from '@/components/topBottom.vue'
     import TopBtnGroup from '@/components/TopBtnGroup.vue'
@@ -67,18 +67,18 @@
         })
     }
     const bookTotal = computed(() => {
-      return kemonoBookList.arr.length
+      return kemonoData.BookList.arr.length
     });
     const pagedBook = computed(() => {
       const start = (indexPage.value - 1) * pageSize;
       const end = start + pageSize;
-      return kemonoBookList.arr.slice(start, end);
+      return kemonoData.BookList.arr.slice(start, end);
     });
     // ------------------------渲染相关
     const init = () => {
       getBooks(callBack)
       function callBack(data){
-        kemonoBookList.arr = data
+        kemonoData.BookList.arr = data
       }
     }
     init()
