@@ -14,7 +14,7 @@
 ![](doc/assets/comic_viewer.jpg)
 
 ### 内容目录树参考
-配置：`backend/conf.yml`中`path`的值（默认`D:\Comic`，切本就改成`D:\Comic\本子`，现可在功能菜单 > 配置处更改）
+配置：`backend/conf.yml`中`path`的值（默认`D:\Comic`，切本就改成`D:\Comic\本子`，可在功能菜单 > 配置处更改
 ```shell
 D:\Comic                              
    ├── web_handle                     # 程序创建的操作处理目录
@@ -37,7 +37,7 @@ D:\Comic
 
 ## 📢更新
 
-### V1.6.1 | 2024-11-27
+### V1.1.0 | 2024-11-27
 
 增加`更改配置`功能<br>目前的功能以及后续新增功能都将放在`功能菜单`里
 
