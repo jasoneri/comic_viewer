@@ -37,7 +37,6 @@
             />
           </div>
         </el-scrollbar>
-        <topBottom></topBottom>
       </el-main>
     </el-container>
 </template>
@@ -46,7 +45,6 @@
     import axios from "axios";
     import {backend,indexPage,bookList,filteredBookList,sortVal,pageSize} from "@/static/store.js";
     import {ElNotification} from "element-plus";
-    import topBottom from '@/components/topBottom.vue'
     import TopBtnGroup from '@/components/TopBtnGroup.vue'
     import bookHandleBtn from '@/components/bookHandleBtn.vue'
 

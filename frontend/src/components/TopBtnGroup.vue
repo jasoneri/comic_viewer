@@ -65,8 +65,7 @@
         <el-button type="primary" @click="handleConfDialog(confText)">提交修改</el-button>
       </div>
     </template>
-
-    </el-dialog>
+  </el-dialog>
 </template>
 
 <script setup>

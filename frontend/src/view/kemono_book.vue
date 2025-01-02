@@ -1,24 +1,19 @@
 <template>
   <el-container>
-    <el-header>
-      <el-button-group style="width: 40%; height: 100%;">
+    <el-header style="height: 40px">
+      <el-button-group style="width: 35%; height: 100%;">
         <bookHandleBtn
             :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book" :bookHandlePath="'/kemono/handle'" :handleApiBodyExtra="{u_s: u_s}"
         />
       </el-button-group>
-      <el-button-group style="width: 60%; height: 100%;">
-        <el-button style="width: 50%; height: 100%" type="primary" :icon="ArrowLeft" @click="previousBook">上一排序</el-button>
-        <el-button style="width: 50%; height: 100%" type="primary" @click="nextBook">下一排序<el-icon class="el-icon--right"><ArrowRight /></el-icon></el-button>
+      <el-button-group style="width: 65%; height: 100%;">
+        <TopBtnGroupOfBook :nextBook="nextBook" :previousBook="previousBook"/>
       </el-button-group>
     </el-header>
     <el-main class="demo-image__lazy" style="height: 100%">
         <el-image v-for="url in imgUrls.arr" :key="url" :src="url" lazy />
+        <topBottom />
     </el-main>
-    <el-backtop :right="60" :bottom="110" >
-        <div style="height: 100%; width: 100%; text-align: center; line-height: 45px; color: #00f5e1;">
-          <el-icon><ArrowUpBold /></el-icon>
-        </div>
-    </el-backtop>
   </el-container>
 </template>
 
@@ -29,7 +24,9 @@
     import {reactive,markRaw,computed} from "vue";
     import {ElMessageBox} from 'element-plus'
     import bookHandleBtn from '@/components/bookHandleBtn.vue'
-    import {ArrowUpBold,Delete,Finished,Warning,ArrowLeft,ArrowRight} from "@element-plus/icons-vue";
+    import {Delete,Finished,Warning} from "@element-plus/icons-vue"
+    import topBottom from '@/components/topBottom.vue'
+    import TopBtnGroupOfBook from "@/components/TopBtnGroupOfBook.vue"
 
     const route = useRoute()
     const router = useRouter()

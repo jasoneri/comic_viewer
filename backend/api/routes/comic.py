@@ -60,6 +60,25 @@ async def duel_conf(request: Request, conf_content: ConfContent = None):
         return "update conf successfully"
 
 
+class ScrollConf(BaseModel):
+    IntervalTime: int
+    IntervalPixel: int
+
+
+@index_router.get("/conf_scroll")
+@index_router.post("/conf_scroll")
+async def duel_scroll_conf(request: Request, scroll_conf: ScrollConf = None):
+    if request.method == "GET":
+        if not hasattr(conf, "scrollConf"):
+            setattr(conf, "scrollConf", {"IntervalTime": 15, "IntervalPixel": 1})
+        return {"IntervalTime": conf.scrollConf["IntervalTime"], "IntervalPixel": conf.scrollConf["IntervalPixel"]}
+    else:
+        conf.update({"scrollConf": {
+            "IntervalTime": scroll_conf.IntervalTime, "IntervalPixel": scroll_conf.IntervalPixel
+        }})
+        return "update scroll conf successfully"
+
+
 @index_router.get("/{book_name}")
 async def get_book(request: Request, book_name: str):
     book_md5 = hashlib.md5(book_name.encode('utf-8')).hexdigest()

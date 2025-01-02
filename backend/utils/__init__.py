@@ -4,6 +4,8 @@ import re
 import pathlib
 from urllib.parse import quote
 import yaml
+import typing as t
+from dataclasses import dataclass, asdict, field
 
 basepath = pathlib.Path(__file__).parent
 yaml.warnings({'YAMLLoadWarning': False})
@@ -16,10 +18,17 @@ def yaml_update(_f, yaml_string):
         fp.write(yaml_string)
 
 
+@dataclass
 class Conf:
     comic_path = None
     handle_path = None
     file = basepath.parent.joinpath('conf.yml')
+    path: t.Union[str, pathlib.Path] = None
+    kemono_path: t.Union[str, pathlib.Path] = None
+    scrollConf: dict = field(default_factory=dict)
+
+    def __init__(self):
+        self.init()
 
     def init(self):
         with open(self.file, 'r', encoding='utf-8') as f:
@@ -46,15 +55,24 @@ class Conf:
 
     def __new__(cls, *args, **kwargs):
         if not hasattr(Conf, "_instance"):
-            Conf._instance = super().__new__(cls, *args, **kwargs)
-            Conf._instance.init()
-        return Conf._instance
+            setattr(Conf, "_instance", object.__new__(cls))
+        return getattr(Conf, "_instance")
+
 
     @staticmethod
     def get_content():
         return basepath.parent.joinpath('conf.yml').read_text()
 
-    def update(self, cfg_string):
+    def update(self, cfg):
+        if isinstance(cfg, str):
+            cfg_string = cfg
+        else:
+            _cfg = asdict(self)
+            _cfg.update(cfg)
+            for k, v in _cfg.items():
+                if isinstance(v, pathlib.Path):
+                    _cfg[k] = str(v)
+            cfg_string = yaml.dump(_cfg, allow_unicode=True, sort_keys=False)
         yaml_update(self.file, cfg_string)
         self.init()
 
