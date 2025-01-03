@@ -2,11 +2,11 @@
     <el-backtop :right="60" :bottom="110" >
         <el-icon size="25" color="#00f5e1"><ArrowUpBold /></el-icon>
     </el-backtop>
-    <el-backtop :right="60" :bottom="60" :visibility-height="0" @click="toggleScroll" >
-        <el-icon size="25" color="#00f5e1">
+   <el-button size="large">
+      <el-icon size="25" color="#00f5e1" @click="toggleScroll" style="position: fixed;right: 67px; bottom: 60px">
           <ArrowDownBold v-if="!isScrolling" /><VideoPause v-if="isScrolling" />
         </el-icon>
-    </el-backtop>
+   </el-button>
 </template>
 
 <script setup>
@@ -25,12 +25,10 @@ const toggleScroll = () => {
     // 如果正在滚动，停止滚动并恢复按钮图标
     clearInterval(scrollInterval);
     isScrolling.value = false;
-    window.scrollBy(0, 0);
   } else {
     // 启动自动滚动
     toggledScrolling.value = true;
     isScrolling.value = true;
-    window.scrollBy({top: 0, behavior: "smooth"});
     scrollInterval = setInterval(() => {
       // 判断自动滚动停止
       const currentScrollTop = window.scrollY || document.documentElement.scrollTop;
