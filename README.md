@@ -39,7 +39,7 @@ D:\Comic
 
 ### V1.1.1 | 2025-01-05
 
-存在多个Network时，优化局域网前端访问后端的取值以保证手机跨域访问
+存在多个Network时，优化局域网前端访问后端的取值以保证手机跨域访问（其表现为有ui但没书列表）
 + 优先取`192.x.x.x`网段
 + `x.x.x.1` 的排除
 > 规则也许还不完善，可提issue或者在代码里修改 位置在`frontend/vite.config.js`搜索`alias.address.startsWith("192")`，
