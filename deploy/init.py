@@ -16,7 +16,6 @@ if __name__ == '__main__':
     pkg = "node_modules"
     pkg_zip = f"{pkg}.7z"
     npm_pkg = root.joinpath(f"runtime/{pkg_zip}")
-    os.system("npm config set registry https://registry.npm.taobao.org")
     if npm_pkg.exists():
         print(Fore.YELLOW + "[ 首次使用，初始化环境中.. ]")
         npm_pkg_p = scripts_p.joinpath(f'frontend/{pkg}')
