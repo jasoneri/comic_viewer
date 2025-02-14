@@ -107,6 +107,9 @@ npm start
 > 规则样板覆盖不全，目前仅靠开发者自己发现，可提issue或者在代码里修改 位置在`frontend/vite.config.js`搜索`alias.address.startsWith("192")`，<br>
 > 可自行调整if条件或在函数最后`return needHost`上面加一行代码`needHost = 'x.x.x.x;'`设成指定的ip值（这样的话还能跳出局域网访问公网）
 
+### 3. 后端程序报错[WinError 10013] ...不允许...访问套接字的尝试。
+后端端口为12345，命中默认的虚拟机`Hyper-V`随机保留端口范围，根据 [此链接方法](https://zhaoji.wang/solve-the-problem-of-windows-10-ports-being-randomly-reserved-occupied-by-hyper-v/) 处理并重启
+
 ## 🔰其他
 ### kemono
 配置中有个`kemono_path`，可观看从`CGS`脚本集下的`kemono`内容，
