@@ -7,7 +7,10 @@
         />
       </el-button-group>
       <el-button-group style="width: 65%; height: 100%;">
-        <TopBtnGroupOfBook :nextBook="nextBook" :previousBook="previousBook"/>
+        <TopBtnGroupOfBook 
+          :nextBook="nextBook" :previousBook="previousBook"
+          :total-pages="imgUrls.arr.length"
+        />
       </el-button-group>
     </el-header>
     <el-main class="demo-image__lazy" style="height: 100%">
@@ -58,8 +61,8 @@
       router.replace({path:'book',query:{book:_book}})
       init(_book)
     }
-    function previousBook(){triggerInit(bookList.arr[bookIndex.value-1].book_name)}
-    function nextBook(){triggerInit(bookList.arr[bookIndex.value+1].book_name)}
+    function previousBook(callBack){triggerInit(bookList.arr[bookIndex.value-1].book_name);callBack()}
+    function nextBook(callBack){triggerInit(bookList.arr[bookIndex.value+1].book_name);callBack()}
 
     function retainCallBack(done, path) {MsgOpen(done, Finished, path)}
     function removeCallBack(done, path) {MsgOpen(done, Warning, path)}
