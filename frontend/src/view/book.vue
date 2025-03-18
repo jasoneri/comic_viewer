@@ -14,9 +14,14 @@
       </el-button-group>
     </el-header>
     <el-main class="demo-image__lazy" style="height: 100%">
-        <el-image v-for="url in imgUrls.arr" :key="url" :src="url" lazy />
+        <el-image v-for="url in imgUrls.arr" :key="url" :src="url" lazy :preview-src-list="imgUrls.arr"/>
       <topBottom />
     </el-main>
+    <el-button-group style="width: 100%; height: 50px;">
+        <bookHandleBtn
+            :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book"  :bookHandlePath="'/comic/handle'"
+        />
+    </el-button-group>
   </el-container>
 </template>
 
