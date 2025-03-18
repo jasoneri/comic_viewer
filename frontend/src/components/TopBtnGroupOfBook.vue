@@ -1,4 +1,21 @@
 <template>
+  <el-button-group  v-if="show_transparent_next_prev_btn">
+    <el-button 
+      class="float-btn left-btn" 
+      :class="{ 'slide-active': show_slide }"
+      type="primary" 
+      :icon="ArrowLeft" 
+      @click="previousBook"
+    />
+    <el-button 
+      class="float-btn right-btn" 
+      type="primary" 
+      :icon="ArrowRight" 
+      @click="nextBook"
+    >
+    </el-button>
+  </el-button-group>
+
   <el-button style="width: 40%; height: 100%" type="primary" :icon="ArrowLeft" @click="previousBook">上一排序</el-button>
   <el-button style="width: 40%; height: 100%" type="primary" @click="nextBook">下一排序<el-icon class="el-icon--right"><ArrowRight /></el-icon></el-button>
   <el-dropdown trigger="click" style="width: 20%;height: 100%;" placement="bottom-end" size="large">
@@ -7,9 +24,12 @@
     </el-button>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item :icon="ArrowDownBold" @click="showScrollConfDia">自动下滑</el-dropdown-item>
+        <el-dropdown-item :icon="ArrowDownBold" @click="showScrollConfDia">自动下滑设置</el-dropdown-item>
         <el-dropdown-item>
           <el-switch v-model="show_slide" :active-action-icon="View" :inactive-action-icon="Hide" active-text="页数滚动条"></el-switch>
+        </el-dropdown-item>
+        <el-dropdown-item>
+          <el-switch v-model="show_transparent_next_prev_btn" :active-action-icon="View" :inactive-action-icon="Hide" active-text="页中翻页按钮"></el-switch>
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>
@@ -53,6 +73,7 @@ import {backend, scrollIntervalPixel, scrollIntervalTime} from "@/static/store.j
 import slider from '@/components/func/slider.vue'
 
 const show_slide = ref(false)
+const show_transparent_next_prev_btn = ref(true)
 
 const props = defineProps({
   previousBook:{type: Function, required: true},
@@ -91,5 +112,46 @@ const setScrollConf = async() => {
     .catch(function (error) {console.log(error);})
 }
 </script>
+
 <style scoped lang="scss">
+.float-btn {
+  position: fixed;
+  top: 40%;
+  transform: translateY(-50%);
+  width: 10vw !important;
+  height: 15vh !important;
+  min-width: 60px;
+  min-height: 60px;
+  opacity: 0.3;
+  z-index: 999;
+  transition: all 0.3s;
+  background-color: rgba(0,0,0,0.3);
+  border: none;
+  &:hover,
+  &:active {
+    opacity: 0.8;
+    background-color: rgba(64, 158, 255, 0.5);
+  }
+  :deep(.el-icon) {
+    font-size: 2.5rem;
+  }
+
+  &.slide-active {
+    &.left-btn {
+      left: auto;
+      right: 0;
+      top: calc(40% + 15vh);  /* 原位置下移一个按钮高度 + 间距 */
+      transform: translateY(-50%);
+      border-radius: 8px 0 0 8px;
+    }
+  }
+}
+.left-btn {
+  left: 0;
+  border-radius: 0 8px 8px 0;
+}
+.right-btn {
+  right: 0;
+  border-radius: 8px 0 0 8px;
+}
 </style>
