@@ -1,7 +1,10 @@
 <div align="center">
   <h1 id="koishi">ComicViewer</h1>
-  <img src="https://img.shields.io/badge/Backend-Python3.12-green.svg?colorA=abcdef" alt="tag">
-  <img src="https://img.shields.io/badge/Frontend-Vite+elementPlus-blue.svg?colorA=abcdef" alt="tag">
+  <img src="https://img.shields.io/badge/-3.12%2B-brightgreen.svg?logo=python" alt="tag">
+  <img src="https://img.shields.io/badge/By-Fastapi_&_vitejs-blue.svg?colorA=abcdef" alt="tag">
+  <a href="https://github.com/jasoneri/comic_viewer/releases" target="_blank">
+     <img src="https://img.shields.io/github/downloads/jasoneri/comic_viewer/total?style=social&logo=github" alt="tag">
+  </a>
 </div>
 
 ## 📑介绍
