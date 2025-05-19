@@ -1,3 +1,8 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Logs
 logs
 *.log
@@ -26,3 +31,5 @@ dist-ssr
 
 # user
 *.d
+*.lh
+package-lock.json

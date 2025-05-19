@@ -7,13 +7,21 @@
         />
       </el-button-group>
       <el-button-group style="width: 65%; height: 100%;">
-        <TopBtnGroupOfBook :nextBook="nextBook" :previousBook="previousBook"/>
+        <TopBtnGroupOfBook 
+          :nextBook="nextBook" :previousBook="previousBook"
+          :total-pages="imgUrls.arr.length"
+        />
       </el-button-group>
     </el-header>
     <el-main class="demo-image__lazy" style="height: 100%">
-        <el-image v-for="url in imgUrls.arr" :key="url" :src="url" lazy />
+        <el-image v-for="url in imgUrls.arr" :key="url" :src="url" lazy :preview-src-list="imgUrls.arr"/>
       <topBottom />
     </el-main>
+    <el-button-group style="width: 100%; height: 50px;">
+        <bookHandleBtn
+            :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book"  :bookHandlePath="'/comic/handle'"
+        />
+    </el-button-group>
   </el-container>
 </template>
 
@@ -58,8 +66,8 @@
       router.replace({path:'book',query:{book:_book}})
       init(_book)
     }
-    function previousBook(){triggerInit(bookList.arr[bookIndex.value-1].book_name)}
-    function nextBook(){triggerInit(bookList.arr[bookIndex.value+1].book_name)}
+    function previousBook(callBack){triggerInit(bookList.arr[bookIndex.value-1].book_name);callBack()}
+    function nextBook(callBack){triggerInit(bookList.arr[bookIndex.value+1].book_name);callBack()}
 
     function retainCallBack(done, path) {MsgOpen(done, Finished, path)}
     function removeCallBack(done, path) {MsgOpen(done, Warning, path)}

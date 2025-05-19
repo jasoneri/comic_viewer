@@ -13,16 +13,15 @@ function getNetworkIp() {
       if (iface) { // 添加这个条件检查，确保iface有被定义
         for (let i = 0; i < iface.length; i++) {
           const alias = iface[i];
-          if (
-            alias.family === 'IPv4' &&
-            alias.address !== '127.0.0.1' && !alias.internal &&
-            alias.address.startsWith("192") && !alias.address.endsWith(".1")
-          ) {needHost = alias.address;}
+          if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+            if (alias.address.startsWith("192") && !alias.address.endsWith(".1")) {needHost = alias.address;}
+            else {needHost = alias.address;}
+          }
         }
       }
     }
   } catch (e) {needHost = 'localhost';}
-  return needHost;
+  return needHost || 'localhost';
 }
 
 
