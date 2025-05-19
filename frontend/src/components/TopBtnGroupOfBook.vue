@@ -53,8 +53,8 @@
           <template #reference>
             <el-button class="m-2" :icon="InfoFilled" type="info">数值相关</el-button>
           </template>
-          大致分为两种形式 <br><hr style="border-style: dotted">
-          动画式：流畅下滑，数值均设小，<br>例如 15ms/1px <br><hr style="border-style: dashed">
+          大致分为两种形式 <hr style="border-style: dotted">
+          动画式：流畅下滑，数值均设小，<br>例如 15ms/1px <hr style="border-style: dashed">
           ppt式：跨度大，预留阅读时间，<br>例如 3000ms/400px<hr style="border-style: dashed">
         </el-popover>
         <el-button @click="dialogFormVisible = false">Cancel</el-button>

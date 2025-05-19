@@ -1,13 +1,13 @@
 <template>
   <el-container>
-    <el-header style="height: 40px">
+    <el-header style="height: 45px">
       <el-button-group style="width: 35%; height: 100%;">
         <bookHandleBtn
             :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book"  :bookHandlePath="'/comic/handle'"
         />
       </el-button-group>
       <el-button-group style="width: 65%; height: 100%;">
-        <TopBtnGroupOfBook 
+        <TopBtnGroupOfBook
           :nextBook="nextBook" :previousBook="previousBook"
           :total-pages="imgUrls.arr.length"
         />

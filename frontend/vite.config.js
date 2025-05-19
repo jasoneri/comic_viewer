@@ -15,7 +15,6 @@ function getNetworkIp() {
           const alias = iface[i];
           if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
             if (alias.address.startsWith("192") && !alias.address.endsWith(".1")) {needHost = alias.address;}
-            else {needHost = alias.address;}
           }
         }
       }

@@ -91,7 +91,12 @@ class BookCursor:
 
     @staticmethod
     def _sort(pages, func=None):
-        func = func or (lambda x: int(re.search(r'\d+', x).group()))
+        def _by_int(p):
+            _int = re.search(r'\d+', p)
+            if bool(_int):
+                return int(_int.group())
+            return 0
+        func = func or _by_int
         return sorted(pages, key=func)
 
     def get(self, cursor=None):
