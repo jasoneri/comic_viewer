@@ -147,7 +147,7 @@ npm start
 
 ## 🔇开源许可
 
-详见 [MIT License](https://github.com/jasoneri/comic_viewer/blob/master/LICENSE)
+详见 [Apache License 2.0](https://github.com/jasoneri/comic_viewer/blob/master/LICENSE)
 
 ---
 
