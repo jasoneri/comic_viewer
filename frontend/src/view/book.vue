@@ -66,8 +66,8 @@
       router.replace({path:'book',query:{book:_book}})
       init(_book)
     }
-    function previousBook(callBack){triggerInit(bookList.arr[bookIndex.value-1].book_name);callBack()}
-    function nextBook(callBack){triggerInit(bookList.arr[bookIndex.value+1].book_name);callBack()}
+    function previousBook(){triggerInit(bookList.arr[bookIndex.value-1].book_name)}
+    function nextBook(){triggerInit(bookList.arr[bookIndex.value+1].book_name)}
 
     function retainCallBack(done, path) {MsgOpen(done, Finished, path)}
     function removeCallBack(done, path) {MsgOpen(done, Warning, path)}

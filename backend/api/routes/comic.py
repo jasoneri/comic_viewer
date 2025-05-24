@@ -100,9 +100,8 @@ async def handle(request: Request, book: Book):
     with open(conf.handle_path.joinpath("record.txt"), "a+", encoding="utf-8") as f:
         f.writelines(f"<{book.handle}>{book.name}\n")
     if book.handle == "del":
-        ...
-        # shutil.rmtree(book_path)
-        # return {"path": book.name, "handled": f"{book.handle}eted"}
+        shutil.rmtree(book_path)
+        return {"path": book.name, "handled": f"{book.handle}eted"}
     elif not os.path.exists(book_path):
         return JSONResponse(status_code=404, content=f"book[{book.name}] not exist]")
     else:
