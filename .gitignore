@@ -33,3 +33,29 @@ dist-ssr
 *.d
 *.lh
 package-lock.json
+
+# self
+analyze/
+*.d
+*.zip
+*demo*.py
+__temp
+test/*
+.lh/
+# self/build
+src/
+temp
+*-in.txt
+untitled*
+Pipfile
+Pipfile.lock
+codecov*
+*_local.yml
+*-lock.yaml
+*.hash
+# self/conf
+conf.yml
+# self/bug-report
+_bug_log
+# ide
+.cursor
