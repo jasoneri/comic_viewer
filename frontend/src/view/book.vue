@@ -108,7 +108,7 @@
 .demo-image__lazy .el-image:last-child {
   margin-bottom: 0;
 }
-@media screen and (min-width: 1200px) {
+@media screen and (min-width: 900px) {
   .demo-image__lazy .el-image {
     width: 65%;
     margin-left: auto;

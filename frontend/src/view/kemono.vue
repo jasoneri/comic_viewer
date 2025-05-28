@@ -10,7 +10,7 @@
               <template v-slot="scope">
                 <el-space wrap :size="'small'">
                   <router-link :style="`font-size: var(--el-font-size-extra-large)`"
-                               :to="{ path: 'kemono_books', query: { u_s: scope.row.artists}}">
+                               :to="{ path: 'kemono_books_list', query: { u_s: scope.row.artists}}">
                     {{ scope.row.artists }}
                   </router-link>
                 </el-space>

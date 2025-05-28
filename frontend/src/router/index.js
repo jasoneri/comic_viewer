@@ -4,16 +4,16 @@ import { createRouter, createWebHistory } from 'vue-router'
 // 路由配置
 const routes = [{
   path: '/',
-  name: 'books',
+  name: 'books list',
   meta: {
-    title: "comic books index"
+    title: "books list"
   },
-  component: () => import('@/view/comic.vue')
+  component: () => import('@/view/books_list.vue')
 },{
   path: '/book',
   name: 'book',
   meta: {
-    title: "comic book"
+    title: "book"
   },
   component: () => import('@/view/book.vue')
 },{
@@ -24,12 +24,12 @@ const routes = [{
   },
   component: () => import('@/view/kemono.vue')
 },{
-  path: '/kemono_books',
-  name: 'kemono_books',
+  path: '/kemono_books_list',
+  name: 'kemono_books_list',
   meta: {
-    title: "kemono artist books"
+    title: "kemono books list"
   },
-  component: () => import('@/view/kemono_books.vue')
+  component: () => import('@/view/kemono_books_list.vue')
 },{
   path: '/kemono_book',
   name: 'kemono_book',
