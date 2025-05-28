@@ -124,6 +124,12 @@
     }
     // ------------------------渲染相关
     const init = () => {
+      // 从 localStorage 读取排序值
+      const savedSort = localStorage.getItem('sortValue')
+      if (savedSort) {
+        sortVal.value = savedSort
+      }
+      
       getBooks(callBack)
       function callBack(data){
         bookList.arr = data

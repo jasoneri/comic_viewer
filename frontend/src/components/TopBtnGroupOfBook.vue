@@ -116,7 +116,7 @@ const setScrollConf = async() => {
 <style scoped lang="scss">
 .float-btn {
   position: fixed;
-  top: 40%;
+  top: 60%;
   transform: translateY(-50%);
   width: 10vw !important;
   height: 15vh !important;
@@ -140,7 +140,7 @@ const setScrollConf = async() => {
     &.left-btn {
       left: auto;
       right: 0;
-      top: calc(40% + 15vh);  /* 原位置下移一个按钮高度 + 间距 */
+      top: calc(60% + 15vh);  /* 原位置下移一个按钮高度 + 间距 */
       transform: translateY(-50%);
       border-radius: 8px 0 0 8px;
     }

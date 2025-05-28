@@ -36,7 +36,7 @@
               <el-option
                 v-for="item in select_options" style="height: 100%" :icon="Sort"
                 :key="item.value" :label="item.label" :value="item.value"
-                @click="emit('send_sort', item.value)"
+                @click="handleSortChange(item.value)"
               />
               <template #footer>
                 <el-button v-if="!isAdding" text bg size="small" @click="onAddOption">
@@ -89,7 +89,12 @@ const emit = defineEmits(['send_sort', 'update:modelValue'])
 const isDark = ref(true)
 const isListMode = ref(true)
 
-// 初始化主题和视图模式
+const select_value = ref([])
+const select_options = ref([
+  {value: 'time_desc', label: '时间倒序'},
+  {value: 'name_asc', label: '名字顺序'},
+])
+
 onMounted(() => {
   // 初始化视图模式
   const savedMode = localStorage.getItem('isListMode')
@@ -97,16 +102,26 @@ onMounted(() => {
     isListMode.value = savedMode === 'true'
     emit('update:modelValue', isListMode.value)
   }
-  
   // 初始化主题
   const savedTheme = localStorage.getItem('isDark')
   if (savedTheme !== null) {
     isDark.value = savedTheme === 'true'
   }
   setTheme(isDark.value)
+  // 初始化排序选项
+  const savedSort = localStorage.getItem('sortValue')
+  if (savedSort) {
+    select_value.value = savedSort
+  }
+  
+  // 初始化自定义排序选项
+  const savedCustomSorts = localStorage.getItem('customSorts')
+  if (savedCustomSorts) {
+    const customSorts = JSON.parse(savedCustomSorts)
+    select_options.value = [...select_options.value, ...customSorts]
+  }
 })
 
-// 设置主题
 const setTheme = (isDarkMode) => {
   const html = document.querySelector('html')
   if (html) {
@@ -136,11 +151,7 @@ const dialogVisible = ref(false);
 const isAdding = ref(false)
 const confText = ref('')
 const optionName = ref('')
-const select_value = ref([])
-const select_options = ref([
-  {value: 'time_desc', label: '时间倒序'},
-  {value: 'name_asc', label: '名字顺序'},
-])
+
 const open_filter = () => {
   ElMessageBox.prompt('输入关键字', '筛选', {
     inputPlaceholder: '大小写严格匹配',
@@ -177,16 +188,29 @@ const onAddOption = () => {
 }
 const onConfirm = () => {
   if (optionName.value) {
-    select_options.value.push({
+    const newOption = {
       label: optionName.value,
       value: optionName.value,
-    })
+    }
+    select_options.value.push(newOption)
+    
+    const customSorts = select_options.value.filter(option => 
+      !['time_desc', 'name_asc'].includes(option.value)
+    )
+    localStorage.setItem('customSorts', JSON.stringify(customSorts))
+    
     clear()
   }
 }
 const clear = () => {
   optionName.value = ''
   isAdding.value = false
+}
+
+const handleSortChange = (value) => {
+  select_value.value = value
+  localStorage.setItem('sortValue', value)
+  emit('send_sort', value)
 }
 </script>
 
