@@ -110,18 +110,5 @@
 
 </script>
 <style lang="scss" scoped>
-    .app-container {
-        display: flex;
-        width: 100%;
-        justify-content: center;
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            position: relative;
-            .handler {
-              display: flex;
-              justify-content: center;
-            }
-        }
-    }
+    @import '@/styles/books_list.scss';
 </style>
