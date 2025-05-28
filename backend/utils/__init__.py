@@ -31,6 +31,10 @@ class Conf:
         self.init()
 
     def init(self):
+        if not self.file.exists():
+            with open(basepath.joinpath('conf_sample.yml'), 'r', encoding='utf-8') as fps:
+                with open(self.file, 'w', encoding='utf-8') as fpw:
+                    fpw.write(fps.read())
         with open(self.file, 'r', encoding='utf-8') as f:
             cfg = f.read()
         yml_config = yaml.load(cfg, Loader=yaml.FullLoader)
