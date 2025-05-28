@@ -41,4 +41,11 @@ export default defineConfig({
   define: {
     'import.meta.env.LAN_IP': JSON.stringify(`http://${getNetworkIp()}:${process.env.PORT || 12345}`),
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler'
+      }
+    }
+  },
 })

@@ -2,7 +2,7 @@
     <el-container>
       <el-header>
         <TopBtnGroup :reload="reload" :items="bookList" :filtered-items="filteredBookList" :handle-conf="handleConf" 
-                     @send_sort="sv_sort" @update:isListMode="handleViewModeChange"/>
+                     v-model="isListMode" @send_sort="sv_sort"/>
       </el-header>
       <el-main>
         <el-scrollbar>
@@ -63,7 +63,7 @@
     </el-container>
 </template>
 <script setup>
-    import {computed, h, ref, onMounted} from 'vue';
+    import {computed, h, ref} from 'vue';
     import axios from "axios";
     import {backend,indexPage,bookList,filteredBookList,sortVal,pageSize} from "@/static/store.js";
     import {ElNotification} from "element-plus";
@@ -72,10 +72,6 @@
 
     const isListMode = ref(true);
     
-    const handleViewModeChange = (newMode) => {
-      isListMode.value = newMode
-    }
-
     // ------------------------后端交互 & 数据处理
     const getBooks = async(callBack) => {
       const params = {sort: sortVal.value};

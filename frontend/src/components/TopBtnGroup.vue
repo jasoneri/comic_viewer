@@ -78,42 +78,58 @@ import {Filter, RefreshRight, Menu, Sort, Operation, Grid, List} from "@element-
 import {ElMessageBox} from 'element-plus'
 
 const props = defineProps({
+  modelValue: {type: Boolean, required: true},
   reload:{type: Function, required: true},
   handleConf:{type: Function, required: false},
   items: {type: Object, required: false}, filteredItems: {type: Object, required: false}
 })
 
-const emit = defineEmits(['send_sort', 'update:isListMode'])
+const emit = defineEmits(['send_sort', 'update:modelValue'])
 
 const isDark = ref(true)
 const isListMode = ref(true)
 
-// 从localStorage加载视图模式
+// 初始化主题和视图模式
 onMounted(() => {
+  // 初始化视图模式
   const savedMode = localStorage.getItem('isListMode')
   if (savedMode !== null) {
     isListMode.value = savedMode === 'true'
+    emit('update:modelValue', isListMode.value)
   }
+  
+  // 初始化主题
+  const savedTheme = localStorage.getItem('isDark')
+  if (savedTheme !== null) {
+    isDark.value = savedTheme === 'true'
+  }
+  setTheme(isDark.value)
 })
+
+// 设置主题
+const setTheme = (isDarkMode) => {
+  const html = document.querySelector('html')
+  if (html) {
+    if (isDarkMode) {
+      html.classList.remove("dark")
+      html.classList.add("light")
+    } else {
+      html.classList.remove("light")
+      html.classList.add("dark")
+    }
+  }
+}
 
 const toggleDark = () => {
   isDark.value = !isDark.value
-  const html = document.querySelector('html')
-  if (html) {
-    if (isDark.value) {
-      html.classList.remove("dark");
-      html.classList.add("light");
-    } else {
-      html.classList.remove("light");
-      html.classList.add("dark");
-    }
-  }
+  localStorage.setItem('isDark', isDark.value)
+  setTheme(isDark.value)
 }
 
 const toggleViewMode = () => {
   isListMode.value = !isListMode.value
   localStorage.setItem('isListMode', isListMode.value)
-  emit('update:isListMode', isListMode.value)
+  emit('update:modelValue', isListMode.value)
 }
 
 const dialogVisible = ref(false);
