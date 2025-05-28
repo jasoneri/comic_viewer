@@ -16,8 +16,10 @@
         </svg>
       </el-icon>
     </el-button>
-    <el-button text style="width: 15%; height: 100%" @click="toggleViewMode">
-      <el-icon v-if="isListMode"><List /></el-icon>
+    <el-button type="info" style="width: 15%; height: 100%" @click="toggleViewMode">
+      <el-icon v-if="isListMode">
+        <svg style="enable-background:new 0 0 24 24;" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="info"/><g id="icons"><g id="menu"><path d="M20,10H4c-1.1,0-2,0.9-2,2c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2C22,10.9,21.1,10,20,10z"/><path d="M4,8h12c1.1,0,2-0.9,2-2c0-1.1-0.9-2-2-2H4C2.9,4,2,4.9,2,6C2,7.1,2.9,8,4,8z"/><path d="M16,16H4c-1.1,0-2,0.9-2,2c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2C18,16.9,17.1,16,16,16z"/></g></g></svg>
+      </el-icon>
       <el-icon v-else><Grid /></el-icon>
     </el-button>
     <el-button type="primary" :icon="RefreshRight" @click="props.reload"
@@ -25,7 +27,7 @@
       重新加载</el-button>
 
     <el-dropdown trigger="click" style="width: 15%;height: 100%;" placement="bottom-end" size="large">
-      <el-button type="success"  @click="menuVisible = true" style="width: 100%;height: 100%;">
+      <el-button type="success" @click="menuVisible = true" style="width: 100%;height: 100%;">
         <el-icon><Menu /></el-icon>
       </el-button>
         <template #dropdown>

@@ -29,7 +29,7 @@
           <el-switch v-model="show_slide" :active-action-icon="View" :inactive-action-icon="Hide" active-text="页数滚动条"></el-switch>
         </el-dropdown-item>
         <el-dropdown-item>
-          <el-switch v-model="show_transparent_next_prev_btn" :active-action-icon="View" :inactive-action-icon="Hide" active-text="页中翻页按钮"></el-switch>
+          <el-switch v-model="show_transparent_next_prev_btn" :active-action-icon="View" :inactive-action-icon="Hide" active-text="页中翻书按钮"></el-switch>
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>

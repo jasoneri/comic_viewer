@@ -42,7 +42,7 @@
                     </div>
                   </router-link>
                   <div class="book-actions">
-                    <el-button-group>
+                    <el-button-group :style="`width:100%;`">
                       <bookHandleBtn :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack"
                                     :bookName="book.book_name" :bookHandlePath="'/comic/handle'" />
                     </el-button-group>
