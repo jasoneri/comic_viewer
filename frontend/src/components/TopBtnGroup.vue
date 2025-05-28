@@ -83,7 +83,9 @@ const props = defineProps({
   modelValue: {type: Boolean, required: true},
   reload:{type: Function, required: true},
   handleConf:{type: Function, required: false},
-  items: {type: Object, required: false}, filteredItems: {type: Object, required: false}
+  items: {type: Object, required: false}, 
+  filteredItems: {type: Object, required: false},
+  handleFilter: {type: Function, required: false}
 })
 
 const emit = defineEmits(['send_sort', 'update:modelValue'])
@@ -162,7 +164,11 @@ const open_filter = () => {
     roundButton: true
   })
     .then(({ value }) => {
-      props.filteredItems.arr = props.items.arr.filter(item => item.book_name.includes(value))
+      if (props.handleFilter) {
+        props.handleFilter(value)
+      } else {
+        props.filteredItems.arr = props.items.arr.filter(item => item.book_name.includes(value))
+      }
     })
     .catch(( v ) => {
       // debugger;

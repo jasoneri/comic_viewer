@@ -2,7 +2,7 @@
     <el-container>
       <el-header>
         <TopBtnGroup :reload="reload" :items="bookList" :filtered-items="filteredBookList" :handle-conf="handleConf" 
-                     v-model="isListMode" @send_sort="sv_sort"/>
+                     :handle-filter="handleFilter" v-model="isListMode" @send_sort="sv_sort"/>
       </el-header>
       <el-main>
         <el-scrollbar>
@@ -71,7 +71,17 @@
     import bookHandleBtn from '@/components/bookHandleBtn.vue'
 
     const isListMode = ref(true);
+    const filterKeyword = ref('');
     
+    // 添加过滤方法
+    const applyFilter = (data) => {
+      if (filterKeyword.value) {
+        filteredBookList.arr = data.filter(item => item.book_name.includes(filterKeyword.value))
+      } else {
+        filteredBookList.arr = data
+      }
+    }
+
     // ------------------------后端交互 & 数据处理
     const getBooks = async(callBack) => {
       const params = {sort: sortVal.value};
@@ -130,14 +140,24 @@
         sortVal.value = savedSort
       }
       
+      // 从 localStorage 读取筛选关键字
+      const savedFilter = localStorage.getItem('filterKeyword')
+      if (savedFilter) {
+        filterKeyword.value = savedFilter
+      }
+      
       getBooks(callBack)
       function callBack(data){
         bookList.arr = data
-        filteredBookList.arr = data
+        applyFilter(data)
       }
     }
     init()
-    const reload = init
+    const reload = () => {
+      filterKeyword.value = ''
+      localStorage.removeItem('filterKeyword')
+      init()
+    }
     function retainCallBack(done, path){
         notification('已移至保留['+done+']', 'success', path)
         reload()
@@ -161,6 +181,13 @@
     function sv_sort(val){
       sortVal.value = val
       reload()
+    }
+
+    // 添加筛选方法
+    const handleFilter = (keyword) => {
+      filterKeyword.value = keyword
+      localStorage.setItem('filterKeyword', keyword)
+      applyFilter(bookList.arr)
     }
 
 </script>

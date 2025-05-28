@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-    import {backend,bookList} from '@/static/store.js'
+    import {backend,bookList,filteredBookList} from '@/static/store.js'
     import axios from 'axios'
     import {useRoute,useRouter} from 'vue-router'
     import {reactive,markRaw,computed} from "vue"
@@ -52,7 +52,7 @@
         })
     }
     const bookIndex = computed(() => {
-      return bookList.arr.findIndex(item => item.book_name === route.query.book)
+      return filteredBookList.arr.findIndex(item => item.book_name === route.query.book)
     });
     const init = (_book) => {
       getBook(_book, callBack)
@@ -66,8 +66,12 @@
       router.replace({path:'book',query:{book:_book}})
       init(_book)
     }
-    function previousBook(){triggerInit(bookList.arr[bookIndex.value-1].book_name)}
-    function nextBook(){triggerInit(bookList.arr[bookIndex.value+1].book_name)}
+    function previousBook(){
+        triggerInit(filteredBookList.arr[bookIndex.value-1].book_name)
+    }
+    function nextBook(){
+        triggerInit(filteredBookList.arr[bookIndex.value+1].book_name)
+    }
 
     function retainCallBack(done, path) {MsgOpen(done, Finished, path)}
     function removeCallBack(done, path) {MsgOpen(done, Warning, path)}
