@@ -1,8 +1,8 @@
 <template>
     <el-container>
       <el-header>
-        <TopBtnGroup :reload="reload" :items="bookList" :filtered-items="filteredBookList" :handle-conf="handleConf"
-                     @send_sort="sv_sort"/>
+        <TopBtnGroup :reload="reload" :items="bookList" :filtered-items="filteredBookList" :handle-conf="handleConf" 
+                     @send_sort="sv_sort" @update:isListMode="handleViewModeChange"/>
       </el-header>
       <el-main>
         <el-scrollbar>
@@ -13,7 +13,8 @@
               layout="prev, pager, next, jumper"
             />
           </div>
-          <el-table :data="pagedBook">
+          <!-- 列表视图 -->
+          <el-table v-if="isListMode" :data="pagedBook">
             <el-table-column prop="book" label="Book" >
               <template v-slot="scope">
                 <el-space wrap :size="'small'">
@@ -29,6 +30,27 @@
               </template>
             </el-table-column>
           </el-table>
+          <!-- 网格视图 -->
+          <div v-else class="grid-container">
+            <el-row :gutter="20">
+              <el-col v-for="book in pagedBook" :key="book.book_name" :span="4" :xs="12" :sm="8" :md="6" :lg="4">
+                <el-card :body-style="{ padding: '0px' }" class="book-card">
+                  <router-link :to="{ path: 'book', query: { book: book.book_name}}">
+                    <img :src="backend+book.first_img" class="book-image" :title="book.book_name" />
+                    <div class="book-info">
+                      <span class="book-title">{{ book.book_name }}</span>
+                    </div>
+                  </router-link>
+                  <div class="book-actions">
+                    <el-button-group>
+                      <bookHandleBtn :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack"
+                                    :bookName="book.book_name" :bookHandlePath="'/comic/handle'" />
+                    </el-button-group>
+                  </div>
+                </el-card>
+              </el-col>
+            </el-row>
+          </div>
           <div class="demo-pagination-block">
             <el-pagination
                 v-model:current-page="indexPage"
@@ -41,21 +63,25 @@
     </el-container>
 </template>
 <script setup>
-    import {computed,h} from 'vue';
+    import {computed, h, ref, onMounted} from 'vue';
     import axios from "axios";
     import {backend,indexPage,bookList,filteredBookList,sortVal,pageSize} from "@/static/store.js";
     import {ElNotification} from "element-plus";
     import TopBtnGroup from '@/components/TopBtnGroup.vue'
     import bookHandleBtn from '@/components/bookHandleBtn.vue'
 
+    const isListMode = ref(true);
+    
+    const handleViewModeChange = (newMode) => {
+      isListMode.value = newMode
+    }
+
     // ------------------------后端交互 & 数据处理
     const getBooks = async(callBack) => {
       const params = {sort: sortVal.value};
       await axios.get(backend + '/comic/', {params})
         .then(res => {
-          let result = res.data.map((_) => {
-            return { book_name: _}
-          });
+          let result = res.data
           callBack(result)
         })
         .catch(function (error) {
@@ -150,5 +176,49 @@
               justify-content: center;
             }
         }
+    }
+
+    .grid-container {
+      padding: 20px;
+    }
+
+    .book-card {
+      margin-bottom: 20px;
+      transition: all 0.3s;
+      
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+      }
+    }
+
+    .book-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .book-info {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .book-title {
+      font-size: 14px;
+      text-decoration: none;
+      margin-bottom: 10px;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    .book-actions {
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
 </style>

@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from utils import conf, BookCursor, BookSort
+from utils import conf, BookCursor, BookSort, quote
 
 index_router = APIRouter(prefix='/comic')
 step = 25   # step与前端保持一致
@@ -43,7 +43,15 @@ async def get_books(request: Request, sort: str = Query(None)):
     if not books:
         return JSONResponse("no books exists", status_code=404)
     QuerySort.check_name(books[0])
-    return sorted(books, key=getattr(QuerySort, func), reverse=getattr(QuerySort, _sort).value)
+    out_books = sorted(books, key=getattr(QuerySort, func), reverse=getattr(QuerySort, _sort).value)
+    def get_info(book):
+        for book in out_books:
+            try:
+                first_img = next(conf.comic_path.joinpath(book).iterdir()).name
+            except StopIteration:
+                first_img = None
+            yield {"book_name": book, "first_img": f"/static/{quote(book)}/{first_img}"}
+    return list(get_info(out_books))
 
 
 class ConfContent(BaseModel):

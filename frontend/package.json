@@ -7,8 +7,7 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "concurrently \"npm run start-vue\" \"npm run start-python\"",
-    "start-vue": "vite --host",
+    "start": "concurrently \"npm run dev\" \"npm run start-python\"",
     "start-python": "python ../backend/app.py"
   },
   "dependencies": {
@@ -23,6 +22,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "vite-plugin-vue-devtools": "^7.7.6",
     "@vitejs/plugin-vue": "^5.0.4",
     "concurrently": "^8.2.2",
     "vite": "^5.2.11"

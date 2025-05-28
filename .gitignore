@@ -42,8 +42,8 @@ analyze/
 __temp
 test/*
 .lh/
+.env
 # self/build
-src/
 temp
 *-in.txt
 untitled*

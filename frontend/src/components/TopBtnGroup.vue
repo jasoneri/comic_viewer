@@ -16,8 +16,12 @@
         </svg>
       </el-icon>
     </el-button>
+    <el-button text style="width: 15%; height: 100%" @click="toggleViewMode">
+      <el-icon v-if="isListMode"><List /></el-icon>
+      <el-icon v-else><Grid /></el-icon>
+    </el-button>
     <el-button type="primary" :icon="RefreshRight" @click="props.reload"
-               style="width: 65%; height: 100%; margin: 0 auto; display: block; font-size: 15px">
+               style="width: 50%; height: 100%; margin: 0 auto; display: block; font-size: 15px">
       重新加载</el-button>
 
     <el-dropdown trigger="click" style="width: 15%;height: 100%;" placement="bottom-end" size="large">
@@ -69,8 +73,8 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
-import {Filter, RefreshRight, Menu, Sort, Operation} from "@element-plus/icons-vue";
+import {ref, onMounted} from 'vue'
+import {Filter, RefreshRight, Menu, Sort, Operation, Grid, List} from "@element-plus/icons-vue";
 import {ElMessageBox} from 'element-plus'
 
 const props = defineProps({
@@ -78,7 +82,20 @@ const props = defineProps({
   handleConf:{type: Function, required: false},
   items: {type: Object, required: false}, filteredItems: {type: Object, required: false}
 })
+
+const emit = defineEmits(['send_sort', 'update:isListMode'])
+
 const isDark = ref(true)
+const isListMode = ref(true)
+
+// 从localStorage加载视图模式
+onMounted(() => {
+  const savedMode = localStorage.getItem('isListMode')
+  if (savedMode !== null) {
+    isListMode.value = savedMode === 'true'
+  }
+})
+
 const toggleDark = () => {
   isDark.value = !isDark.value
   const html = document.querySelector('html')
@@ -91,6 +108,12 @@ const toggleDark = () => {
       html.classList.add("dark");
     }
   }
+}
+
+const toggleViewMode = () => {
+  isListMode.value = !isListMode.value
+  localStorage.setItem('isListMode', isListMode.value)
+  emit('update:isListMode', isListMode.value)
 }
 
 const dialogVisible = ref(false);
@@ -149,8 +172,6 @@ const clear = () => {
   optionName.value = ''
   isAdding.value = false
 }
-// 子传父
-const emit = defineEmits(['send_sort'])
 </script>
 
 <style scoped lang="scss">
