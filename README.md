@@ -54,15 +54,14 @@ D:\Comic
 [Python>=3.12](https://python.p2hp.com/downloads/)
 
 ```shell
-cd backend
-python -m pip install -r requirements.txt
+python -m pip install uv -i http://mirrors.aliyun.com/pypi/simple/
+python -m uv pip install -r "backend/requirements/windows.txt" --index-url http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
 ```
 
 [node>=22](https://nodejs.cn/en/download)
 
 ```shell
-cd frontend
-npm i
+cd frontend && npm i
 ```
 
 ### 2.运行
