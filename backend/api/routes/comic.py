@@ -9,6 +9,7 @@ from fastapi import APIRouter, Query
 from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+from send2trash import send2trash
 
 from utils import conf, BookCursor, BookSort, quote
 
@@ -109,6 +110,9 @@ async def handle(request: Request, book: Book):
         f.writelines(f"<{book.handle}>{book.name}\n")
     if book.handle == "del":
         shutil.rmtree(book_path)
+        return {"path": book.name, "handled": f"{book.handle}eted"}
+    elif book.handle == "remove":
+        send2trash(book_path)
         return {"path": book.name, "handled": f"{book.handle}eted"}
     elif not os.path.exists(book_path):
         return JSONResponse(status_code=404, content=f"book[{book.name}] not exist]")
