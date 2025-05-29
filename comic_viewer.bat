@@ -10,7 +10,7 @@ set "PATH=%_root%\site-packages;%_pyBin%;%_root%\scripts\backend;%PATH%"
 
 IF %ERRORLEVEL% NEQ 0 goto error
 call cd backend && start cmd /k "python app.py"
-start /d %_root%\frontend npm run start-vue
+start /d %_root%\frontend npm run dev
 goto end
 
 :error

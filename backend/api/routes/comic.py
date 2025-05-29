@@ -3,6 +3,7 @@
 import hashlib
 import os
 import shutil
+import random
 from enum import Enum
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
@@ -35,8 +36,9 @@ class QuerySort(Enum):
     desc = True
 
     @classmethod
-    def check_name(cls, book):
-        cls.name = BookSort.by_section if bool(BookSort.section_regex.search(book)) else lambda x: x
+    def check_name(cls, books):
+        if all(bool(BookSort.section_regex.search(book)) for book in books):
+            cls.name = BookSort.get_sort_key
 
 
 @index_router.get("/")
@@ -46,16 +48,17 @@ async def get_books(request: Request, sort: str = Query(None)):
     books = list(map(lambda _: _.name, filter(lambda x: x.is_dir(), conf.comic_path.iterdir())))
     if not books:
         return JSONResponse("no books exists", status_code=404)
-    QuerySort.check_name(books[0])
+    QuerySort.check_name(random.choices(books, k=5))
     out_books = sorted(books, key=getattr(QuerySort, func), reverse=getattr(QuerySort, _sort).value)
-    def get_info(book):
-        for book in out_books:
-            try:
-                first_img = next(conf.comic_path.joinpath(book).iterdir()).name
-            except StopIteration:
-                first_img = None
-            yield {"book_name": book, "first_img": f"/static/{quote(book)}/{first_img}"}
-    return list(get_info(out_books))
+    
+    result = []
+    for book in out_books:
+        try:
+            first_img = next(conf.comic_path.joinpath(book).iterdir()).name
+        except StopIteration:
+            first_img = None
+        result.append({"book_name": book, "first_img": f"/static/{quote(book)}/{first_img}"})
+    return result
 
 
 class ConfContent(BaseModel):

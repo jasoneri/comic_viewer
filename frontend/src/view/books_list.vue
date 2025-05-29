@@ -174,9 +174,9 @@
           const keywords = new Set()
           data.forEach(book => {
             const keyword = extractKeywords(book.book_name)
-            if (keyword) keywords.add(keyword)
+            if (keyword) keywords.add(keyword.slice(0, 20))
           })
-          keywords_list.value = Array.from(keywords)
+          keywords_list.value = Array.from(keywords).sort((a, b) => a.localeCompare(b))
         }, 0)
       }
     }

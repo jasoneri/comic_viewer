@@ -14,7 +14,7 @@ echo 检查npm包更新...
 call cd scripts/frontend && call npm i
 IF %ERRORLEVEL% NEQ 0 goto error
 call cd ../backend && start cmd /k "python app.py"
-start /d %_root%\scripts\frontend npm run start-vue
+start /d %_root%\scripts\frontend npm run dev
 
 :error
 exit /B %ERRORLEVEL%

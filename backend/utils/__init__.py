@@ -110,13 +110,26 @@ class BookCursor:
 
 
 class BookSort:
-    section_regex = re.compile(r'(\d+\.?\d?)[话卷]')
+    section_regex = re.compile(r'_第?(\d+\.?\d*)([话卷])')
+    volume_regex = re.compile(r'_第?(\d+\.?\d*)卷')
 
     @classmethod
     def by_section(cls, book_with_section):
         _s = cls.section_regex.search(book_with_section)
         book_name = book_with_section.split('_')[0]
-        return book_name, float(_s.group(1)) if bool(_s) else 0   # 前置使用此方法的是第一本书名，其余避免错误所以兜底0
+        if not _s:
+            return book_name, 2, 0
+        num = float(_s.group(1))
+        type_ = _s.group(2)
+        priority = 0 if type_ == '卷' else 1
+        if type_ == '卷' and '番外' in book_with_section:
+            return book_name, priority, num + 0.5
+        return book_name, priority, num
+
+    @classmethod
+    def get_sort_key(cls, book):
+        name, priority, num = cls.by_section(book)
+        return (name, priority, num)
 
 
 class KemonoBookCursor(BookCursor):

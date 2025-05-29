@@ -82,7 +82,7 @@
           <el-icon><ArrowDown /></el-icon>
         </el-button>
         <template #dropdown>
-          <el-dropdown-menu>
+          <el-dropdown-menu class="keyword-dropdown">
             <el-dropdown-item v-for="keyword in props.keywords_list" :key="keyword" :command="keyword">
               {{ keyword }}
             </el-dropdown-item>
@@ -285,5 +285,24 @@ const handleSortChange = (value) => {
   .el-input {
     width: 100%;
   }
+}
+
+.keyword-dropdown {
+  max-height: 45vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.keyword-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.keyword-dropdown::-webkit-scrollbar-thumb {
+  background-color: var(--el-border-color-darker);
+  border-radius: 3px;
+}
+
+.keyword-dropdown::-webkit-scrollbar-track {
+  background-color: var(--el-border-color-lighter);
 }
 </style>
