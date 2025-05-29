@@ -22,7 +22,7 @@
       </el-icon>
       <el-icon v-else><Grid /></el-icon>
     </el-button>
-    <el-button type="primary" :icon="RefreshRight" @click="props.reload"
+    <el-button type="primary" :icon="RefreshRight" @click="props.reload(true)"
                style="width: 50%; height: 100%; margin: 0 auto; display: block; font-size: 15px">
       重新加载</el-button>
 

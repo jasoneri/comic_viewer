@@ -162,9 +162,11 @@
       }
     }
     init()
-    const reload = () => {
+    const reload = (refreshFilterKeyword = false) => {
+      if (refreshFilterKeyword) {
       filterKeyword.value = ''
       localStorage.removeItem('filterKeyword')
+      }
       init()
     }
     function retainCallBack(done, path){
