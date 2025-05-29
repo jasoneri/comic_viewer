@@ -61,7 +61,7 @@
   </el-button-group>
 
   <el-dialog
-      v-model="dialogVisible" title="修改配置" width="80%"
+      v-model="dialogVisible" title="修改配置" width="80vw"
       align-center center
     >
         <el-input type="textarea" v-model="confText"
@@ -73,11 +73,35 @@
       </div>
     </template>
   </el-dialog>
+
+  <el-dialog v-model="filterDialogVisible" title="筛选" width="65vw">
+    <div class="filter-input-wrapper">
+      <el-input v-model="filterInput" placeholder="大小写严格匹配" />
+      <el-dropdown @command="handleKeywordSelect" trigger="click" placement="bottom-end" max-height="55vh">
+        <el-button class="el-button--text">
+          <el-icon><ArrowDown /></el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item v-for="keyword in props.keywords_list" :key="keyword" :command="keyword">
+              {{ keyword }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="filterDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleFilterConfirm">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
 import {ref, onMounted, computed} from 'vue'
-import {Filter, RefreshRight, Menu, Sort, Operation, Switch, Grid, List} from "@element-plus/icons-vue";
+import {Filter, RefreshRight, Menu, Sort, Operation, Switch, Grid, List, ArrowDown} from "@element-plus/icons-vue";
 import {ElMessageBox, ElMessage} from 'element-plus'
 import { useSettingsStore } from "@/static/store.js"
 
@@ -87,7 +111,8 @@ const props = defineProps({
   handleConf:{type: Function, required: false},
   items: {type: Object, required: false}, 
   filteredItems: {type: Object, required: false},
-  handleFilter: {type: Function, required: false}
+  handleFilter: {type: Function, required: false},
+  keywords_list: {type: Array, required: false}
 })
 
 const emit = defineEmits(['send_sort', 'update:modelValue'])
@@ -149,24 +174,30 @@ const isAdding = ref(false)
 const confText = ref('')
 const optionName = ref('')
 
+const filterDialogVisible = ref(false)
+const filterInput = ref('')
+
 const open_filter = () => {
-  ElMessageBox.prompt('输入关键字', '筛选', {
-    inputPlaceholder: '大小写严格匹配',
-    confirmButtonText: 'OK',
-    cancelButtonText: 'Cancel',
-    roundButton: true
-  })
-    .then(({ value }) => {
-      if (props.handleFilter) {
-        props.handleFilter(value)
-      } else {
-        props.filteredItems.arr = props.items.arr.filter(item => item.book_name.includes(value))
-      }
-    })
-    .catch(( v ) => {
-      // debugger;
-    })
+  filterDialogVisible.value = true
 }
+
+const handleKeywordSelect = (keyword) => {
+  filterInput.value = keyword
+}
+
+const handleFilterConfirm = () => {
+  if (filterInput.value) {
+    if (props.handleFilter) {
+      props.handleFilter(filterInput.value)
+    } else {
+      props.filteredItems.arr = props.items.arr.filter(item => item.book_name.includes(filterInput.value))
+    }
+    filterDialogVisible.value = false
+  } else {
+    ElMessage.warning('请输入关键字')
+  }
+}
+
 const showConfDialog = () => {
   function callBack(data){
     confText.value = data
@@ -238,6 +269,21 @@ const handleSortChange = (value) => {
   .el-icon {
     color: #fff;
     margin-left: 15px;
+  }
+}
+
+.filter-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  
+  .el-dropdown {
+    position: absolute;
+    right: 10px;
+  }
+  
+  .el-input {
+    width: 100%;
   }
 }
 </style>

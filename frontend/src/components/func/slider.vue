@@ -3,7 +3,6 @@
       <el-slider
         v-model="currentPage"
         vertical
-        height="100%"
         placement="right"
         :min="0"
         :max="props.totalPages"
@@ -191,7 +190,7 @@ onUnmounted(() => {
   position: fixed;
   left: 5%;
   top: 50%;
-  height: 60%;
+  height: 60vh;
   transform: translateY(-50%);
   z-index: 2000;
   padding: 15px;

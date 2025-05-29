@@ -34,7 +34,7 @@
       </el-dropdown-menu>
     </template>
   </el-dropdown>
-  <el-dialog v-model="dialogFormVisible" title="调速" :width="'80%'" align-center>
+  <el-dialog v-model="dialogFormVisible" title="调速" width="50vw" align-center>
     <el-form :model="form">
       <el-form-item label="间隔时间毫秒" :label-width="formLabelWidth">
         <el-input v-model="form.IntervalTime" autocomplete="off"  :clearable="true"/>
@@ -116,7 +116,7 @@ const setScrollConf = async() => {
 <style scoped lang="scss">
 .float-btn {
   position: fixed;
-  top: 60%;
+  top: 60vh;
   transform: translateY(-50%);
   width: 10vw !important;
   height: 15vh !important;
@@ -140,7 +140,7 @@ const setScrollConf = async() => {
     &.left-btn {
       left: auto;
       right: 0;
-      top: calc(60% + 15vh);  /* 原位置下移一个按钮高度 + 间距 */
+      top: calc(60vh - 15vh);  /* 原位置下移一个按钮高度 + 间距 */
       transform: translateY(-50%);
       border-radius: 8px 0 0 8px;
     }

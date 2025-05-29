@@ -2,7 +2,7 @@
     <el-container>
       <el-header>
         <TopBtnGroup :reload="reload" :items="bookList" :filtered-items="filteredBookList" :handle-conf="handleConf" 
-                     :handle-filter="handleFilter" v-model="isListMode" @send_sort="sv_sort"/>
+                     :handle-filter="handleFilter" :keywords_list="keywords_list" v-model="isListMode" @send_sort="sv_sort"/>
       </el-header>
       <el-main>
         <el-scrollbar>
@@ -81,6 +81,7 @@
 
     const isListMode = ref(true);
     const filterKeyword = ref('');
+    const keywords_list = ref([]);
     
     // 添加过滤方法
     const applyFilter = (data) => {
@@ -89,6 +90,15 @@
       } else {
         filteredBookList.arr = data
       }
+    }
+
+    const extractKeywords = (book_name) => {
+      if (book_name.includes('[') && book_name.includes(']')) {
+        return book_name.split('[')[1].split(']')[0]
+      } else if (book_name.includes('_')) {
+        return book_name.split('_')[0]
+      }
+      return null
     }
 
     // ------------------------后端交互 & 数据处理
@@ -159,13 +169,22 @@
       function callBack(data){
         bookList.arr = data
         applyFilter(data)
+        // 异步提取关键词
+        setTimeout(() => {
+          const keywords = new Set()
+          data.forEach(book => {
+            const keyword = extractKeywords(book.book_name)
+            if (keyword) keywords.add(keyword)
+          })
+          keywords_list.value = Array.from(keywords)
+        }, 0)
       }
     }
     init()
     const reload = (refreshFilterKeyword = false) => {
       if (refreshFilterKeyword) {
-      filterKeyword.value = ''
-      localStorage.removeItem('filterKeyword')
+        filterKeyword.value = ''
+        localStorage.removeItem('filterKeyword')
       }
       init()
     }
