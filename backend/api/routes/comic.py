@@ -4,6 +4,8 @@ import hashlib
 import os
 import shutil
 from enum import Enum
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
@@ -15,6 +17,7 @@ from utils import conf, BookCursor, BookSort, quote
 
 index_router = APIRouter(prefix='/comic')
 step = 25   # step与前端保持一致
+executor = ThreadPoolExecutor(max_workers=1)
 
 
 class Cache:
@@ -112,7 +115,7 @@ async def handle(request: Request, book: Book):
         shutil.rmtree(book_path)
         return {"path": book.name, "handled": f"{book.handle}eted"}
     elif book.handle == "remove":
-        send2trash(book_path)
+        await asyncio.get_event_loop().run_in_executor(executor, send2trash, book_path)
         return {"path": book.name, "handled": f"{book.handle}eted"}
     elif not os.path.exists(book_path):
         return JSONResponse(status_code=404, content=f"book[{book.name}] not exist]")
