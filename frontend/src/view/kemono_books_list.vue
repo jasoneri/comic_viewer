@@ -110,5 +110,5 @@
 
 </script>
 <style lang="scss" scoped>
-    @import '@/styles/books_list.scss';
+    @use '@/styles/books_list.scss';
 </style>

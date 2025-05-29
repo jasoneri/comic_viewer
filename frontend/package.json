@@ -19,7 +19,10 @@
     "vue-router": "^4.0.14",
     "sass-embedded": "^1.77.8",
     "@types/lodash": "^4.17.16",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "pinia": "^3.0.2",
+    "sass": "^1.89.0",
+    "sass-loader": "^13.3.2"
   },
   "devDependencies": {
     "vite-plugin-vue-devtools": "^7.7.6",

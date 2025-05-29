@@ -57,5 +57,5 @@ if (scrollIntervalPixel.value === 0 && scrollIntervalPixel.value === 0) {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 </style>

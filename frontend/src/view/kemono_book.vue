@@ -90,6 +90,6 @@
     }
 </script>
 
-<style scoped>
-  @import '@/styles/book.scss';
+<style lang="scss" scoped>
+  @use '@/styles/book.scss';
 </style>
