@@ -159,15 +159,15 @@
       init()
     }
     function retainCallBack(done, path){
-        notification('已移至保留['+done+']', 'success', path)
+        notification('已移至保留目录', 'success', path)
         reload()
       }
     function removeCallBack(done, path){
-        notification('已移至待删除['+done+']', 'warning', path)
+        notification('已删至回收站', 'warning', path)
         reload()
       }
     function delCallBack(done, _){
-        notification('已删除['+done+']', 'error', _)
+        notification('已彻底删除', 'error', _)
         reload()
       }
     const notification = (handle, _type, book) => {

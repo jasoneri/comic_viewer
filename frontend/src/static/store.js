@@ -1,4 +1,5 @@
 import {reactive, ref} from "vue";
+import { defineStore } from 'pinia'
 
 export const backend = import.meta.env.LAN_IP
 export let indexPage = ref(1)
@@ -12,3 +13,35 @@ export const kemonoData = {
 }
 export let scrollIntervalTime = ref(0)
 export let scrollIntervalPixel = ref(0)
+
+export const useSettingsStore = defineStore('settings', {
+  state: () => ({
+    isListMode: localStorage.getItem('isListMode') === 'true',
+    isDark: localStorage.getItem('isDark') === 'true',
+    sortValue: localStorage.getItem('sortValue') || '',
+    customSorts: JSON.parse(localStorage.getItem('customSorts') || '[]'),
+    isCompleteDel: localStorage.getItem('isCompleteDel') === 'true'
+  }),
+  actions: {
+    toggleListMode() {
+      this.isListMode = !this.isListMode
+      localStorage.setItem('isListMode', this.isListMode)
+    },
+    toggleDark() {
+      this.isDark = !this.isDark
+      localStorage.setItem('isDark', this.isDark)
+    },
+    setSortValue(value) {
+      this.sortValue = value
+      localStorage.setItem('sortValue', value)
+    },
+    addCustomSort(sort) {
+      this.customSorts.push(sort)
+      localStorage.setItem('customSorts', JSON.stringify(this.customSorts))
+    },
+    toggleDeleteMode() {
+      this.isCompleteDel = !this.isCompleteDel
+      localStorage.setItem('isCompleteDel', this.isCompleteDel)
+    }
+  }
+})

@@ -2,22 +2,24 @@
     <el-button style="width: 50%; height: 100%;" type="success" @click="retain(props.bookName)">
       保留<el-icon class="el-icon--right"><Download /></el-icon>
     </el-button>
-    <el-popconfirm
-      confirm-button-text="Del" confirm-button-type="danger" @confirm="delBook(props.bookName)"
-      cancel-button-text="No, just remove" cancel-button-type="warning" @cancel="removeBook(props.bookName)"
-      :icon="InfoFilled" icon-color="#626AEF" width=60% :title=props.bookName
-    >
-      <template #reference>
-        <el-button style="width: 50%; height: 100%;" type="danger" :icon="Delete" />
-      </template>
-    </el-popconfirm>
+    <el-button 
+      style="width: 50%; height: 100%;" :icon="Delete"
+      :type="isCompleteDel ? 'danger' : 'warning'" 
+      @click="isCompleteDel ? delBook(props.bookName) : removeBook(props.bookName)"
+    />
 </template>
 
 <script setup>
-    import { Delete, Download, InfoFilled } from '@element-plus/icons-vue'
+    import { Delete, Download } from '@element-plus/icons-vue'
     import axios from "axios";
     import {backend} from "@/static/store.js";
     import { ElMessage } from 'element-plus'
+    import { computed } from 'vue'
+    import { useSettingsStore } from "@/static/store.js"
+
+    const settingsStore = useSettingsStore()
+    const isCompleteDel = computed(() => settingsStore.isCompleteDel)
+
     const props = defineProps({
       bookName:{type: String, required: true},
       retainCallBack:{type: Function, required: true},

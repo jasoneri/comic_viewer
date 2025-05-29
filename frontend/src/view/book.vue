@@ -73,10 +73,10 @@
         triggerInit(filteredBookList.arr[bookIndex.value+1].book_name)
     }
 
-    function retainCallBack(done, path) {MsgOpen(done, Finished, path)}
-    function removeCallBack(done, path) {MsgOpen(done, Warning, path)}
-    function delCallBack(done, path) {MsgOpen(done, Delete, path)}
-    const MsgOpen = (handle, _ico, book) => {
+    function retainCallBack(done, path) {MsgOpen(done, Finished, 'success', path)}
+    function removeCallBack(done, path) {MsgOpen(done, Warning, 'warning', path)}
+    function delCallBack(done, path) {MsgOpen(done, Delete, 'error', path)}
+    const MsgOpen = (handle, _ico, _type, book) => {
       function back_index(){router.push({path: '/'})}
       ElMessageBox.confirm(
         book,
@@ -86,6 +86,7 @@
           confirmButtonText: '下一排序',
           cancelButtonText: '上一排序',
           center: true,
+          type: _type,
           icon: markRaw(_ico),
         }
       )

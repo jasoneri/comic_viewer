@@ -34,6 +34,7 @@
           <el-dropdown-menu>
             <el-dropdown-item :icon="Operation" @click="showConfDialog">配置</el-dropdown-item>
             <el-dropdown-item :icon="Filter" @click="open_filter">筛选</el-dropdown-item>
+            <el-dropdown-item :icon="Switch" @click="switchDelMode">删除模式</el-dropdown-item>
             <el-select v-model="select_value" placeholder="排序" placement="left-start">
               <el-option
                 v-for="item in select_options" style="height: 100%" :icon="Sort"
@@ -75,9 +76,10 @@
 </template>
 
 <script setup>
-import {ref, onMounted} from 'vue'
-import {Filter, RefreshRight, Menu, Sort, Operation, Grid, List} from "@element-plus/icons-vue";
+import {ref, onMounted, computed} from 'vue'
+import {Filter, RefreshRight, Menu, Sort, Operation, Switch, Grid, List} from "@element-plus/icons-vue";
 import {ElMessageBox} from 'element-plus'
+import { useSettingsStore } from "@/static/store.js"
 
 const props = defineProps({
   modelValue: {type: Boolean, required: true},
@@ -90,40 +92,22 @@ const props = defineProps({
 
 const emit = defineEmits(['send_sort', 'update:modelValue'])
 
-const isDark = ref(true)
-const isListMode = ref(true)
-
-const select_value = ref([])
-const select_options = ref([
+const settingsStore = useSettingsStore()
+const isListMode = computed(() => settingsStore.isListMode)
+const isDark = computed(() => settingsStore.isDark)
+const select_value = computed({
+  get: () => settingsStore.sortValue,
+  set: (value) => settingsStore.setSortValue(value)
+})
+const select_options = computed(() => [
   {value: 'time_desc', label: '时间倒序'},
   {value: 'name_asc', label: '名字顺序'},
+  ...settingsStore.customSorts
 ])
 
 onMounted(() => {
-  // 初始化视图模式
-  const savedMode = localStorage.getItem('isListMode')
-  if (savedMode !== null) {
-    isListMode.value = savedMode === 'true'
-    emit('update:modelValue', isListMode.value)
-  }
-  // 初始化主题
-  const savedTheme = localStorage.getItem('isDark')
-  if (savedTheme !== null) {
-    isDark.value = savedTheme === 'true'
-  }
+  emit('update:modelValue', isListMode.value)
   setTheme(isDark.value)
-  // 初始化排序选项
-  const savedSort = localStorage.getItem('sortValue')
-  if (savedSort) {
-    select_value.value = savedSort
-  }
-  
-  // 初始化自定义排序选项
-  const savedCustomSorts = localStorage.getItem('customSorts')
-  if (savedCustomSorts) {
-    const customSorts = JSON.parse(savedCustomSorts)
-    select_options.value = [...select_options.value, ...customSorts]
-  }
 })
 
 const setTheme = (isDarkMode) => {
@@ -140,15 +124,17 @@ const setTheme = (isDarkMode) => {
 }
 
 const toggleDark = () => {
-  isDark.value = !isDark.value
-  localStorage.setItem('isDark', isDark.value)
+  settingsStore.toggleDark()
   setTheme(isDark.value)
 }
 
 const toggleViewMode = () => {
-  isListMode.value = !isListMode.value
-  localStorage.setItem('isListMode', isListMode.value)
+  settingsStore.toggleListMode()
   emit('update:modelValue', isListMode.value)
+}
+
+const switchDelMode = () => {
+  settingsStore.toggleDeleteMode()
 }
 
 const dialogVisible = ref(false);
@@ -200,13 +186,7 @@ const onConfirm = () => {
       label: optionName.value,
       value: optionName.value,
     }
-    select_options.value.push(newOption)
-    
-    const customSorts = select_options.value.filter(option => 
-      !['time_desc', 'name_asc'].includes(option.value)
-    )
-    localStorage.setItem('customSorts', JSON.stringify(customSorts))
-    
+    settingsStore.addCustomSort(newOption)
     clear()
   }
 }
@@ -217,7 +197,6 @@ const clear = () => {
 
 const handleSortChange = (value) => {
   select_value.value = value
-  localStorage.setItem('sortValue', value)
   emit('send_sort', value)
 }
 </script>
