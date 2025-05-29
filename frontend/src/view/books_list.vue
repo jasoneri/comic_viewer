@@ -18,6 +18,9 @@
             <el-table-column prop="book" label="Book" >
               <template v-slot="scope">
                 <el-space wrap :size="'small'">
+                  <el-button type="info" @click="setFilter(scope.row.book_name)">
+                    <el-icon><Filter /></el-icon>
+                  </el-button>
                   <el-button-group>
                     <bookHandleBtn :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack"
                                    :bookName="scope.row.book_name" :bookHandlePath="'/comic/handle'" />
@@ -42,9 +45,13 @@
                     </div>
                   </router-link>
                   <div class="book-actions">
+                    <el-button style="width: 20%;" type="info" @click="setFilter(book.book_name)">
+                      <el-icon><Filter /></el-icon>
+                    </el-button>
                     <el-button-group :style="`width:100%;`">
-                      <bookHandleBtn :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack"
-                                    :bookName="book.book_name" :bookHandlePath="'/comic/handle'" />
+                      <bookHandleBtn
+                        :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack"
+                        :bookName="book.book_name" :bookHandlePath="'/comic/handle'" />
                     </el-button-group>
                   </div>
                 </el-card>
@@ -62,13 +69,15 @@
       </el-main>
     </el-container>
 </template>
+
 <script setup>
     import {computed, h, ref} from 'vue';
     import axios from "axios";
     import {backend,indexPage,bookList,filteredBookList,sortVal,pageSize} from "@/static/store.js";
-    import {ElNotification} from "element-plus";
+    import {ElNotification,ElMessage} from "element-plus";
     import TopBtnGroup from '@/components/TopBtnGroup.vue'
     import bookHandleBtn from '@/components/bookHandleBtn.vue'
+    import { Filter } from '@element-plus/icons-vue';
 
     const isListMode = ref(true);
     const filterKeyword = ref('');
@@ -183,11 +192,29 @@
       reload()
     }
 
-    // 添加筛选方法
     const handleFilter = (keyword) => {
       filterKeyword.value = keyword
       localStorage.setItem('filterKeyword', keyword)
       applyFilter(bookList.arr)
+    }
+
+    const setFilter = (book_name) => {
+      // 1. 当book_name为`[artist]xxx`形式时，keyword=artist
+      // 2. 当book_name为`xxx_第N话`形式时，keyword=xxx
+      // 3. 当book_name为`xxx`形式时，keyword=xxx
+      let keyword
+      if (book_name.includes('[') && book_name.includes(']')) {
+        keyword = book_name.split('[')[1].split(']')[0]
+        handleFilter(keyword)
+      } else if (book_name.includes('_')) {
+        keyword = book_name.split('_')[0]
+        handleFilter(keyword)
+      } else {
+        ElMessage({
+          message: '没有适用过滤的规则',
+          type: 'warning',
+        });
+      }
     }
 
 </script>
