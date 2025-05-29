@@ -78,7 +78,7 @@
 <script setup>
 import {ref, onMounted, computed} from 'vue'
 import {Filter, RefreshRight, Menu, Sort, Operation, Switch, Grid, List} from "@element-plus/icons-vue";
-import {ElMessageBox} from 'element-plus'
+import {ElMessageBox, ElMessage} from 'element-plus'
 import { useSettingsStore } from "@/static/store.js"
 
 const props = defineProps({
@@ -134,6 +134,13 @@ const toggleViewMode = () => {
 }
 
 const switchDelMode = () => {
+  if (settingsStore.isCompleteDel === false) {
+    ElMessage ({
+      message: `已切换至「彻底删除」模式，请谨慎操作`,
+      type: 'warning',
+      duration: 3500
+    })
+  }
   settingsStore.toggleDeleteMode()
 }
 
