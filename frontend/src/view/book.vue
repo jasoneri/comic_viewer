@@ -11,7 +11,14 @@
       </el-button-group>
     </el-header>
     <el-main class="demo-image__lazy" style="height: 100%">
-        <el-image v-for="url in imgUrls.arr" :key="url" :src="url" lazy :preview-src-list="imgUrls.arr"/>
+        <el-image 
+          v-for="url in imgUrls.arr" 
+          :key="url" 
+          :src="url" 
+          lazy 
+          :preview-src-list="imgUrls.arr"
+          @load="handleImageLoad"
+        />
       <topBottom />
     </el-main>
     <el-button-group style="width: 100%; height: 50px;">
@@ -20,14 +27,17 @@
         />
     </el-button-group>
   </el-container>
-  <slider :totalPages="imgUrls.arr.length" />
+  <slider 
+    :totalPages="imgUrls.arr.length" 
+    @imagesLoaded="handleImagesLoaded"
+  />
 </template>
 
 <script setup>
     import {backend,bookList,filteredBookList} from '@/static/store.js'
     import axios from 'axios'
     import {useRoute,useRouter} from 'vue-router'
-    import {reactive,markRaw,computed} from "vue"
+    import {reactive,markRaw,computed,ref} from "vue"
     import {ElMessageBox} from 'element-plus'
     import bookHandleBtn from '@/components/bookHandleBtn.vue'
     import {Delete, Finished, Warning,} from "@element-plus/icons-vue"
@@ -38,12 +48,21 @@
     const route = useRoute()
     const router = useRouter()
     const imgUrls = reactive({arr:[]})
+    const loadedImages = ref(0)
+    const totalImages = ref(0)
+
+    const handleImageLoad = () => {
+      loadedImages.value++
+    }
+
     const getBook = async(book, callBack) => {
       await axios.get(backend + '/comic/' + encodeURIComponent(book))
         .then(res => {
           let result = res.data.map((_) => {
             return backend + _
           });
+          totalImages.value = result.length
+          loadedImages.value = 0
           callBack(result)
         })
         .catch(function (error) {
@@ -96,6 +115,10 @@
         const catch_func = action === 'cancel' ? previousBook : back_index;
         catch_func();
       })
+    }
+
+    const handleImagesLoaded = () => {
+      console.log('所有图片加载完成')
     }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
     <div v-if="settingsStore.showSlider" class="slider-container">
-      <el-tooltip content="记录当前页" placement="right">
+      <el-tooltip content="记录当前页" placement="top">
         <el-icon class="edit-pen" @click="saveCurrentPage">
           <EditPen />
         </el-icon>
@@ -30,6 +30,8 @@ const props = defineProps({
   totalPages:{type: Number, required: true},
 })
 
+const emit = defineEmits(['imagesLoaded'])
+
 const scrollContainer = ref(null)
 const { y: scrollY } = useScroll(scrollContainer)
 const currentPage = ref(1)
@@ -50,10 +52,9 @@ const handlePageChange = (page) => {
 // 保存当前页
 const saveCurrentPage = () => {
   // 更新当前页码
-  currentPage.value = actualPage
   // 保存到 store
-  settingsStore.savePageRecord(route.query.book, actualPage)
-  ElMessage.success(`已记录第 ${actualPage} 页`)
+  settingsStore.savePageRecord(route.query.book, currentPage.value)
+  ElMessage.success(`已记录第 ${currentPage.value} 页`)
 }
 const wrapShowSlide = (callBack) => {
   if (settingsStore.showSlider === true){
@@ -72,39 +73,6 @@ const wrapShowSlide = (callBack) => {
 }
 
 // ----------------------------------------
-// 初始化 Intersection Observer
-const initObserver = () => {
-  if (localStorage.getItem(`page-${route.query.book}`)) {
-    debugger;
-    handlePageChange(parseInt(localStorage.getItem(`page-${route.query.book}`)))
-  }
-  if (!scrollContainer.value) return
-  // 配置选项
-  const options = {
-    root: scrollContainer.value,
-    rootMargin: '0px',
-    threshold: 0.5 // 当50%的图片可见时触发
-  }
-  // 创建观察器
-  observer.value = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const index = Array.from(scrollContainer.value.children)
-          .indexOf(entry.target)
-        visibleIndex.value = index + 1
-      }
-    })
-  }, options)
-  // 观察所有图片
-  Array.from(scrollContainer.value.children).forEach(child => {
-    observer.value.observe(child)
-  })
-}
-// 修改滚动处理逻辑
-watchEffect(() => {
-  currentPage.value = visibleIndex.value
-})
-
 // 修改初始化逻辑
 const initSlider = async () => {
   const findContainer = () => document.querySelector('.demo-image__lazy')
@@ -113,11 +81,12 @@ const initSlider = async () => {
     await new Promise(resolve => requestAnimationFrame(resolve))
   }
   scrollContainer.value = findContainer()
-  // 等待图片加载完成
+  
+  // 等待所有图片加载完成
   await new Promise(resolve => {
     const checkImages = () => {
       const imgs = Array.from(scrollContainer.value.querySelectorAll('img'))
-      if (imgs.every(img => img.complete)) {
+      if (imgs.length === props.totalPages && imgs.every(img => img.complete)) {
         resolve()
       } else {
         requestAnimationFrame(checkImages)
@@ -125,9 +94,12 @@ const initSlider = async () => {
     }
     checkImages()
   })
+
   // 初始化观察器
   initObserver()
+  emit('imagesLoaded')
 }
+
 // 优化后的初始化
 onMounted(() => {
   // 统一初始化逻辑
@@ -141,18 +113,26 @@ onMounted(() => {
     })
   }
   init()
-  // 初始化时加载保存的页码
+})
+
+// 初始化 Intersection Observer
+const initObserver = () => {
+  // 确保有图片元素
+  const imgs = scrollContainer.value?.querySelectorAll('img')
+  if (!imgs || imgs.length === 0) {
+    console.log('没有找到图片元素，延迟初始化 observer') // TODO[1] 此处放有马加奈动图加载
+    setTimeout(initObserver, 100)
+    return
+  }
+
   const savedPage = settingsStore.getPageRecord(route.query.book)
   if (savedPage) {
-    currentPage.value = savedPage
     handlePageChange(savedPage)
+    currentPage.value = savedPage
   }
-})
-// 监听totalPages变化
-watch(() => props.totalPages, (newVal) => {
-  currentPage.value = Math.min(currentPage.value, newVal)
-})
-// 统一滚动处理逻辑（替换原有的两个watchEffect）
+}
+
+// 统一滚动处理逻辑
 watchEffect((onCleanup) => {
   const container = scrollContainer.value
   if (!container) return
@@ -166,18 +146,6 @@ watchEffect((onCleanup) => {
       props.totalPages
     )
   }
-  // 清除旧监听器
-  if (debouncedScrollHandler.value) {
-    container.removeEventListener('scroll', debouncedScrollHandler.value)
-  }
-  // 创建新的防抖处理函数
-  debouncedScrollHandler.value = _.debounce(handleScroll, 150)
-  // 绑定新监听器
-  container.addEventListener('scroll', debouncedScrollHandler.value)
-  // 组件卸载时自动清理
-  onCleanup(() => {
-    container.removeEventListener('scroll', debouncedScrollHandler.value)
-  })
   // 初始化计算当前页
   handleScroll()
 });
