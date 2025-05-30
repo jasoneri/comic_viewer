@@ -54,7 +54,7 @@ export const useSettingsStore = defineStore('settings', {
       localStorage.setItem('pageRecords', JSON.stringify(this.pageRecords))
     },
     getPageRecord(bookName) {
-      return this.pageRecords[bookName] || 1
+      return this.pageRecords[bookName] || 0
     }
   }
 })

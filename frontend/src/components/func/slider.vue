@@ -10,7 +10,7 @@
         :min="0"
         :max="props.totalPages"
         :step="1"
-        @change="handlePageChange"
+        @change="slider2Page"
       />
     </div>
 </template>
@@ -33,13 +33,12 @@ const props = defineProps({
 const emit = defineEmits(['imagesLoaded'])
 
 const scrollContainer = ref(null)
-const { y: scrollY } = useScroll(scrollContainer)
-const currentPage = ref(1)
+const currentPage = ref(0)
 // 当前可见的图片索引
-const visibleIndex = ref(0)
 const observer = ref(null)
+
 // 处理页面跳转
-const handlePageChange = (page) => {
+const slider2Page = (page) => {
   if (!scrollContainer.value) return
   const target = scrollContainer.value.children[page - 1]
   if (target) {
@@ -49,30 +48,14 @@ const handlePageChange = (page) => {
     })
   }
 }
+
 // 保存当前页
 const saveCurrentPage = () => {
-  // 更新当前页码
   // 保存到 store
   settingsStore.savePageRecord(route.query.book, currentPage.value)
   ElMessage.success(`已记录第 ${currentPage.value} 页`)
 }
-const wrapShowSlide = (callBack) => {
-  if (settingsStore.showSlider === true){
-    settingsStore.toggleSlider(false)
-    callBack(_callBack);
-    function _callBack() {
-      const checkTotalPages = () => {
-        if (props.totalPages !== 1) {
-          settingsStore.toggleSlider(true)
-        } else {setTimeout(checkTotalPages, 50);}
-      };
-      checkTotalPages();
-    }
-  }
-  else {callBack(()=>{});}
-}
 
-// ----------------------------------------
 // 修改初始化逻辑
 const initSlider = async () => {
   const findContainer = () => document.querySelector('.demo-image__lazy')
@@ -82,19 +65,6 @@ const initSlider = async () => {
   }
   scrollContainer.value = findContainer()
   
-  // 等待所有图片加载完成
-  await new Promise(resolve => {
-    const checkImages = () => {
-      const imgs = Array.from(scrollContainer.value.querySelectorAll('img'))
-      if (imgs.length === props.totalPages && imgs.every(img => img.complete)) {
-        resolve()
-      } else {
-        requestAnimationFrame(checkImages)
-      }
-    }
-    checkImages()
-  })
-
   // 初始化观察器
   initObserver()
   emit('imagesLoaded')
@@ -106,13 +76,13 @@ onMounted(() => {
   const init = async () => {
     await nextTick()
     await initSlider()
-    // 添加滚动监听
-    scrollContainer.value?.addEventListener('scroll', () => {
-      const pageHeight = scrollContainer.value.clientHeight
-      currentPage.value = Math.floor(scrollContainer.value.scrollTop / pageHeight) + 1
-    })
   }
   init()
+})
+
+// 监听路由变化
+watch(() => route.query.book, () => {
+  initObserver()
 })
 
 // 初始化 Intersection Observer
@@ -124,31 +94,13 @@ const initObserver = () => {
     setTimeout(initObserver, 100)
     return
   }
-
   const savedPage = settingsStore.getPageRecord(route.query.book)
   if (savedPage) {
-    handlePageChange(savedPage)
+    slider2Page(savedPage)
     currentPage.value = savedPage
   }
 }
 
-// 统一滚动处理逻辑
-watchEffect((onCleanup) => {
-  const container = scrollContainer.value
-  if (!container) return
-  const handleScroll = () => {
-    const scrollTop = container.scrollTop
-    const containerHeight = container.clientHeight
-    const pageHeight = containerHeight
-    // 精确的页数计算（带30%偏移量）
-    currentPage.value = Math.min(
-      Math.max(1, Math.floor((scrollTop + containerHeight * 0.3) / pageHeight) + 1),
-      props.totalPages
-    )
-  }
-  // 初始化计算当前页
-  handleScroll()
-});
 // 组件卸载时清理
 onUnmounted(() => {
   if (observer.value) {
