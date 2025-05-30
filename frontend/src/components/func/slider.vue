@@ -1,5 +1,5 @@
 <template>
-    <div v-if="props.show_slide" class="slider-container">
+    <div v-if="settingsStore.showSlider" class="slider-container">
       <el-tooltip content="记录当前页" placement="right">
         <el-icon class="edit-pen" @click="saveCurrentPage">
           <EditPen />
@@ -17,17 +17,19 @@
 
 <script setup>
 import {EditPen} from "@element-plus/icons-vue";
-import {reactive, ref, watch, onMounted, nextTick, watchEffect, onUnmounted } from "vue";
+import {reactive, ref, watch, onMounted, nextTick, watchEffect, onUnmounted, computed } from "vue";
 import { useRoute } from 'vue-router'
 import { useScroll } from '@vueuse/core'
 import { ElMessage } from 'element-plus'
 import _ from 'lodash';
+import { useSettingsStore } from '@/static/store'
 
 const route = useRoute()
+const settingsStore = useSettingsStore()
 const props = defineProps({
   totalPages:{type: Number, required: true},
-  show_slide: {type: Boolean,required: true},
 })
+
 const scrollContainer = ref(null)
 const { y: scrollY } = useScroll(scrollContainer)
 const currentPage = ref(1)
@@ -47,20 +49,20 @@ const handlePageChange = (page) => {
 }
 // 保存当前页
 const saveCurrentPage = () => {
-  if (localStorage.getItem(`page-${route.query.book}`)) {localStorage.removeItem(`page-${route.query.book}`)};
-  localStorage.setItem(`page-${route.query.book}`, currentPage.value)
-  ElMessage.success(`已记录第 ${currentPage.value} 页`)
+  // 更新当前页码
+  currentPage.value = actualPage
+  // 保存到 store
+  settingsStore.savePageRecord(route.query.book, actualPage)
+  ElMessage.success(`已记录第 ${actualPage} 页`)
 }
 const wrapShowSlide = (callBack) => {
-  props.totalPages = 1
-  if (props.show_slide.value === true){
-    props.show_slide.value = false;
+  if (settingsStore.showSlider === true){
+    settingsStore.toggleSlider(false)
     callBack(_callBack);
     function _callBack() {
       const checkTotalPages = () => {
-        if (props.totalPages!== 1) {
-          props.show_slide.value = true;
-          console.log('props.totalPages 不为 0，已将 props.show_slide.value 设置为 true');
+        if (props.totalPages !== 1) {
+          settingsStore.toggleSlider(true)
         } else {setTimeout(checkTotalPages, 50);}
       };
       checkTotalPages();
@@ -68,8 +70,6 @@ const wrapShowSlide = (callBack) => {
   }
   else {callBack(()=>{});}
 }
-function nextBook() {wrapShowSlide(props.nextBook)}
-function previousBook() {wrapShowSlide(props.previousBook)}
 
 // ----------------------------------------
 // 初始化 Intersection Observer
@@ -141,6 +141,12 @@ onMounted(() => {
     })
   }
   init()
+  // 初始化时加载保存的页码
+  const savedPage = settingsStore.getPageRecord(route.query.book)
+  if (savedPage) {
+    currentPage.value = savedPage
+    handlePageChange(savedPage)
+  }
 })
 // 监听totalPages变化
 watch(() => props.totalPages, (newVal) => {

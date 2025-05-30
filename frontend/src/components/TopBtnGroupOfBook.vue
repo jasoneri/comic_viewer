@@ -2,7 +2,6 @@
   <el-button-group  v-if="show_transparent_next_prev_btn">
     <el-button 
       class="float-btn left-btn" 
-      :class="{ 'slide-active': show_slide }"
       type="primary" 
       :icon="ArrowLeft" 
       @click="previousBook"
@@ -26,7 +25,7 @@
       <el-dropdown-menu>
         <el-dropdown-item :icon="ArrowDownBold" @click="showScrollConfDia">自动下滑设置</el-dropdown-item>
         <el-dropdown-item>
-          <el-switch v-model="show_slide" :active-action-icon="View" :inactive-action-icon="Hide" active-text="页数滚动条"></el-switch>
+          <el-switch v-model="showSlider" :active-action-icon="View" :inactive-action-icon="Hide" active-text="页数滚动条"></el-switch>
         </el-dropdown-item>
         <el-dropdown-item>
           <el-switch v-model="show_transparent_next_prev_btn" :active-action-icon="View" :inactive-action-icon="Hide" active-text="页中翻书按钮"></el-switch>
@@ -62,23 +61,25 @@
       </div>
     </template>
   </el-dialog>
-  <slider :totalPages="props.totalPages" :show_slide="show_slide" />
 </template>
 
 <script setup>
 import axios from "axios";
 import {ArrowDownBold, ArrowLeft, ArrowRight, Operation, InfoFilled, Hide, View} from "@element-plus/icons-vue";
-import {reactive, ref} from "vue";
-import {backend, scrollIntervalPixel, scrollIntervalTime} from "@/static/store.js";
-import slider from '@/components/func/slider.vue'
+import {reactive, ref, watch} from "vue";
+import {backend, scrollIntervalPixel, scrollIntervalTime, useSettingsStore} from "@/static/store.js";
 
-const show_slide = ref(false)
+const settingsStore = useSettingsStore()
 const show_transparent_next_prev_btn = ref(true)
+const showSlider = ref(settingsStore.showSlider)
+
+watch(showSlider, (newValue) => {
+  settingsStore.toggleSlider(newValue)
+})
 
 const props = defineProps({
   previousBook:{type: Function, required: true},
   nextBook:{type: Function, required: true},
-  totalPages: {type: Number,required: true},
 })
 const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'
@@ -136,15 +137,6 @@ const setScrollConf = async() => {
     font-size: 2.5rem;
   }
 
-  &.slide-active {
-    &.left-btn {
-      left: auto;
-      right: 0;
-      top: calc(60vh - 15vh);  /* 原位置下移一个按钮高度 + 间距 */
-      transform: translateY(-50%);
-      border-radius: 8px 0 0 8px;
-    }
-  }
 }
 .left-btn {
   left: 0;

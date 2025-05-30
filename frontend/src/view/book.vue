@@ -7,10 +7,7 @@
         />
       </el-button-group>
       <el-button-group style="width: 65%; height: 100%;">
-        <TopBtnGroupOfBook
-          :nextBook="nextBook" :previousBook="previousBook"
-          :total-pages="imgUrls.arr.length"
-        />
+        <TopBtnGroupOfBook :nextBook="nextBook" :previousBook="previousBook" />
       </el-button-group>
     </el-header>
     <el-main class="demo-image__lazy" style="height: 100%">
@@ -23,6 +20,7 @@
         />
     </el-button-group>
   </el-container>
+  <slider :totalPages="imgUrls.arr.length" />
 </template>
 
 <script setup>
@@ -35,6 +33,7 @@
     import {Delete, Finished, Warning,} from "@element-plus/icons-vue"
     import topBottom from '@/components/topBottom.vue'
     import TopBtnGroupOfBook from '@/components/TopBtnGroupOfBook.vue'
+    import slider from '@/components/func/slider.vue'
 
     const route = useRoute()
     const router = useRouter()

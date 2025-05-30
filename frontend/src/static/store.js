@@ -18,9 +18,11 @@ export const useSettingsStore = defineStore('settings', {
   state: () => ({
     isListMode: localStorage.getItem('isListMode') === 'true',
     isDark: localStorage.getItem('isDark') === 'true',
+    showSlider: localStorage.getItem('showSlider') === 'true',
     sortValue: localStorage.getItem('sortValue') || '',
     customSorts: JSON.parse(localStorage.getItem('customSorts') || '[]'),
-    isCompleteDel: localStorage.getItem('isCompleteDel') === 'true'
+    isCompleteDel: localStorage.getItem('isCompleteDel') === 'true',
+    pageRecords: JSON.parse(localStorage.getItem('pageRecords') || '{}')
   }),
   actions: {
     toggleListMode() {
@@ -30,6 +32,10 @@ export const useSettingsStore = defineStore('settings', {
     toggleDark() {
       this.isDark = !this.isDark
       localStorage.setItem('isDark', this.isDark)
+    },
+    toggleSlider(value) {
+      this.showSlider = value
+      localStorage.setItem('showSlider', this.showSlider)
     },
     setSortValue(value) {
       this.sortValue = value
@@ -42,6 +48,13 @@ export const useSettingsStore = defineStore('settings', {
     toggleDeleteMode() {
       this.isCompleteDel = !this.isCompleteDel
       localStorage.setItem('isCompleteDel', this.isCompleteDel)
+    },
+    savePageRecord(bookName, page) {
+      this.pageRecords[bookName] = page
+      localStorage.setItem('pageRecords', JSON.stringify(this.pageRecords))
+    },
+    getPageRecord(bookName) {
+      return this.pageRecords[bookName] || 1
     }
   }
 })
