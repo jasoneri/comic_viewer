@@ -1,20 +1,18 @@
 <template>
     <div v-if="props.show_slide" class="slider-container">
-      <el-slider
-        v-model="currentPage"
-        vertical
-        placement="right"
-        :min="0"
-        :max="props.totalPages"
-        :step="1"
-        @change="handlePageChange"
-      />
       <el-tooltip content="记录当前页" placement="right">
         <el-icon class="edit-pen" @click="saveCurrentPage">
           <EditPen />
         </el-icon>
       </el-tooltip>
-  </div>
+      <el-slider
+        v-model="currentPage"
+        :min="0"
+        :max="props.totalPages"
+        :step="1"
+        @change="handlePageChange"
+      />
+    </div>
 </template>
 
 <script setup>
@@ -188,44 +186,39 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .slider-container {
   position: fixed;
-  left: 5%;
-  top: 50%;
-  height: 60vh;
-  transform: translateY(-50%);
-  z-index: 2000;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
-}
-.edit-pen {
-  position: absolute;
-  bottom: -40px;
+  bottom: 2vh;
   left: 50%;
   transform: translateX(-50%);
+  width: 80vw;
+  padding: 15px;
+  border-radius: 8px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.edit-pen {
   cursor: pointer;
   padding: 5px;
-  background: #fff;
+  background: #ffffff72;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.599);
   transition: all 0.3s;
 }
 
 .edit-pen:hover {
-  color: var(--el-color-primary);
-  transform: translateX(-50%) scale(1.1);
+  transform: scale(1.1);
 }
-// 在文件末尾添加
-:deep(.demo-image__lazy) {
-  scroll-snap-type: y mandatory;
-  > .el-image {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-  }
+
+:deep(.el-slider) {
+  width: 100%;
 }
+
 @media (max-width: 768px) {
   .slider-container {
-    left: 10px;
-    padding: 10px;
+    width: 80vw;
+    bottom: 2.5vh;
   }
 }
 </style>

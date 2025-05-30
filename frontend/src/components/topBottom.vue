@@ -1,8 +1,8 @@
 <template>
-    <el-backtop :right="60" :bottom="110" >
+    <el-backtop :style="{right: '10vw', bottom: '18vh'}" >
         <el-icon size="25" color="#00f5e1"><ArrowUpBold /></el-icon>
     </el-backtop>
-   <el-button size="large" @click="toggleScroll" style="position: fixed;right: 60px; bottom: 60px" circle>
+   <el-button size="large" @click="toggleScroll" style="position: fixed;right: 10vw; bottom: 10vh" circle>
       <el-icon size="25" color="#00f5e1">
           <ArrowDownBold v-if="!isScrolling" /><VideoPause v-if="isScrolling" />
         </el-icon>
