@@ -1,5 +1,5 @@
 <template>
-  <el-button-group  style="width: 100%; height: 70%">
+  <el-button-group style="width: 100%; height: 100%">
     <el-button text class="switch" :class="isDark ? 'isDark-switch' : 'noDark-switch'" style="width: 20%; height: 100%" @click="toggleDark">
       <el-icon v-if="isDark" size="large">
         <svg viewBox="0 0 24 24">

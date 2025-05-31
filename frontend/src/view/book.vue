@@ -1,12 +1,7 @@
 <template>
   <el-container>
-    <el-header style="height: 45px">
-      <el-button-group style="width: 35%; height: 100%;" id="top-btn-group">
-        <bookHandleBtn
-            :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book"  :bookHandlePath="'/comic/handle'"
-        />
-      </el-button-group>
-      <el-button-group style="width: 65%; height: 100%;">
+    <el-header height="5vh">
+      <el-button-group style="width: 100%; height: 100%;" id="top-btn-group">
         <TopBtnGroupOfBook :nextBook="nextBook" :previousBook="previousBook" />
       </el-button-group>
     </el-header>
@@ -20,14 +15,12 @@
             lazy 
             @load="handleImageLoad"
           />
-          <!-- <el-button-group style="width: 100%; height: 50px;">
-              <bookHandleBtn
-                  :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book"  :bookHandlePath="'/comic/handle'"
-              />
-          </el-button-group> -->
-          <!-- 左下侧 el-button-group 的竖直样式 -->
+          <bookHandleBtn 
+              :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" 
+              :bookName="route.query.book"  :bookHandlePath="'/comic/handle'" :verticalMode="true"
+          />
+          <topBottom />
       </el-scrollbar>
-      <topBottom />
     </el-main>
     <slider 
       :totalPages="imgUrls.arr.length" 

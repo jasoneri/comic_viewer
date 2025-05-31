@@ -1,13 +1,13 @@
 <template>
   <el-button 
-      :class="['handle-btn', { 'vertical-btn': verticalMode }]"
+      :class="['handle-btn', { 'vertical-btn-sv': verticalMode }]"
       type="success" 
       @click="retain(props.bookName)"
   >
       <el-icon size="large"><svg class="feather feather-save" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></el-icon>
   </el-button>
   <el-button 
-      :class="['handle-btn', { 'vertical-btn': verticalMode }]"
+      :class="['handle-btn', { 'vertical-btn-del': verticalMode }]"
       :type="isCompleteDel ? 'danger' : 'warning'" 
       @click="isCompleteDel ? delBook(props.bookName) : removeBook(props.bookName)"
   ><el-icon size="large"><Delete /></el-icon></el-button>
@@ -58,35 +58,24 @@
 </script>
 
 <style lang="scss" scoped>
-.book-handle-container {
-    display: flex;
-    width: 100%;
-    height: 100%;
-
-    &.vertical-mode {
-        position: fixed;
-        left: 20px;
-        bottom: 20px;
-        width: auto;
-        height: auto;
-        flex-direction: column;
-        gap: 10px;
-        z-index: 1000;
-    }
-}
-
 .handle-btn {
     width: 50%;
     height: 100%;
 
-    &.vertical-btn {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    @mixin vertical-btn($bottom) {
+      position: fixed;
+      width: 10vw;
+      max-width: 50px;
+      height: 8vh;
+      left: 0vw;
+      bottom: $bottom;
+    }
+    &.vertical-btn-sv {
+      @include vertical-btn(18vh);
+    }
+    &.vertical-btn-del {
+      @include vertical-btn(10vh);
+      margin: 0;
     }
 }
 </style>

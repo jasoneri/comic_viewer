@@ -1,8 +1,8 @@
 <template>
-    <el-backtop :style="{right: '5vw', bottom: '18vh'}" >
+    <el-backtop class="navi-btn" :style="{right: '5vw', bottom: '16vh'}" :visibility-height=0>
         <el-icon size="25" color="#00f5e1"><ArrowUpBold /></el-icon>
     </el-backtop>
-   <el-button size="large" @click="toggleScroll" style="position: fixed;right: 5vw; bottom: 10vh" circle>
+   <el-button class="navi-btn" size="large" @click="toggleScroll" style="position: fixed;right: 5vw; bottom: 10vh" circle>
       <el-icon size="25" color="#00f5e1">
           <ArrowDownBold v-if="!isScrolling" /><VideoPause v-if="isScrolling" />
         </el-icon>
@@ -58,4 +58,7 @@ if (scrollIntervalPixel.value === 0 && scrollIntervalPixel.value === 0) {
 </script>
 
 <style lang="scss" scoped>
+.navi-btn {
+  background-color: #ffffff61
+}
 </style>

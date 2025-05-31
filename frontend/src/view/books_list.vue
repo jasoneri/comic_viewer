@@ -1,6 +1,6 @@
 <template>
     <el-container>
-      <el-header>
+      <el-header height="5vh">
         <TopBtnGroup :reload="reload" :items="bookList" :filtered-items="filteredBookList" :handle-conf="handleConf" 
                      :handle-filter="handleFilter" :keywords_list="keywords_list" v-model="isListMode" @send_sort="sv_sort"/>
       </el-header>
