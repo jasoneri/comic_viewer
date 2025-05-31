@@ -21,7 +21,7 @@
               :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" 
               :bookName="route.query.book"  :bookHandlePath="'/comic/handle'" :verticalMode="true"
           />
-          <topBottom />
+          <topBottom :scrollbarRef="scrollbarRef" />
       </el-scrollbar>
     </el-main>
     <!-- [slider.vue] template -->

@@ -1,5 +1,5 @@
 <template>
-    <el-backtop class="navi-btn" :style="{right: '5vw', bottom: '16vh'}" :visibility-height=0>
+    <el-backtop class="navi-btn" :style="{right: '5vw', bottom: '16vh'}" :visibility-height=0 @click="scrollToTop">
         <el-icon size="25" color="#00f5e1"><ArrowUpBold /></el-icon>
     </el-backtop>
    <el-button class="navi-btn" size="large" @click="toggleScroll" style="position: fixed;right: 5vw; bottom: 10vh" circle>
@@ -15,10 +15,18 @@ import { ref } from 'vue';
 import {scrollIntervalTime, scrollIntervalPixel, backend} from "@/static/store.js";
 import axios from "axios";
 
+const props = defineProps({
+  scrollbarRef: {type: [Object, null], required: true}
+});
+
 const isScrolling = ref(false);
 const toggledScrolling = ref(false);
 let currScrollHeight = ref(0)
 let scrollInterval = null;
+
+const scrollToTop = () => {
+  props.scrollbarRef?.setScrollTop(0);
+};
 
 const toggleScroll = () => {
   if (isScrolling.value) {
@@ -30,25 +38,31 @@ const toggleScroll = () => {
     toggledScrolling.value = true;
     isScrolling.value = true;
     scrollInterval = setInterval(() => {
-      // 判断自动滚动停止
-      const currentScrollTop = window.scrollY || document.documentElement.scrollTop;
-      const maxScrollTop = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollbar = props.scrollbarRef;
+      if (!scrollbar) return;
+      
+      const scrollContainer = scrollbar.wrapRef || scrollbar.wrap$;
+      if (!scrollContainer) return;
+      
+      const currentScrollTop = scrollContainer.scrollTop;
+      const maxScrollTop = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+      
       if (currentScrollTop >= maxScrollTop) {
         clearInterval(scrollInterval);
         isScrolling.value = false;
         return;
       }
-      // 常规自动滚动
+      
       currScrollHeight.value += scrollIntervalPixel.value;
-      window.scrollBy({top: scrollIntervalPixel.value, behavior: "auto"});
+      scrollbar.setScrollTop(currentScrollTop + scrollIntervalPixel.value);
     }, scrollIntervalTime.value);
   }
 };
 const _getScrollConf = async() => {
   await axios.get(backend + '/comic/conf_scroll')
     .then(res => {
-      scrollIntervalTime.value = res.data.IntervalTime
-      scrollIntervalPixel.value = res.data.IntervalPixel
+      scrollIntervalTime.value = parseInt(res.data.IntervalTime)
+      scrollIntervalPixel.value = parseInt(res.data.IntervalPixel)
     })
 };
 const getScrollConf = () => {_getScrollConf()}
