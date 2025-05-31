@@ -1,12 +1,12 @@
 <template>
   <el-container>
-    <el-header height="5vh">
+    <el-header height="5vh" v-show="showBtn">
       <el-button-group style="width: 100%; height: 100%;" id="top-btn-group">
         <TopBtnGroupOfBook :nextBook="nextBook" :previousBook="previousBook" />
       </el-button-group>
     </el-header>
     <el-main id="main">
-      <el-scrollbar class="demo-image__lazy" height="90vh" always 
+      <el-scrollbar class="demo-image__lazy" :height="showBtn?`90vh`:`95vh`" always 
       ref="scrollbarRef" @scroll.native.capture="handleRealScroll">
         <div ref="imageContainer">
           <el-image 
@@ -17,12 +17,15 @@
             @load="handleImageLoad"
           />
         </div>
-          <bookHandleBtn 
-              :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" 
-              :bookName="route.query.book"  :bookHandlePath="'/comic/handle'" :verticalMode="true"
-          />
+          
           <topBottom :scrollbarRef="scrollbarRef" />
       </el-scrollbar>
+      <div v-show="showBtn">
+        <bookHandleBtn 
+            :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" 
+            :bookName="route.query.book"  :bookHandlePath="'/comic/handle'" :verticalMode="true"
+        />
+      </div>
     </el-main>
     <!-- [slider.vue] template -->
     <div v-if="settingsStore.showSlider" class="slider-container">
@@ -69,6 +72,8 @@ const maxScrollHeight = ref(0)   // 最大滚动高度
     const totalImages = ref(0)
     const currScrollTop = ref(0)
     const scrollbarRef = ref(null)
+    const showBtn = ref(true)
+    const btnShowThreshold = 0.15
 
     const getBook = async(book, callBack) => {
       await axios.get(backend + '/comic/' + encodeURIComponent(book))
@@ -135,6 +140,12 @@ const maxScrollHeight = ref(0)   // 最大滚动高度
     const handleRealScroll = (e) => {
       const scrollTop = e.target.scrollTop
       currScrollTop.value = scrollTop
+
+      const maxScrollTop = e.target.scrollHeight - e.target.clientHeight
+      const thresholdVal = maxScrollTop * btnShowThreshold
+      showBtn.value = 
+        scrollTop <= thresholdVal || 
+        scrollTop >= maxScrollTop - thresholdVal
     }
     const inputSlider = (scrollTopVal) => {
       scrollbarRef.value?.setScrollTop(scrollTopVal)
@@ -200,7 +211,6 @@ const scroll2Top = (val) => {
 }
 // 初始化：计算总高度
 onMounted(() => {
-  // 初始计算高度
   if (settingsStore.showSlider) {
     nextTick(calculateTotalHeight);
   }

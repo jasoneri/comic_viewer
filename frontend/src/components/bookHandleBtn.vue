@@ -69,6 +69,10 @@
       height: 8vh;
       left: 0vw;
       bottom: $bottom;
+      opacity: 0.6;
+      &:hover {
+        opacity: 1;
+      }
     }
     &.vertical-btn-sv {
       @include vertical-btn(18vh);
