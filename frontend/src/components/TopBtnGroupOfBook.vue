@@ -1,5 +1,6 @@
 <template>
   <el-button-group  v-if="show_transparent_next_prev_btn">
+    <!-- TODO[1] 点击后一直亮蓝色！ -->
     <el-button 
       class="float-btn left-btn" 
       type="primary" 
@@ -15,11 +16,11 @@
     </el-button>
   </el-button-group>
 
-  <el-button style="width: 40%; height: 100%" type="primary" :icon="ArrowLeft" @click="previousBook">上一排序</el-button>
-  <el-button style="width: 40%; height: 100%" type="primary" @click="nextBook">下一排序<el-icon class="el-icon--right"><ArrowRight /></el-icon></el-button>
+  <el-button style="width: 40%; height: 100%" type="primary" :icon="ArrowLeft" @click="previousBook">上一本</el-button>
+  <el-button style="width: 40%; height: 100%" type="primary" @click="nextBook">下一本<el-icon class="el-icon--right"><ArrowRight /></el-icon></el-button>
   <el-dropdown trigger="click" style="width: 20%;height: 100%;" placement="bottom-end" size="large">
     <el-button type="info"  @click="menuVisible = true" style="width: 100%;height: 100%;">
-      <el-icon><Operation /></el-icon>
+      <el-icon size="large"><Operation /></el-icon>
     </el-button>
     <template #dropdown>
       <el-dropdown-menu>

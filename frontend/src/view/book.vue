@@ -25,6 +25,7 @@
                   :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book"  :bookHandlePath="'/comic/handle'"
               />
           </el-button-group> -->
+          <!-- 左下侧 el-button-group 的竖直样式 -->
       </el-scrollbar>
       <topBottom />
     </el-main>

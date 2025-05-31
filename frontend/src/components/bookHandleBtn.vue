@@ -1,12 +1,16 @@
 <template>
-    <el-button style="width: 50%; height: 100%;" type="success" @click="retain(props.bookName)">
-      保留<el-icon class="el-icon--right"><Download /></el-icon>
-    </el-button>
-    <el-button 
-      style="width: 50%; height: 100%;" :icon="Delete"
+  <el-button 
+      :class="['handle-btn', { 'vertical-btn': verticalMode }]"
+      type="success" 
+      @click="retain(props.bookName)"
+  >
+      <el-icon size="large"><svg class="feather feather-save" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></el-icon>
+  </el-button>
+  <el-button 
+      :class="['handle-btn', { 'vertical-btn': verticalMode }]"
       :type="isCompleteDel ? 'danger' : 'warning'" 
       @click="isCompleteDel ? delBook(props.bookName) : removeBook(props.bookName)"
-    />
+  ><el-icon size="large"><Delete /></el-icon></el-button>
 </template>
 
 <script setup>
@@ -26,7 +30,8 @@
       removeCallBack:{type: Function, required: true},
       delCallBack:{type: Function, required: true},
       bookHandlePath:{type: String, required: true},
-      handleApiBodyExtra:{type: Object, required: false}
+      handleApiBodyExtra:{type: Object, required: false},
+      verticalMode:{type: Boolean, required: false}
     })
 
     const handleBook = async(handle, book, callBack) => {
@@ -53,4 +58,35 @@
 </script>
 
 <style lang="scss" scoped>
+.book-handle-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+
+    &.vertical-mode {
+        position: fixed;
+        left: 20px;
+        bottom: 20px;
+        width: auto;
+        height: auto;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 1000;
+    }
+}
+
+.handle-btn {
+    width: 50%;
+    height: 100%;
+
+    &.vertical-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
 </style>

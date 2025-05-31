@@ -121,14 +121,14 @@ onUnmounted(() => {
   background: #ffffff04;
   left: 50%;
   transform: translateX(-50%);
-  width: 85vw;
+  width: 90vw;
   max-height: 3px;
   padding: 10px;
   border-radius: 15px;
   z-index: 2000;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
 }
 
 .edit-pen {

@@ -18,8 +18,8 @@
             <el-table-column prop="book" label="Book" >
               <template v-slot="scope">
                 <el-space wrap :size="'small'">
-                  <el-button type="info" @click="setFilter(scope.row.book_name)">
-                    <el-icon><Filter /></el-icon>
+                  <el-button type="info"  style="width: 20%;height: 100%;" @click="setFilter(scope.row.book_name)">
+                    <el-icon size="large"><Filter /></el-icon>
                   </el-button>
                   <el-button-group>
                     <bookHandleBtn :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack"
@@ -45,8 +45,8 @@
                     </div>
                   </router-link>
                   <div class="book-actions">
-                    <el-button style="width: 20%;" type="info" @click="setFilter(book.book_name)">
-                      <el-icon><Filter /></el-icon>
+                    <el-button style="width: 20%;height: 100%;" type="info" @click="setFilter(book.book_name)">
+                      <el-icon size="large"><Filter /></el-icon>
                     </el-button>
                     <el-button-group :style="`width:100%;`">
                       <bookHandleBtn
