@@ -1,6 +1,5 @@
 <template>
   <el-button-group  v-if="showCenterNextPrev">
-    <!-- TODO[1] 点击后一直亮蓝色！ -->
     <el-button 
       class="float-btn left-btn" 
       type="primary" 
