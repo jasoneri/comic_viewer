@@ -6,11 +6,9 @@
         </el-icon>
       </el-tooltip>
       <el-slider
-        v-model="currentPage"
-        :min="0"
+        v-model="localPage"
         :max="props.totalPages"
-        :step="1"
-        @change="slider2Page"
+        @change="changeSlider"
       />
     </div>
 </template>
@@ -19,7 +17,6 @@
 import {EditPen} from "@element-plus/icons-vue";
 import {reactive, ref, watch, onMounted, nextTick, watchEffect, onUnmounted, computed } from "vue";
 import { useRoute } from 'vue-router'
-import { useScroll } from '@vueuse/core'
 import { ElMessage } from 'element-plus'
 import _ from 'lodash';
 import { useSettingsStore } from '@/static/store'
@@ -27,15 +24,24 @@ import { useSettingsStore } from '@/static/store'
 const route = useRoute()
 const settingsStore = useSettingsStore()
 const props = defineProps({
+  currentPage:{type: Number, required: true},
   totalPages:{type: Number, required: true},
 })
 
-const emit = defineEmits(['imagesLoaded'])
+const emit = defineEmits(['imagesLoaded', 'changeSlider', 'setCurrentPage'])
 
 const scrollContainer = ref(null)
-const currentPage = ref(0)
-// 当前可见的图片索引
 const observer = ref(null)
+const localPage = ref(props.currentPage)
+
+// 监听本地值变化，同步到父组件
+watch(localPage, (newVal) => {
+  emit('setCurrentPage', newVal)
+})
+
+const changeSlider = (value) => {
+  emit('changeSlider', value)
+}
 
 // 处理页面跳转
 const slider2Page = (page) => {
@@ -44,19 +50,18 @@ const slider2Page = (page) => {
   if (target) {
     target.scrollIntoView({ 
       behavior: 'smooth',
-      block: 'center'
+      block: 'start'
     })
   }
 }
 
 // 保存当前页
 const saveCurrentPage = () => {
-  // 保存到 store
-  settingsStore.savePageRecord(route.query.book, currentPage.value)
-  ElMessage.success(`已记录第 ${currentPage.value} 页`)
+  settingsStore.savePageRecord(route.query.book, localPage.value)
+  ElMessage.success(`已记录第 ${localPage.value} 页，后续阅读此本时会从自动翻到该页`)
 }
 
-// 修改初始化逻辑
+// 初始化
 const initSlider = async () => {
   const findContainer = () => document.querySelector('.demo-image__lazy')
   // 等待容器加载
@@ -82,22 +87,22 @@ onMounted(() => {
 
 // 监听路由变化
 watch(() => route.query.book, () => {
-  initObserver()
+  initSlider()    // FIX 当下一排序进入存在记录的book后，点击上一排序触发initObserver一直循环
 })
 
 // 初始化 Intersection Observer
 const initObserver = () => {
   // 确保有图片元素
-  const imgs = scrollContainer.value?.querySelectorAll('img')
+  const imgs = scrollContainer.value?.querySelectorAll('.el-image')
   if (!imgs || imgs.length === 0) {
     console.log('没有找到图片元素，延迟初始化 observer') // TODO[1] 此处放有马加奈动图加载
-    setTimeout(initObserver, 100)
+    setTimeout(initObserver, 300)
     return
   }
   const savedPage = settingsStore.getPageRecord(route.query.book)
   if (savedPage) {
-    slider2Page(savedPage)
-    currentPage.value = savedPage
+    changeSlider(savedPage)
+    localPage.value = savedPage
   }
 }
 
@@ -112,16 +117,18 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .slider-container {
   position: fixed;
-  bottom: 2vh;
+  bottom: 3.2vh;
+  background: #ffffff04;
   left: 50%;
   transform: translateX(-50%);
-  width: 80vw;
-  padding: 15px;
-  border-radius: 8px;
+  width: 85vw;
+  max-height: 3px;
+  padding: 10px;
+  border-radius: 15px;
   z-index: 2000;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
 }
 
 .edit-pen {
@@ -141,10 +148,4 @@ onUnmounted(() => {
   width: 100%;
 }
 
-@media (max-width: 768px) {
-  .slider-container {
-    width: 80vw;
-    bottom: 2.5vh;
-  }
-}
 </style>

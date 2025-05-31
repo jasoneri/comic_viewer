@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-header style="height: 45px">
-      <el-button-group style="width: 35%; height: 100%;">
+      <el-button-group style="width: 35%; height: 100%;" id="top-btn-group">
         <bookHandleBtn
             :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book"  :bookHandlePath="'/comic/handle'"
         />
@@ -10,34 +10,40 @@
         <TopBtnGroupOfBook :nextBook="nextBook" :previousBook="previousBook" />
       </el-button-group>
     </el-header>
-    <el-main class="demo-image__lazy" style="height: 100%">
-        <el-image 
-          v-for="url in imgUrls.arr" 
-          :key="url" 
-          :src="url" 
-          lazy 
-          :preview-src-list="imgUrls.arr"
-          @load="handleImageLoad"
-        />
+    <el-main id="main">
+      <el-scrollbar class="demo-image__lazy" ref="scrollbarRef" 
+        height="90vh" always @scroll.native.capture="handleRealScroll">
+          <el-image 
+            v-for="url in imgUrls.arr" 
+            :key="url" 
+            :src="url" 
+            lazy 
+            @load="handleImageLoad"
+          />
+          <!-- <el-button-group style="width: 100%; height: 50px;">
+              <bookHandleBtn
+                  :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book"  :bookHandlePath="'/comic/handle'"
+              />
+          </el-button-group> -->
+      </el-scrollbar>
       <topBottom />
     </el-main>
-    <el-button-group style="width: 100%; height: 50px;">
-        <bookHandleBtn
-            :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book"  :bookHandlePath="'/comic/handle'"
-        />
-    </el-button-group>
+    <slider 
+      :totalPages="imgUrls.arr.length" 
+      :currentPage="currentPage"
+      @imagesLoaded="handleImagesLoaded"
+      @changeSlider="changeSlider"
+      @setCurrentPage="setCurrentPage"
+    />
+    
   </el-container>
-  <slider 
-    :totalPages="imgUrls.arr.length" 
-    @imagesLoaded="handleImagesLoaded"
-  />
 </template>
 
 <script setup>
     import {backend,bookList,filteredBookList} from '@/static/store.js'
     import axios from 'axios'
     import {useRoute,useRouter} from 'vue-router'
-    import {reactive,markRaw,computed,ref} from "vue"
+    import {reactive,markRaw,computed,ref, onMounted, onBeforeUnmount} from "vue"
     import {ElMessageBox} from 'element-plus'
     import bookHandleBtn from '@/components/bookHandleBtn.vue'
     import {Delete, Finished, Warning,} from "@element-plus/icons-vue"
@@ -50,6 +56,9 @@
     const imgUrls = reactive({arr:[]})
     const loadedImages = ref(0)
     const totalImages = ref(0)
+    const currentPage = ref(0)
+    const scrollbarRef = ref(null)
+    let scrollElement = null // 存储实际滚动元素
 
     const handleImageLoad = () => {
       loadedImages.value++
@@ -119,6 +128,29 @@
 
     const handleImagesLoaded = () => {
       console.log('所有图片加载完成')
+    }
+    
+    const handleRealScroll = (e) => {
+      const scrollTop = e.target.scrollTop
+      console.log("真实滚动位置:", scrollTop)
+      // TODO[1] 计算图片位置并更新currentPage和slider.vue的localPage值
+    }
+    const scroll = ({ scrollTop }) => {
+      console.log("scroll: "+scrollTop)
+      currentPage.value = obj
+    }
+    const setCurrentPage = (value) => {
+      currentPage.value = value
+    }
+    const changeSlider = (page) => {
+      const images = document.querySelector('.demo-image__lazy').querySelectorAll('.el-image')
+      const target = images[page - 1]
+      if (target) {
+        target.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        })
+      }
     }
 </script>
 
