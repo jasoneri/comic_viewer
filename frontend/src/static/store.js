@@ -22,7 +22,7 @@ export const useSettingsStore = defineStore('settings', {
     sortValue: localStorage.getItem('sortValue') || '',
     customSorts: JSON.parse(localStorage.getItem('customSorts') || '[]'),
     isCompleteDel: localStorage.getItem('isCompleteDel') === 'true',
-    pageRecords: JSON.parse(localStorage.getItem('pageRecords') || '{}')
+    scrollTopRecords: JSON.parse(localStorage.getItem('scrollTopRecords') || '{}')
   }),
   actions: {
     toggleListMode() {
@@ -49,12 +49,12 @@ export const useSettingsStore = defineStore('settings', {
       this.isCompleteDel = !this.isCompleteDel
       localStorage.setItem('isCompleteDel', this.isCompleteDel)
     },
-    savePageRecord(bookName, page) {
-      this.pageRecords[bookName] = page
-      localStorage.setItem('pageRecords', JSON.stringify(this.pageRecords))
+    saveScrollTopRecord(bookName, page) {
+      this.scrollTopRecords[bookName] = page
+      localStorage.setItem('scrollTopRecords', JSON.stringify(this.scrollTopRecords))
     },
-    getPageRecord(bookName) {
-      return this.pageRecords[bookName] || 0
+    getScrollTopRecord(bookName) {
+      return this.scrollTopRecords[bookName] || 0
     }
   }
 })
