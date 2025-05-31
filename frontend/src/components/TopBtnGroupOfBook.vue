@@ -1,5 +1,5 @@
 <template>
-  <el-button-group  v-if="show_transparent_next_prev_btn">
+  <el-button-group  v-if="showCenterNextPrev">
     <!-- TODO[1] 点击后一直亮蓝色！ -->
     <el-button 
       class="float-btn left-btn" 
@@ -29,7 +29,10 @@
           <el-switch v-model="showSlider" :active-action-icon="View" :inactive-action-icon="Hide" active-text="页数滚动条"></el-switch>
         </el-dropdown-item>
         <el-dropdown-item>
-          <el-switch v-model="show_transparent_next_prev_btn" :active-action-icon="View" :inactive-action-icon="Hide" active-text="页中翻书按钮"></el-switch>
+          <el-switch v-model="showNavBtn" :active-action-icon="View" :inactive-action-icon="Hide" active-text="导航按钮"></el-switch>
+        </el-dropdown-item>
+        <el-dropdown-item>
+          <el-switch v-model="showCenterNextPrev" :active-action-icon="View" :inactive-action-icon="Hide" active-text="页中翻书按钮"></el-switch>
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>
@@ -71,11 +74,20 @@ import {reactive, ref, watch} from "vue";
 import {backend, scrollIntervalPixel, scrollIntervalTime, useSettingsStore} from "@/static/store.js";
 
 const settingsStore = useSettingsStore()
-const show_transparent_next_prev_btn = ref(true)
-const showSlider = ref(settingsStore.showSlider)
+const showCenterNextPrev = ref(settingsStore.displaySettings.showCenterNextPrev)
+const showSlider = ref(settingsStore.displaySettings.showSlider)
+const showNavBtn = ref(settingsStore.displaySettings.showNavBtn)
 
 watch(showSlider, (newValue) => {
   settingsStore.toggleSlider(newValue)
+})
+
+watch(showNavBtn, (newValue) => {
+  settingsStore.toggleNavBtn(newValue)
+})
+
+watch(showCenterNextPrev, (newValue) => {
+  settingsStore.toggleCenterNextPrev(newValue)
 })
 
 const props = defineProps({

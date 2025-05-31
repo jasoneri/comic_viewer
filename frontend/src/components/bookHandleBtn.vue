@@ -22,7 +22,7 @@
     import { useSettingsStore } from "@/static/store.js"
 
     const settingsStore = useSettingsStore()
-    const isCompleteDel = computed(() => settingsStore.isCompleteDel)
+    const isCompleteDel = computed(() => settingsStore.viewSettings.isCompleteDel)
 
     const props = defineProps({
       bookName:{type: String, required: true},

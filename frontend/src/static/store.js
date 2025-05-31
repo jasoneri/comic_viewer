@@ -16,26 +16,40 @@ export let scrollIntervalPixel = ref(0)
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
-    isListMode: localStorage.getItem('isListMode') === 'true',
-    isDark: localStorage.getItem('isDark') === 'true',
-    showSlider: localStorage.getItem('showSlider') === 'true',
+    viewSettings: JSON.parse(localStorage.getItem('viewSettings') || JSON.stringify({
+      isDark: false,
+      isListMode: false,
+      isCompleteDel: false
+    })),
+    displaySettings: JSON.parse(localStorage.getItem('displaySettings') || JSON.stringify({
+      showSlider: false,
+      showNavBtn: true,
+      showCenterNextPrev: true
+    })),
     sortValue: localStorage.getItem('sortValue') || '',
     customSorts: JSON.parse(localStorage.getItem('customSorts') || '[]'),
-    isCompleteDel: localStorage.getItem('isCompleteDel') === 'true',
     scrollTopRecords: JSON.parse(localStorage.getItem('scrollTopRecords') || '{}')
   }),
   actions: {
     toggleListMode() {
-      this.isListMode = !this.isListMode
-      localStorage.setItem('isListMode', this.isListMode)
+      this.viewSettings.isListMode = !this.viewSettings.isListMode
+      localStorage.setItem('viewSettings', JSON.stringify(this.viewSettings))
     },
     toggleDark() {
-      this.isDark = !this.isDark
-      localStorage.setItem('isDark', this.isDark)
+      this.viewSettings.isDark = !this.viewSettings.isDark
+      localStorage.setItem('viewSettings', JSON.stringify(this.viewSettings))
     },
     toggleSlider(value) {
-      this.showSlider = value
-      localStorage.setItem('showSlider', this.showSlider)
+      this.displaySettings.showSlider = value
+      localStorage.setItem('displaySettings', JSON.stringify(this.displaySettings))
+    },
+    toggleNavBtn(value) {
+      this.displaySettings.showNavBtn = value
+      localStorage.setItem('displaySettings', JSON.stringify(this.displaySettings))
+    },
+    toggleCenterNextPrev(value) {
+      this.displaySettings.showCenterNextPrev = value
+      localStorage.setItem('displaySettings', JSON.stringify(this.displaySettings))
     },
     setSortValue(value) {
       this.sortValue = value
@@ -46,8 +60,8 @@ export const useSettingsStore = defineStore('settings', {
       localStorage.setItem('customSorts', JSON.stringify(this.customSorts))
     },
     toggleDeleteMode() {
-      this.isCompleteDel = !this.isCompleteDel
-      localStorage.setItem('isCompleteDel', this.isCompleteDel)
+      this.viewSettings.isCompleteDel = !this.viewSettings.isCompleteDel
+      localStorage.setItem('viewSettings', JSON.stringify(this.viewSettings))
     },
     saveScrollTopRecord(bookName, page) {
       this.scrollTopRecords[bookName] = page

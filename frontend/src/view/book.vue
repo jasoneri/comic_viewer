@@ -13,12 +13,11 @@
             v-for="url in imgUrls.arr" 
             :key="url" 
             :src="url" 
-            :lazy="!settingsStore.showSlider"
+            :lazy="!settingsStore.displaySettings.showSlider"
             @load="handleImageLoad"
           />
         </div>
-          
-          <topBottom :scrollbarRef="scrollbarRef" />
+        <topBottom v-if="settingsStore.displaySettings.showNavBtn" :scrollbarRef="scrollbarRef" />
       </el-scrollbar>
       <div v-show="showBtn">
         <bookHandleBtn 
@@ -28,7 +27,7 @@
       </div>
     </el-main>
     <!-- [slider.vue] template -->
-    <div v-if="settingsStore.showSlider" class="slider-container">
+    <div v-if="settingsStore.displaySettings.showSlider" class="slider-container">
         <el-icon class="edit-pen" @click="saveCurrScrollTop">
           <EditPen />
         </el-icon>
@@ -165,7 +164,7 @@ const handleImageLoad = () => {
 const loadedFlag = computed(() => {
   if (totalImages.value === 0) return
   const _loadFlag = loadedImages.value === totalImages.value
-  if (!settingsStore.showSlider && _loadFlag) return true;
+  if (!settingsStore.displaySettings.showSlider && _loadFlag) return true;
   if (!(imageContainer.value || _loadFlag)) return;
   const imgs = imageContainer.value.querySelectorAll('.el-image');
   return !imgs || imgs.length === totalImages.value
@@ -200,7 +199,7 @@ const saveCurrScrollTop = () => {
   })
 }
 const scroll2Top = (val) => {
-  if (settingsStore.showSlider && !loadedFlag.value && maxScrollHeight.value) {
+  if (settingsStore.displaySettings.showSlider && !loadedFlag.value && maxScrollHeight.value) {
     console.log('scroll2Top 循环中！');
     setTimeout(()=>{scroll2Top(val)}, 150)
   }
@@ -211,13 +210,13 @@ const scroll2Top = (val) => {
 }
 // 初始化：计算总高度
 onMounted(() => {
-  if (settingsStore.showSlider) {
+  if (settingsStore.displaySettings.showSlider) {
     nextTick(calculateTotalHeight);
   }
 });
 
 // 监听滑块显示状态变化
-watch(() => settingsStore.showSlider, (newValue, oldValue) => {
+watch(() => settingsStore.displaySettings.showSlider, (newValue, oldValue) => {
   if (newValue && oldValue === false) {
     // 强制重新渲染所有图片（取消懒加载）
     const urls = [...imgUrls.arr];

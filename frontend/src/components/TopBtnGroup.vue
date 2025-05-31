@@ -118,8 +118,8 @@ const props = defineProps({
 const emit = defineEmits(['send_sort', 'update:modelValue'])
 
 const settingsStore = useSettingsStore()
-const isListMode = computed(() => settingsStore.isListMode)
-const isDark = computed(() => settingsStore.isDark)
+const isListMode = computed(() => settingsStore.viewSettings.isListMode)
+const isDark = computed(() => settingsStore.viewSettings.isDark)
 const select_value = computed({
   get: () => settingsStore.sortValue,
   set: (value) => settingsStore.setSortValue(value)
@@ -159,7 +159,7 @@ const toggleViewMode = () => {
 }
 
 const switchDelMode = () => {
-  if (settingsStore.isCompleteDel === false) {
+  if (settingsStore.viewSettings.isCompleteDel === false) {
     ElMessage ({
       message: `已切换至「彻底删除」模式，请谨慎操作`,
       type: 'warning',
