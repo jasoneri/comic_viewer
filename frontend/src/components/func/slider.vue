@@ -28,9 +28,7 @@ const props = defineProps({
   totalPages:{type: Number, required: true},
 })
 
-const emit = defineEmits(['imagesLoaded', 'changeSlider', 'setCurrentPage'])
-
-const scrollContainer = ref(null)
+const emit = defineEmits(['changeSlider', 'setCurrentPage'])
 const observer = ref(null)
 const localPage = ref(props.currentPage)
 
@@ -43,18 +41,6 @@ const changeSlider = (value) => {
   emit('changeSlider', value)
 }
 
-// 处理页面跳转
-const slider2Page = (page) => {
-  if (!scrollContainer.value) return
-  const target = scrollContainer.value.children[page - 1]
-  if (target) {
-    target.scrollIntoView({ 
-      behavior: 'smooth',
-      block: 'start'
-    })
-  }
-}
-
 // 保存当前页
 const saveCurrentPage = () => {
   settingsStore.savePageRecord(route.query.book, localPage.value)
@@ -63,18 +49,24 @@ const saveCurrentPage = () => {
 
 // 初始化
 const initSlider = async () => {
-  const findContainer = () => document.querySelector('.demo-image__lazy')
-  // 等待容器加载
-  while (!findContainer()) {
-    await new Promise(resolve => requestAnimationFrame(resolve))
-  }
-  scrollContainer.value = findContainer()
-  
   // 初始化观察器
   initObserver()
-  emit('imagesLoaded')
 }
-
+// 初始化 Intersection Observer
+const initObserver = () => {
+  // 确保有图片元素
+  const imgs = document.querySelector('.demo-image__lazy')?.querySelectorAll('.el-image')
+  if (!imgs || imgs.length === 0) {
+    console.log('没有找到图片元素，延迟初始化 observer') // TODO[1] 此处放有马加奈动图加载
+    setTimeout(initObserver, 300)
+    return
+  }
+  const savedPage = settingsStore.getPageRecord(route.query.book)
+  if (savedPage) {
+    changeSlider(savedPage)
+    localPage.value = savedPage
+  }
+}
 // 优化后的初始化
 onMounted(() => {
   // 统一初始化逻辑
@@ -87,24 +79,8 @@ onMounted(() => {
 
 // 监听路由变化
 watch(() => route.query.book, () => {
-  initSlider()    // FIX 当下一排序进入存在记录的book后，点击上一排序触发initObserver一直循环
+  initSlider()    // FIXME 当下一排序进入存在记录的book后，点击上一排序触发initObserver一直循环
 })
-
-// 初始化 Intersection Observer
-const initObserver = () => {
-  // 确保有图片元素
-  const imgs = scrollContainer.value?.querySelectorAll('.el-image')
-  if (!imgs || imgs.length === 0) {
-    console.log('没有找到图片元素，延迟初始化 observer') // TODO[1] 此处放有马加奈动图加载
-    setTimeout(initObserver, 300)
-    return
-  }
-  const savedPage = settingsStore.getPageRecord(route.query.book)
-  if (savedPage) {
-    changeSlider(savedPage)
-    localPage.value = savedPage
-  }
-}
 
 // 组件卸载时清理
 onUnmounted(() => {

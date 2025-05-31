@@ -25,7 +25,6 @@
     <slider 
       :totalPages="imgUrls.arr.length" 
       :currentPage="currentPage"
-      @imagesLoaded="handleImagesLoaded"
       @changeSlider="changeSlider"
       @setCurrentPage="setCurrentPage"
     />
@@ -120,10 +119,6 @@
       })
     }
 
-    const handleImagesLoaded = () => {
-      console.log('所有图片加载完成')
-    }
-    
     const handleRealScroll = (e) => {
       const scrollTop = e.target.scrollTop
       console.log("真实滚动位置:", scrollTop)

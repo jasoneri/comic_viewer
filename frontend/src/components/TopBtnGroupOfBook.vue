@@ -116,6 +116,17 @@ const setScrollConf = async() => {
 </script>
 
 <style scoped lang="scss">
+@media (hover: none) and (pointer: coarse) {
+  .float-btn {
+    -webkit-tap-highlight-color: transparent !important;
+    tap-highlight-color: transparent;
+    
+    &:active, &:focus {
+      background-color: rgba(0,0,0,0.3) !important;
+      opacity: 0.3 !important;
+    }
+  }
+}
 .float-btn {
   position: fixed;
   top: 60vh;
