@@ -1,15 +1,15 @@
 <div align="center">
-  <h1 id="koishi">ComicViewer</h1>
+  <h1 id="koishi">redViewer</h1>
   <img src="https://img.shields.io/badge/-3.12%2B-brightgreen.svg?logo=python" alt="tag">
   <img src="https://img.shields.io/badge/By-Fastapi_&_vitejs-blue.svg?colorA=abcdef" alt="tag">
-  <a href="https://github.com/jasoneri/comic_viewer/releases" target="_blank">
-     <img src="https://img.shields.io/github/downloads/jasoneri/comic_viewer/total?style=social&logo=github" alt="tag">
+  <a href="https://github.com/jasoneri/redViewer/releases" target="_blank">
+     <img src="https://img.shields.io/github/downloads/jasoneri/redViewer/total?style=social&logo=github" alt="tag">
   </a>
 
   <p align="center">
-  <a href="https://github.com/jasoneri/comic_viewer/wiki/FAQ">📖FAQ</a> | 
-  <a href="https://github.com/jasoneri/comic_viewer/wiki/Feat">🎲功能说明</a> | 
-  <a href="https://github.com/jasoneri/comic_viewer/releases/latest">📦绿色包下载</a>
+  <a href="https://github.com/jasoneri/redViewer/wiki/FAQ">📖FAQ</a> | 
+  <a href="https://github.com/jasoneri/redViewer/wiki/Feat">🎲功能说明</a> | 
+  <a href="https://github.com/jasoneri/redViewer/releases/latest">📦绿色包下载</a>
   </p>
 </div>
 
@@ -24,7 +24,7 @@ pc本地下漫画(或任意图片目录)后用手机浏览器进行局域网阅�
 
 > [!Tip]  
 > - 「删除模式-丢回收站」过程会有点慢（但其实是异步），介意的话切到「删除模式-彻底删除」 
-> - 快速筛选的匹配模式请参考 [🎲功能说明](https://github.com/jasoneri/comic_viewer/wiki/Feat)，用 CGS 下的就不用参考了😎  
+> - 快速筛选的匹配模式请参考 [🎲功能说明](https://github.com/jasoneri/redViewer/wiki/Feat)，用 CGS 下的就不用参考了😎  
 
 ### ▼ 📗阅读预览 ▼
 
@@ -84,14 +84,14 @@ cd frontend
 npm start
 ```
 
-或在项目根目录运行脚本 `comic_viewer.bat`
+或在项目根目录运行脚本 `redViewer.bat`
 
 ### 3.使用
 
 启动后终端会显示局域网ip与端口 `Network:`行，手机进浏览器照样填地址即可，如预览所示  
 建议 PC 设置固定局域网 ip
 
-> [🎥使用指南参考](https://www.veed.io/view/zh-CN/688ae765-2bfb-4deb-9495-32b24a273373?panel=comments)，从 `01:52` 开始含有 comic_viewer 的使用部分
+> [🎥使用指南参考](https://www.veed.io/view/zh-CN/688ae765-2bfb-4deb-9495-32b24a273373?panel=comments)，从 `01:52` 开始含有 redViewer 的使用部分
 
 ## 📢更新
 
@@ -110,16 +110,16 @@ npm start
 🔳logo/改名/CGS对应处理  
 🔳抛弃 release 发布包，使用 部署/更新/启动 多合一脚本处理，release 仅作为新功能/修复信息公告告示  
 
-> [🕑更新历史](https://github.com/jasoneri/comic_viewer/wiki/Changelog)
+> [🕑更新历史](https://github.com/jasoneri/redViewer/wiki/Changelog)
 
 ## 💬交流
 
-详见 [❓FAQ](https://github.com/jasoneri/comic_viewer/wiki/FAQ) 置顶
+详见 [❓FAQ](https://github.com/jasoneri/redViewer/wiki/FAQ) 置顶
 
 ## 🔇开源许可
 
-详见 [Apache License 2.0](https://github.com/jasoneri/comic_viewer/blob/master/LICENSE)
+详见 [Apache License 2.0](https://github.com/jasoneri/redViewer/blob/master/LICENSE)
 
 ---
 
-![comic_viewer](https://count.getloli.com/get/@comic_viewer?theme=rule34)
+![redViewer](https://count.getloli.com/get/@comic_viewer?theme=rule34)

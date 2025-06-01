@@ -47,25 +47,25 @@ preset = {
 release_desc = """开箱即用
 ---
 ### 下载
-下面的`comic_viewer.7z`<br>
+下面的`redViewer.7z`<br>
 下载很慢 ？到压缩包的下载链接右键复制到 https://github.akams.cn/ 上进行下载加速
 
 ### 运行
-解压双击运行 `comic_viewer.exe`
+解压双击运行 `redViewer.exe`
 
 ### 更新
-一般情况下，使用包内的更新程序 `comic_viewer-更新.exe` 即可<br>
+一般情况下，使用包内的更新程序 `redViewer-更新.exe` 即可<br>
 特殊情况，如运行环境需要变化时，需要在此页面下绿色安装包 (包更新未必是最新，更新日期参照标题) 
 > 绿色包保证 `运行环境` 的更新，更新程序保证 `代码` 的更新，<br>
-> 所以会有包更新没跟上代码更新，优先以内置的`comic_viewer-更新.exe` 为主
+> 所以会有包更新没跟上代码更新，优先以内置的`redViewer-更新.exe` 为主
 
 ---
-其他问题 [回到项目主页](https://github.com/jasoneri/comic_viewer) 下方找群进群询问"""
+其他问题 [回到项目主页](https://github.com/jasoneri/redViewer) 下方找群进群询问"""
 
 
 class Proj:
-    proj = "comic_viewer"
-    name = "comic_viewer"
+    proj = "redViewer"
+    name = "redViewer"
 
     def __repr__(self):
         return self.proj
@@ -194,6 +194,6 @@ if __name__ == '__main__':
     Packer.markdown_to_html('scripts/doc/deploy.md', '部署指南.html')  # step 2
     packer = Packer(('scripts', f'{proj}.exe', f'{proj}-更新.exe', '部署指南.html'))
     packer.packup(runtime_init=True)  # step 3
-    packer.upload('comic_viewer.7z')  # step 4
-    Clean.end_work((f'{proj}.exe', f'{proj}-更新.exe', 'comic_viewer.7z', '部署指南.html'))  # step 5
+    packer.upload('redViewer.7z')  # step 4
+    Clean.end_work((f'{proj}.exe', f'{proj}-更新.exe', 'redViewer.7z', '部署指南.html'))  # step 5
     # If error occur, exegesis previous step and run again

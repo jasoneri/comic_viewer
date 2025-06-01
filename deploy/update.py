@@ -121,9 +121,9 @@ class GitHandler:
 
 
 class Proj:
-    proj = "comic_viewer"
+    proj = "redViewer"
     github_author = "jasoneri"
-    name = "comic_viewer"
+    name = "redViewer"
     branch = "master"
     git_handler = GitHandler(github_author, name, branch)
     ver = ""
