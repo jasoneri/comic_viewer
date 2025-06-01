@@ -253,7 +253,7 @@ watch(() => settingsStore.displaySettings.showSlider, (newValue, oldValue) => {
   .edit-pen {
     cursor: pointer;
     padding: 5px;
-    background: #ffffff72;
+    background: #0000003b;
     border-radius: 50%;
     box-shadow: 0 2px 4px rgba(255, 255, 255, 0.599);
     transition: all 0.3s;

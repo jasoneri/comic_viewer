@@ -64,7 +64,7 @@
 
     @mixin vertical-btn($bottom) {
       position: fixed;
-      width: 10vw;
+      width: 11vw;
       max-width: 50px;
       height: 8vh;
       left: 0vw;
