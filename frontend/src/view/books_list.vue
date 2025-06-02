@@ -39,7 +39,14 @@
               <el-col v-for="book in pagedBook" :key="book.book_name" :span="4" :xs="12" :sm="8" :md="6" :lg="4">
                 <el-card :body-style="{ padding: '0px' }" class="book-card">
                   <router-link :to="{ path: 'book', query: { book: book.book_name}}">
-                    <img :src="backend+book.first_img" class="book-image" :title="book.book_name" />
+                    <el-image :src="backend+book.first_img" class="book-image" :title="book.book_name" fit="cover">
+                      <template #error>
+                        <div class="error-container">
+                          <img :src="dynamicImageUrl" :alt="errorText" v-if="dynamicImageUrl" />
+                          <div class="error-text" v-html="errorText"></div>
+                        </div>
+                      </template>
+                    </el-image>
                     <div class="book-info">
                       <span class="book-title">{{ book.book_name }}</span>
                     </div>
@@ -83,6 +90,9 @@
     const filterKeyword = ref('');
     const keywords_list = ref([]);
     
+    const dynamicImageUrl = ref('/empty.png')
+    const errorText = computed(() => '这目录..<br>没有图片...')
+
     // 添加过滤方法
     const applyFilter = (data) => {
       if (filterKeyword.value) {
@@ -241,4 +251,34 @@
 </script>
 <style lang="scss" scoped>
     @use '@/styles/books_list.scss';
+
+.error-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    margin-top: 3px;
+  }
+}
+
+.error-text {
+  position: relative;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-top: 10px;
+  padding: 0 5px;
+  
+  /* 可选文字阴影增强可读性 */
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.925);
+}
 </style>
