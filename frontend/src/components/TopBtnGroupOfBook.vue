@@ -1,5 +1,5 @@
 <template>
-  <el-button-group  v-if="showCenterNextPrev">
+  <el-button-group v-if="showCenterNextPrev">
     <el-button 
       class="float-btn left-btn" 
       type="primary" 
@@ -14,10 +14,13 @@
     >
     </el-button>
   </el-button-group>
-
-  <el-button style="width: 40%; height: 100%" type="primary" :icon="ArrowLeft" @click="previousBook">上一本</el-button>
-  <el-button style="width: 40%; height: 100%" type="primary" @click="nextBook">下一本<el-icon class="el-icon--right"><ArrowRight /></el-icon></el-button>
-  <el-dropdown trigger="click" style="width: 20%;height: 100%;" placement="bottom-end" size="large">
+  <el-button-group style="width: 100%; height: 100%">
+    <el-button style="width: 10%; height: 100%" type="info" @click="goBack">
+      <el-icon size="large"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g><path d="M0 0h24v24H0z" fill="none"/><path d="M5.828 7l2.536 2.536L6.95 10.95 2 6l4.95-4.95 1.414 1.414L5.828 5H13a8 8 0 1 1 0 16H4v-2h9a6 6 0 1 0 0-12H5.828z"/></g></svg></el-icon>
+    </el-button>
+    <el-button style="width: 37%; height: 100%" type="primary" :icon="ArrowLeft" @click="previousBook">上一本</el-button>
+    <el-button style="width: 37%; height: 100%" type="primary" @click="nextBook">下一本<el-icon class="el-icon--right"><ArrowRight /></el-icon></el-button>
+  <el-dropdown trigger="click" style="width: 16%;height: 100%;" placement="bottom-end" size="large">
     <el-button type="info"  @click="menuVisible = true" style="width: 100%;height: 100%;">
       <el-icon size="large"><Operation /></el-icon>
     </el-button>
@@ -36,6 +39,7 @@
       </el-dropdown-menu>
     </template>
   </el-dropdown>
+  </el-button-group>
   <el-dialog v-model="dialogFormVisible" title="调速" width="50vw" align-center>
     <el-form :model="form">
       <el-form-item label="间隔时间毫秒" :label-width="formLabelWidth">
@@ -71,7 +75,9 @@ import axios from "axios";
 import {ArrowDownBold, ArrowLeft, ArrowRight, Operation, InfoFilled, Hide, View} from "@element-plus/icons-vue";
 import {reactive, ref, watch} from "vue";
 import {backend, scrollIntervalPixel, scrollIntervalTime, useSettingsStore} from "@/static/store.js";
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const settingsStore = useSettingsStore()
 const showCenterNextPrev = ref(settingsStore.displaySettings.showCenterNextPrev)
 const showSlider = ref(settingsStore.displaySettings.showSlider)
@@ -124,6 +130,10 @@ const setScrollConf = async() => {
     })
     .catch(function (error) {console.log(error);})
 }
+
+const goBack = () => {
+  router.back();
+};
 </script>
 
 <style scoped lang="scss">
