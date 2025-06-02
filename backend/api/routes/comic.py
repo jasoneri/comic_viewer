@@ -97,9 +97,25 @@ async def duel_scroll_conf(request: Request, scroll_conf: ScrollConf = None):
 @index_router.get("/{book_name}")
 async def get_book(request: Request, book_name: str):
     book_md5 = hashlib.md5(book_name.encode('utf-8')).hexdigest()
-    if not hasattr(cache, book_md5):
-        # todo except FileNotFoundError:
+    book_path = conf.comic_path.joinpath(book_name)
+    if not os.path.exists(book_path):
+        if hasattr(cache, book_md5):
+            return getattr(cache, book_md5).get()
+        return JSONResponse(status_code=404, content=f"book[{book_name}] not exist]")
+    if not hasattr(cache, 'order'):
+        cache.order = []
+    if hasattr(cache, book_md5):
+        cache.order.remove(book_md5)
+        cache.order.append(book_md5)
+    else:
+        cache_attrs = [a for a in vars(cache) if not a.startswith('_')]
+        if len(cache_attrs) > 30:
+            remove_keys = cache.order[:len(cache_attrs)//2]
+            for key in remove_keys:
+                delattr(cache, key)
+                cache.order.remove(key)
         setattr(cache, book_md5, BookCursor(book_name, os.listdir(conf.comic_path.joinpath(book_name))))
+        cache.order.append(book_md5)
     book = getattr(cache, book_md5)
     return book.get()
 
@@ -112,16 +128,16 @@ class Book(BaseModel):
 @index_router.post("/handle")
 async def handle(request: Request, book: Book):
     book_path = conf.comic_path.joinpath(book.name)
+    if not os.path.exists(book_path):
+        return JSONResponse(status_code=404, content=f"book[{book.name}] not exist]")
     with open(conf.handle_path.joinpath("record.txt"), "a+", encoding="utf-8") as f:
         f.writelines(f"<{book.handle}>{book.name}\n")
     if book.handle == "del":
         shutil.rmtree(book_path)
         return {"path": book.name, "handled": f"{book.handle}eted"}
     elif book.handle == "remove":
-        await asyncio.get_event_loop().run_in_executor(executor, send2trash, book_path)
-        return {"path": book.name, "handled": f"{book.handle}eted"}
-    elif not os.path.exists(book_path):
-        return JSONResponse(status_code=404, content=f"book[{book.name}] not exist]")
+        asyncio.get_event_loop().run_in_executor(executor, send2trash, book_path)
+        return JSONResponse({"path": book.name, "handled": f"{book.handle}d"})
     else:
         _ = shutil.move(book_path, conf.handle_path.joinpath(book.handle, book.name))
         return {"path": _, "handled": f"{book.handle}d"}
