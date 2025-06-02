@@ -42,7 +42,7 @@
                     <el-image :src="backend+book.first_img" class="book-image" :title="book.book_name" fit="cover">
                       <template #error>
                         <div class="error-container">
-                          <img :src="dynamicImageUrl" :alt="errorText" v-if="dynamicImageUrl" />
+                          <img src="/empty.png" :alt="errorText" />
                           <div class="error-text" v-html="errorText"></div>
                         </div>
                       </template>
@@ -90,7 +90,6 @@
     const filterKeyword = ref('');
     const keywords_list = ref([]);
     
-    const dynamicImageUrl = ref('/empty.png')
     const errorText = computed(() => '这目录..<br>没有图片...')
 
     // 添加过滤方法

@@ -16,6 +16,8 @@
             :lazy="!settingsStore.displaySettings.showSlider"
             @load="handleImageLoad"
           />
+          <el-empty class="custom-empty" v-if="!loadedFlag && imgUrls.arr.length===0"
+            image="/empty.png" :image-size="`40vw`" :description="errorText" />
         </div>
         <topBottom v-if="settingsStore.displaySettings.showNavBtn" :scrollbarRef="scrollbarRef" />
       </el-scrollbar>
@@ -73,6 +75,7 @@ const maxScrollHeight = ref(0)   // 最大滚动高度
     const scrollbarRef = ref(null)
     const showBtn = ref(true)
     const btnShowThreshold = 0.15
+    const errorText = computed(() => '已经说过没图片了！..')
 
     const getBook = async(book, callBack) => {
       await axios.get(backend + '/comic/' + encodeURIComponent(book))
@@ -232,6 +235,19 @@ watch(() => settingsStore.displaySettings.showSlider, (newValue, oldValue) => {
 
 <style lang="scss" scoped>
   @use '@/styles/book.scss';
+
+  .custom-empty {
+    position: fixed;
+    top: 60vh;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+
+    :deep(.el-empty__description) {
+      p {
+        font-size: 1.3rem;
+      }
+    }
+  }
 
   // [slider.vue] scss
   .slider-container {
