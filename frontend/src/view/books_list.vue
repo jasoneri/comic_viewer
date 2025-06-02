@@ -5,7 +5,7 @@
                      :handle-filter="handleFilter" :keywords_list="keywords_list" v-model="isListMode" @send_sort="sv_sort"/>
       </el-header>
       <el-main>
-        <el-scrollbar>
+        <el-scrollbar ref="scrollbarRef">
           <div class="demo-pagination-block">
             <el-pagination
               v-model:current-page="indexPage"
@@ -72,6 +72,7 @@
                 layout="prev, pager, next, jumper"
             />
           </div>
+          <topBottom :scrollbarRef="scrollbarRef" :hideDown="true"/>
         </el-scrollbar>
       </el-main>
     </el-container>
@@ -84,12 +85,13 @@
     import {ElNotification,ElMessage} from "element-plus";
     import TopBtnGroup from '@/components/TopBtnGroup.vue'
     import bookHandleBtn from '@/components/bookHandleBtn.vue'
+    import topBottom from '@/components/topBottom.vue'
     import { Filter } from '@element-plus/icons-vue';
 
     const isListMode = ref(true);
     const filterKeyword = ref('');
     const keywords_list = ref([]);
-    
+    const scrollbarRef = ref(null)
     const errorText = computed(() => '这目录..<br>没有图片...')
 
     // 添加过滤方法

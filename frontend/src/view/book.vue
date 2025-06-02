@@ -17,7 +17,7 @@
             @load="handleImageLoad"
           />
           <el-empty class="custom-empty" v-if="!loadedFlag && imgUrls.arr.length===0"
-            image="/empty.png" :image-size="`40vw`" :description="errorText" />
+            image="/empty.png" :description="errorText" />
         </div>
         <topBottom v-if="settingsStore.displaySettings.showNavBtn" :scrollbarRef="scrollbarRef" />
       </el-scrollbar>
@@ -246,6 +246,9 @@ watch(() => settingsStore.displaySettings.showSlider, (newValue, oldValue) => {
       p {
         font-size: 1.3rem;
       }
+    }
+    :deep(.el-empty__image) {
+      width: 40vw;
     }
   }
 
