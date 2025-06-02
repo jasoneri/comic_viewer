@@ -22,7 +22,6 @@ const props = defineProps({
 const isScrolling = ref(false);
 const toggledScrolling = ref(false);
 let currScrollHeight = ref(0)
-let scrollInterval = null;
 
 const scrollToTop = () => {
   props.scrollbarRef?.setScrollTop(0);
@@ -31,13 +30,70 @@ const scrollToTop = () => {
 const toggleScroll = () => {
   if (isScrolling.value) {
     // 如果正在滚动，停止滚动并恢复按钮图标
-    clearInterval(scrollInterval);
     isScrolling.value = false;
+    return;
+  }
+
+  // 启动自动滚动
+  toggledScrolling.value = true;
+  isScrolling.value = true;
+  
+  // 判断是动画式还是PPT式
+  const isAnimationMode = scrollIntervalTime.value <= 200 && scrollIntervalPixel.value <= 20;
+  
+  if (isAnimationMode) {
+    // 动画式：使用requestAnimationFrame实现平滑滚动
+    let lastTimestamp = 0;
+    const targetSpeed = scrollIntervalPixel.value / scrollIntervalTime.value; // 目标速度 (像素/毫秒)
+    let currentSpeed = 0;
+    const acceleration = 0.002; // 加速度
+    const maxSpeed = targetSpeed * 1.2; // 最大速度略高于目标速度
+
+    const animate = (timestamp) => {
+      if (!isScrolling.value) return;
+      
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const deltaTime = timestamp - lastTimestamp;
+      lastTimestamp = timestamp;
+
+      const scrollbar = props.scrollbarRef;
+      if (!scrollbar) return;
+      
+      const scrollContainer = scrollbar.wrapRef || scrollbar.wrap$;
+      if (!scrollContainer) return;
+      
+      const currentScrollTop = scrollContainer.scrollTop;
+      const maxScrollTop = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+      
+      if (currentScrollTop >= maxScrollTop) {
+        isScrolling.value = false;
+        return;
+      }
+
+      // 平滑加速
+      currentSpeed = Math.min(currentSpeed + acceleration * deltaTime, maxSpeed);
+      
+      // 计算这一帧要滚动的距离
+      const scrollDistance = currentSpeed * deltaTime;
+      
+      // 应用滚动
+      currScrollHeight.value += scrollDistance;
+      scrollbar.setScrollTop(currentScrollTop + scrollDistance);
+
+      // 继续动画
+      requestAnimationFrame(animate);
+    };
+
+    // 开始动画
+    requestAnimationFrame(animate);
   } else {
-    // 启动自动滚动
-    toggledScrolling.value = true;
-    isScrolling.value = true;
-    scrollInterval = setInterval(() => {
+    // PPT式：使用setInterval实现大跨度滚动
+    const scrollInterval = setInterval(() => {
+      if (!isScrolling.value) {
+        clearInterval(scrollInterval);
+        return;
+      }
+
       const scrollbar = props.scrollbarRef;
       if (!scrollbar) return;
       
@@ -58,6 +114,7 @@ const toggleScroll = () => {
     }, scrollIntervalTime.value);
   }
 };
+
 const _getScrollConf = async() => {
   await axios.get(backend + '/comic/conf_scroll')
     .then(res => {

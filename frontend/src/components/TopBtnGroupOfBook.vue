@@ -40,7 +40,7 @@
     </template>
   </el-dropdown>
   </el-button-group>
-  <el-dialog v-model="dialogFormVisible" title="调速" width="50vw" align-center>
+  <el-dialog v-model="dialogFormVisible" title="调速" width="70vw" align-center>
     <el-form :model="form">
       <el-form-item label="间隔时间毫秒" :label-width="formLabelWidth">
         <el-input v-model="form.IntervalTime" autocomplete="off"  :clearable="true"/>
@@ -62,6 +62,7 @@
           大致分为两种形式 <hr style="border-style: dotted">
           动画式：流畅下滑，数值均设小，<br>例如 15ms/1px <hr style="border-style: dashed">
           ppt式：跨度大，预留阅读时间，<br>例如 3000ms/400px<hr style="border-style: dashed">
+          仅当 小于20px 且 小于200毫秒 <br>会被视为动画式
         </el-popover>
         <el-button @click="dialogFormVisible = false">Cancel</el-button>
         <el-button type="primary" @click="setScrollConf">Ok</el-button>
