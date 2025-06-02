@@ -43,6 +43,7 @@ __temp
 test/*
 .lh/
 .env
+*.psd
 # self/build
 temp
 *-in.txt

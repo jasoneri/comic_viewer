@@ -1,5 +1,9 @@
 <div align="center">
-  <h1 id="koishi">redViewer</h1>
+
+   <a href="https://github.com/jasoneri/ComicGUISpider" target="_blank">
+    <img src="frontend/public/logo.png" alt="logo">
+  </a>
+  <h1 id="logo">redViewer(rV)</h1>
   <img src="https://img.shields.io/badge/-3.12%2B-brightgreen.svg?logo=python" alt="tag">
   <img src="https://img.shields.io/badge/By-Fastapi_&_vitejs-blue.svg?colorA=abcdef" alt="tag">
   <a href="https://github.com/jasoneri/redViewer/releases" target="_blank">
@@ -15,15 +19,13 @@
 
 ## 📑介绍
 
-简单练手用的 fastapi + vitejs 前后端分离项目  
-pc本地下漫画(或任意图片目录)后用手机浏览器进行局域网阅读
+用手机浏览器局域网阅读pc本地的漫画
 
 ### ▼ 📚列表/网格预览 ▼
 
 ![books_list.jpg](doc/assets/books_list.png)
 
 > [!Tip]  
-> - 「删除模式-丢回收站」过程会有点慢（但其实是异步），介意的话切到「删除模式-彻底删除」 
 > - 快速筛选的匹配模式请参考 [🎲功能说明](https://github.com/jasoneri/redViewer/wiki/Feat)，用 CGS 下的就不用参考了😎  
 
 ### ▼ 📗阅读预览 ▼
@@ -106,8 +108,7 @@ npm start
 &emsp;&emsp;&emsp;🔳数组从列表改成大面板选择  
 ✅优化阅读页面-页数滚动条，记录/读取页数  
 ✅纯净阅读，滚动区域在15~85区间隐藏大部分按钮，把导航按钮组隐藏能做到纯图片浏览  
-🔳改book.psd的空白透明  
-🔳logo/改名/CGS对应处理  
+✅logo/改名/CGS对应处理  
 🔳抛弃 release 发布包，使用 部署/更新/启动 多合一脚本处理，release 仅作为新功能/修复信息公告告示  
 
 > [🕑更新历史](https://github.com/jasoneri/redViewer/wiki/Changelog)
