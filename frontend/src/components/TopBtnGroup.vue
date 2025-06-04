@@ -74,7 +74,7 @@
     </template>
   </el-dialog>
 
-  <el-dialog v-model="filterDialogVisible" title="筛选" width="65vw">
+  <el-dialog v-model="filterDialogVisible" title="筛选" width="75vw">
     <div class="filter-input-wrapper">
       <el-input v-model="filterInput" placeholder="大小写严格匹配" />
       <el-dropdown @command="handleKeywordSelect" trigger="click" placement="bottom-end" max-height="55vh">

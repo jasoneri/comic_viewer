@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  compose-and-release:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.12-slim
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取完整历史记录用于生成日志
+
+    - name: Compose Release Notes
+      id: compose_notes
+      run: |
+        # 获取当前标签
+        TAG_NAME="${GITHUB_REF#refs/tags/}"
+        echo "version: $TAG_NAME"
+        
+        # 判断是否为测试版
+        if [[ "$TAG_NAME" == *beta* ]]; then
+          echo "is_beta=true" >> $GITHUB_OUTPUT
+        else
+          echo "is_beta=false" >> $GITHUB_OUTPUT
+        fi
+        
+        # 组合最终发布内容（使用预设文件拼接）
+        cat docs/_github/release_notes.md >> full_body.md
+        cat docs/_github/preset.md >> full_body.md
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref }}
+        name: ${{ github.ref_name }}
+        body_path: full_body.md
+        prerelease: ${{ steps.compose_notes.outputs.is_beta == 'true' }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Sync to Gitee
+      uses: wearerequired/git-mirror-action@master
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
+      with:
+        source-repo: "git@github.com:${{ github.repository }}.git"
+        destination-repo: "git@gitee.com:redViewer/json_eri.git"

@@ -11,9 +11,9 @@
   </a>
 
   <p align="center">
+  <a href="#️部署更新运行多合一脚本">📦多功能脚本</a> | 
   <a href="https://github.com/jasoneri/redViewer/wiki/FAQ">📖FAQ</a> | 
-  <a href="https://github.com/jasoneri/redViewer/wiki/Feat">🎲功能说明</a> | 
-  <a href="https://github.com/jasoneri/redViewer/releases/latest">📦绿色包下载</a>
+  <a href="https://github.com/jasoneri/redViewer/wiki/Feat">🎲功能说明</a>
   </p>
 </div>
 
@@ -35,16 +35,26 @@
 > [!Tip]  
 > - 建议保留导航按钮或滚动条可视，除非对纯图片阅读有极高要求，否则大页数途中会缺少可动操作  
 
+## ♦️部署/更新/运行—多合一脚本
+
+⚠️ 简化大部分流程，不过仍需阅读🚀快速开始的 0.准备 / 3.使用
+
+##### windows
+
+找一个非中文目录（例如 `D:/rv`）右键打开终端，然后执行如下命令
+
+```shell
+irm https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/windows.ps1 | iex
+```
+
 ## 🚀快速开始
 
-### 1.准备/部署
-
-#### 准备
+### 0. 准备
 
 <details>
 <summary> 内容目录树参考 👈点击展开</summary>
 
-CGS 下载漫画<u>**并整合章节后(常规漫)**</u>的话就是这结构，否则把漫画放进该目录的 `web` 文件夹内
+CGS 下载漫画<u>**并整合章节后(表漫的话)**</u>的话就是这结构，否则把漫画放进该目录的 `web` 文件夹内
 
 ```shell
 D:\Comic                              
@@ -63,7 +73,7 @@ D:\Comic
 
 </details>
 
-#### 部署
+### 1.部署
 
 [Python>=3.12](https://python.p2hp.com/downloads/)
 
@@ -86,12 +96,11 @@ cd frontend
 npm start
 ```
 
-或在项目根目录运行脚本 `redViewer.bat`
-
 ### 3.使用
 
-启动后终端会显示局域网ip与端口 `Network:`行，手机进浏览器照样填地址即可，如预览所示  
-建议 PC 设置固定局域网 ip
+启动后终端会显示局域网ip与端口 `Network:`行，手机进浏览器照样填地址即可  
+例如 `192.168.xxx.xx`, 尾号非1  
+建议 PC 设置固定局域网 ip，阅读端做网址收藏
 
 > [🎥使用指南参考](https://www.veed.io/view/zh-CN/688ae765-2bfb-4deb-9495-32b24a273373?panel=comments)，从 `01:52` 开始含有 redViewer 的使用部分
 
@@ -99,18 +108,7 @@ npm start
 
 ### TODO LIST
 
-✅网格视图模式（首图预览）  
-✅本地缓存相关：日夜主题/视图模式/排序，下次打开保持使用习惯  
-&emsp;✅移除/删除改为模式切换  
-&emsp;✅将筛选值存进本地缓存，点击 重新加载 可以还原初始列表  
-&emsp;&emsp;✅增加简易筛选  
-&emsp;&emsp;✅筛选对话框增加关键字数组提供选择  
-&emsp;&emsp;&emsp;✅增加大面板选择  
-✅优化阅读页面-页数滚动条，记录/读取页数  
-✅纯净阅读，滚动区域在15~85区间隐藏大部分按钮，把导航按钮组隐藏能做到纯图片浏览  
-✅logo/改名/CGS对应处理  
-✅优化自动下滑动画式的抖动  
-🔳抛弃 release 发布包，使用 部署/更新/启动 多合一脚本处理，release 仅作为新功能/修复信息公告告示  
+🔳githb-pages做成体验（修改前后的部分细则），寻找免费后端服务  
 
 > [🕑更新历史](https://github.com/jasoneri/redViewer/wiki/Changelog)
 
