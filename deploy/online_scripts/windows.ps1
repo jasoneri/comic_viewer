@@ -30,7 +30,13 @@ function Test-Environment {
     $envMissing = $false
     
     # 检查Python
-    if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
+    try {
+        $pythonVersion = python --version 2>&1
+        if (-not $pythonVersion -or $LASTEXITCODE -ne 0) {
+            throw
+        }
+    } 
+    catch {
         Write-Output "❌ Python未安装"
         $envMissing = $true
     }
@@ -47,28 +53,39 @@ function Install-Environment {
     # 检查是否以管理员权限运行
     $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
     if (-not $isAdmin) {
-        $currentDir = Get-Location
-        Write-Output "请求管理员权限安装环境..."
-        Start-Process powershell.exe -Verb RunAs -ArgumentList "-NoExit -Command `"cd '$currentDir'; & '$PSCommandPath' --install-env`""
+        # 检测是否通过管道执行 (无文件路径)
+        if ([string]::IsNullOrEmpty($PSCommandPath)) {
+            # 创建临时脚本文件
+            $tempScriptPath = Join-Path $originalWorkingDir "rV.ps1"
+            $tempBatScriptPath = Join-Path $originalWorkingDir "rV.bat"
+            $scriptContent = Invoke-RestMethod -Uri "https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/windows.ps1"
+            $scriptContent | Out-File -FilePath $tempScriptPath -Encoding UTF8
+            $batScriptContent = "powershell -ExecutionPolicy Bypass -File `"$tempScriptPath`""
+            $batScriptContent | Out-File -FilePath $tempBatScriptPath -Encoding UTF8
+            # 使用临时文件路径提权
+            Start-Process powershell.exe -Verb RunAs -ArgumentList @"
+-ExecutionPolicy Bypass -NoExit -Command "Set-Location '$originalWorkingDir'; & '$tempScriptPath' --install-env"
+"@
+        }
+        else {
+            # 常规文件执行路径
+            Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -NoExit -Command `"Set-Location '$originalWorkingDir'; & '$PSCommandPath' --install-env`"" 
+        }   
         exit
     }
-    
+
     # 安装Python
-    if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
+    $pythonVersion = python --version 2>&1
+    if (-not $pythonVersion -or $LASTEXITCODE -ne 0) {
         Write-Output "下载 Python 3.12 中..."
         $pythonInstaller = "python-3.12.3-amd64.exe"
         $pythonUrl = "https://mirrors.huaweicloud.com/python/3.12.3/$pythonInstaller"
         $installerPath = Join-Path $originalWorkingDir $pythonInstaller
-        $pythonInstallDir = Join-Path $originalWorkingDir "python3.12"
-        if (-not (Test-Path $pythonInstallDir)) { 
-            New-Item -ItemType Directory -Path $pythonInstallDir -Force | Out-Null 
-        }
         Invoke-WebRequest -Uri $pythonUrl -OutFile $installerPath
         Write-Output "安装 Python 3.12 中..."
         Start-Process -FilePath $installerPath -Wait
         Remove-Item $installerPath
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-
     }
     
     # 安装Node.js
@@ -77,10 +94,6 @@ function Install-Environment {
         $nodeInstaller = "node-v22.16.0-x64.msi"
         $nodeUrl = "https://npmmirror.com/mirrors/node/v22.16.0/$nodeInstaller"
         $installerPath = Join-Path $originalWorkingDir $nodeInstaller
-        $nodeInstallDir = Join-Path $originalWorkingDir "nodejs22"
-        if (-not (Test-Path $nodeInstallDir)) { 
-            New-Item -ItemType Directory -Path $nodeInstallDir -Force | Out-Null 
-        }
         Invoke-WebRequest -Uri $nodeUrl -OutFile $installerPath
 
         Write-Output "安装 Node.js 中..."
@@ -88,14 +101,19 @@ function Install-Environment {
         Remove-Item $installerPath
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
         npm config set registry https://mirrors.huaweicloud.com/repository/npm/ 
+
     }
-    
+
     # 刷新环境变量
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+    Write-Host "✅ 环境安装完成，请退出后运行运行目录的 rV.bat 或 rV.ps1 脚本继续" -ForegroundColor Green
+    Pause
+    exit
 }
 # 处理环境安装参数
 if ($args -contains "--install-env") {
-    Install-Environment
+    Install-Environment @args
     exit
 }
 # 检查环境
@@ -105,13 +123,14 @@ if (Test-Environment) {
 }
 
 # ===== 0.1 最小化安装uv和packaging =====
-$hasPackaging = python -c "import uv; print('installed')" 2>$null
-if (-not $hasPackaging) {
-    python -m pip install uv  -i http://mirrors.aliyun.com/pypi/simple/
+$env:PIP_DISABLE_PIP_VERSION_CHECK = 1
+$hasUv = python -m pip list|findstr uv 2>$null
+if (-not $hasUv) {
+    python -m pip install uv -i https://pypi.tuna.tsinghua.edu.cn/simple
 }
-$hasPackaging = python -c "import packaging; print('installed')" 2>$null
+$hasPackaging = python -m pip list|findstr packaging 2>$null
 if (-not $hasPackaging) {
-    python -m uv pip install packaging --index-url http://mirrors.aliyun.com/pypi/simple/
+    python -m uv pip install packaging --index-url https://pypi.tuna.tsinghua.edu.cn/simple
 }
 
 # ===== 1. 检查更新函数 =====
@@ -178,7 +197,7 @@ function Invoke-Update {
         
         # 2.1 下载源码
         $zipPath = Join-Path $originalWorkingDir "$repo-$latestTag.zip"
-        Write-Output "正在下载源码.s.."
+        Write-Output "正在下载源码..."
         Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath
         
         # 2.2 解压源码
@@ -195,6 +214,12 @@ function Invoke-Update {
         $tmpProjTagDir = Get-ChildItem -Path $tmpDir -Directory | Select-Object -First 1
         Get-ChildItem -Path $tmpProjTagDir.FullName | Move-Item -Destination $realProjPath -Force
         Remove-Item -LiteralPath $tmpDir -Force -Recurse -ErrorAction SilentlyContinue
+        Remove-Item $zipPath
+
+        $sourceScript = Join-Path $realProjPath "deploy\online_scripts\windows.ps1"
+        $destScript = Join-Path $originalWorkingDir "rV.ps1"
+        Copy-Item -Path $sourceScript -Destination $destScript -Force
+
         # 记录新版本到原始目录
         $latestTag | Out-File (Join-Path $originalWorkingDir "ver.txt") -Encoding utf8
         Write-Host "✅ 代码已更换至新版..."
@@ -204,7 +229,7 @@ function Invoke-Update {
         
         # 2.4 使用uv安装后端依赖
         Write-Output "正在安装后端依赖..."
-        python -m uv pip install -r "backend/requirements/windows.txt" --index-url http://mirrors.aliyun.com/pypi/simple/
+        python -m uv pip install -r "backend/requirements/windows.txt" --index-url https://pypi.tuna.tsinghua.edu.cn/simple
         
         # 2.5 安装前端依赖
         Write-Output "正在安装前端依赖..."

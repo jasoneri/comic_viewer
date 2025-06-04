@@ -47,6 +47,11 @@
 irm https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/windows.ps1 | iex
 ```
 
+在部署代码过后会在 `D:/rv` 产生一个 `rV.ps1` 和 `rV.bat`，往后用这脚本操作即可  
+注：ps1 运行不了的应该是没激活系统或 win10，所以增设 bat 脚本
+
+🚩 [关于脚本有任何问题直接 issue 反馈](https://github.com/jasoneri/redViewer/issues/new)
+
 ## 🚀快速开始
 
 ### 0. 准备
