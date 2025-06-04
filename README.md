@@ -39,7 +39,7 @@
 
 ⚠️ 简化大部分流程，不过仍需阅读🚀快速开始的 0.准备 / 3.使用
 
-##### windows
+### windows
 
 找一个非中文目录（例如 `D:/rv`）右键打开终端，然后执行如下命令
 
@@ -47,8 +47,8 @@
 irm https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/windows.ps1 | iex
 ```
 
-在部署代码过后会在 `D:/rv` 产生一个 `rV.ps1` 和 `rV.bat`，往后用这脚本操作即可  
-注：ps1 运行不了的应该是没激活系统或 win10，所以增设 bat 脚本
+部署代码过后目录会有 `rV.bat`，往后用这脚本操作即可  
+注：提权安装 python/nodejs 时，提示系统无法运行脚本之类的话，注意激活 win 系统  
 
 🚩 [关于脚本有任何问题直接 issue 反馈](https://github.com/jasoneri/redViewer/issues/new)
 

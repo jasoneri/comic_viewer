@@ -19,10 +19,21 @@ $originalWorkingDir = Get-Location
 $owner = "jasoneri"
 $repo = "redViewer"
 $realProjPath = Join-Path $originalWorkingDir $repo
+$ps1Script = Join-Path $originalWorkingDir "rV.ps1"
+$batScript = Join-Path $originalWorkingDir "rV.bat"
 $releasesApiUrl = "https://api.github.com/repos/$owner/$repo/releases"
 $script:updateInfo = {
     UpdateAvailable = $false
     LatestTag = $null
+}
+# 创建脚本
+if (-not (Test-Path $ps1Script)) { 
+    $scriptContent = Invoke-RestMethod -Uri "https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/windows.ps1"
+    $scriptContent | Out-File -FilePath $ps1Script -Encoding UTF8
+}
+if (-not (Test-Path $batScript)) { 
+    $batScriptContent = "powershell -ExecutionPolicy Bypass -File `"$ps1Script`""
+    $batScriptContent | Out-File -FilePath $batScript -Encoding UTF8
 }
 
 # ===== 环境检查函数 =====
@@ -55,16 +66,8 @@ function Install-Environment {
     if (-not $isAdmin) {
         # 检测是否通过管道执行 (无文件路径)
         if ([string]::IsNullOrEmpty($PSCommandPath)) {
-            # 创建临时脚本文件
-            $tempScriptPath = Join-Path $originalWorkingDir "rV.ps1"
-            $tempBatScriptPath = Join-Path $originalWorkingDir "rV.bat"
-            $scriptContent = Invoke-RestMethod -Uri "https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/windows.ps1"
-            $scriptContent | Out-File -FilePath $tempScriptPath -Encoding UTF8
-            $batScriptContent = "powershell -ExecutionPolicy Bypass -File `"$tempScriptPath`""
-            $batScriptContent | Out-File -FilePath $tempBatScriptPath -Encoding UTF8
-            # 使用临时文件路径提权
             Start-Process powershell.exe -Verb RunAs -ArgumentList @"
--ExecutionPolicy Bypass -NoExit -Command "Set-Location '$originalWorkingDir'; & '$tempScriptPath' --install-env"
+-ExecutionPolicy Bypass -NoExit -Command "Set-Location '$originalWorkingDir'; & '$ps1Script' --install-env"
 "@
         }
         else {
@@ -101,7 +104,6 @@ function Install-Environment {
         Remove-Item $installerPath
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
         npm config set registry https://mirrors.huaweicloud.com/repository/npm/ 
-
     }
 
     # 刷新环境变量
@@ -217,8 +219,7 @@ function Invoke-Update {
         Remove-Item $zipPath
 
         $sourceScript = Join-Path $realProjPath "deploy\online_scripts\windows.ps1"
-        $destScript = Join-Path $originalWorkingDir "rV.ps1"
-        Copy-Item -Path $sourceScript -Destination $destScript -Force
+        Copy-Item -Path $sourceScript -Destination $ps1Script -Force
 
         # 记录新版本到原始目录
         $latestTag | Out-File (Join-Path $originalWorkingDir "ver.txt") -Encoding utf8
@@ -252,10 +253,23 @@ function Start-RedViewer {
         Set-Location $realProjPath
         Write-Host "🔖TIP: 退出请直接关闭终端窗口" -ForegroundColor Yellow
         Write-Output "正在启动RedViewer..."
-        Set-Location (Join-Path $realProjPath "frontend")
-        npm start
         
-        Set-Location $originalWorkingDir
+        # 静默启动后端
+        $backendJob = Start-Job -ScriptBlock {
+            Set-Location $using:realProjPath
+            python backend/app.py
+        } | Out-Null
+        
+        # 等待后端启动
+        Start-Sleep -Seconds 1
+        
+        # 启动前端并显示输出
+        Set-Location (Join-Path $realProjPath "frontend")
+        npm run dev
+        
+        # 清理后端进程
+        Stop-Job $backendJob
+        Remove-Job $backendJob
     }
     catch {
         Write-Output "❌ 启动失败: $($_.Exception.Message)"
@@ -272,14 +286,22 @@ while ($true) {
     Write-Host "`n————————————" -ForegroundColor Cyan
     Write-Host "|  主菜单  |" -ForegroundColor Cyan
     Write-Host "————————————" -ForegroundColor Cyan
-    Write-Host "`n1: ♻️  更新/部署"
-    Write-Host "2: 🚀 运行"
+    Write-Host "`n1: 🚀 运行"
+    Write-Host "2: ♻️  更新/部署"
     Write-Host "其他任意键: 🔚 退出`n"
     
     $choice = Read-Host "请选择操作，然后按回车"
     
     switch ($choice) {
-        '1' { # 更新
+        '1' { # 运行
+            if (-not (Test-Path $realProjPath)) {
+                Write-Host "❌ 未找到本地安装[$realProjPath]，请先部署" -ForegroundColor Red
+                continue
+            } else {
+                Start-RedViewer
+            }
+        }
+        '2' { # 更新
             if (-not $updateInfo.UpdateAvailable) {
                 Write-Host "⏹️ 本地已是最新版本" -ForegroundColor Yellow
                 $force = Read-Host "是否强制重新安装? (y/n)"
@@ -292,14 +314,6 @@ while ($true) {
             }
             # 执行更新
             Invoke-Update
-        }
-        '2' { # 运行
-            if (-not (Test-Path $realProjPath)) {
-                Write-Host "❌ 未找到本地安装[$realProjPath]，请先部署" -ForegroundColor Red
-                continue
-            } else {
-                Start-RedViewer
-            }
         }
         default {
             exit
