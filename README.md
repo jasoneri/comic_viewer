@@ -23,14 +23,14 @@
 
 ### ▼ 📚列表/网格预览 ▼
 
-![books_list.jpg](doc/assets/books_list.png)
+![books_list.jpg](docs/assets/books_list.png)
 
 > [!Tip]  
 > - 快速筛选的匹配模式请参考 [🎲功能说明](https://github.com/jasoneri/redViewer/wiki/Feat)，用 CGS 下的就不用参考了😎  
 
 ### ▼ 📗阅读预览 ▼
 
-![book.jpg](doc/assets/book.png)
+![book.jpg](docs/assets/book.png)
 
 > [!Tip]  
 > - 建议保留导航按钮或滚动条可视，除非对纯图片阅读有极高要求，否则大页数途中会缺少可动操作  
