@@ -49,10 +49,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Sync to Gitee
-      uses: wearerequired/git-mirror-action@master
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
-      with:
-        source-repo: "git@github.com:jasoneri/redViewer.git"
-        destination-repo: "git@gitee.com:json_eri/redViewer.git"
+    # - name: Sync to Gitee
+    #   uses: wearerequired/git-mirror-action@master
+    #   env:
+    #     SSH_PRIVATE_KEY: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
+    #   with:
+    #     source-repo: "git@github.com:jasoneri/redViewer.git"
+    #     destination-repo: "git@gitee.com:json_eri/redViewer.git"
