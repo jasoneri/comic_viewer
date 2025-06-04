@@ -1,13 +1,13 @@
 {
-  "name": "comic-viewer",
+  "name": "redviewer",
   "private": true,
-  "version": "1.1.1",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "concurrently \"npm run dev\" \"npm run start-python\"",
+    "start": "concurrently \"npm run start-python\" \"npm run dev\"",
     "start-python": "python ../backend/app.py"
   },
   "dependencies": {
