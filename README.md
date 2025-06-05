@@ -47,7 +47,7 @@
 irm https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/windows.ps1 | iex
 ```
 
-部署代码过后目录会有 `rV.bat`，往后用这脚本操作即可  
+部署代码过后目录会有 `rV.bat`，往后使用此脚本操作（避免 irm 目录内重复套娃安装）  
 注：提权安装 python/nodejs 时，提示系统无法运行脚本之类的话，注意激活 win 系统  
 
 🚩 [关于脚本有任何问题直接 issue 反馈](https://github.com/jasoneri/redViewer/issues/new)

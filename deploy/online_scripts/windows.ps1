@@ -1,17 +1,18 @@
 Clear-Host
 Write-Host @"
-                              
-                          ,---. 
-                         /__./| 
-                    ,---.;  ; | 
-          __  ,-.  /___/ \  | | 
-        ,' ,'/ /|  \   ;  \ ' | 
-        '  | |' |   \   \  \: | 
-        |  |   ,'    ;   \  ' . 
-        '  :  /       \   \   ' 
-        |  | '         \   `   ; 
-        ;  : |          :   \ | 
-         ---'            '---"  
+                      ╔════════════╗
+                    ╔═╝     ,---.  ║
+                  ╔═╝      /__./|  ║
+         ╔════════╝   ,---.;  ; |  ║
+       ╔═╝  __  ,-.  /___/ \  | |  ║
+     ╔═╝  ,' ,'/ /|  \   ;  \ ' |  ║
+     ║    '  | |' |   \   \  \: |  ║
+     ║    |  |   ,'    ;   \  ' .  ║
+     ║    '  :  /       \   \   '  ║
+     ║    |  | '         \   `   ;  ║
+     ║    ;  : |          :   \ |  ║
+     ║     ---'            '---"   ║
+     ╚═════════════════════════════╝
 "@  -ForegroundColor Red
 
 # ===== 初始化变量 =====
@@ -21,6 +22,7 @@ $repo = "redViewer"
 $realProjPath = Join-Path $originalWorkingDir $repo
 $ps1Script = Join-Path $originalWorkingDir "rV.ps1"
 $batScript = Join-Path $originalWorkingDir "rV.bat"
+$localVerFile = Join-Path $originalWorkingDir "ver.txt"
 $releasesApiUrl = "https://api.github.com/repos/$owner/$repo/releases"
 $script:updateInfo = {
     UpdateAvailable = $false
@@ -141,13 +143,12 @@ function Test-Update {
         $response = Invoke-RestMethod -Uri $releasesApiUrl -Method Get -ErrorAction Stop
         $latestTag = $response[0].tag_name
         # 检查本地版本image.png
-        $localVerPath = Join-Path $originalWorkingDir "ver.txt"
         $updateAvailable = $false
 
-        if (Test-Path $localVerPath) {
-            $localVer = (Get-Content $localVerPath -Raw).Trim()
+        if (Test-Path $localVerFile) {
+            $localVer = (Get-Content $localVerFile -Raw).Trim()
             # 使用Python比较版本
-            $isNewer = python -c "from packaging.version import parse; print(parse('$latestTag') > parse('$localVer'))"
+            $isNewer = python -c "from packaging.version import parse; print(parse(`'$latestTag`') > parse(`'$localVer`'))"
             if ($isNewer -eq "True") {
                 Write-Host "`n═════════════════════════════════════" -ForegroundColor Green
                 Write-Host "🎁 发现新版本: $latestTag" -ForegroundColor Green -BackgroundColor Black
@@ -222,7 +223,7 @@ function Invoke-Update {
         Copy-Item -Path $sourceScript -Destination $ps1Script -Force
 
         # 记录新版本到原始目录
-        $latestTag | Out-File (Join-Path $originalWorkingDir "ver.txt") -Encoding utf8
+        $latestTag | Out-File $localVerFile -Encoding utf8
         Write-Host "✅ 代码已更换至新版..."
 
         # 获取当前项目路径
@@ -251,7 +252,7 @@ function Start-RedViewer {
     
     try {
         Set-Location $realProjPath
-        Write-Host "🔖TIP: 退出请直接关闭终端窗口" -ForegroundColor Yellow
+        Write-Host "`n🔖 TIP: 退出请直接关闭终端窗口" -ForegroundColor Yellow
         Write-Output "正在启动RedViewer..."
         
         # 静默启动后端
@@ -283,11 +284,11 @@ Test-Update
 # 用户选择菜单
 while ($true) {
 
-    Write-Host "`n————————————" -ForegroundColor Cyan
-    Write-Host "|  主菜单  |" -ForegroundColor Cyan
-    Write-Host "————————————" -ForegroundColor Cyan
-    Write-Host "`n1: 🚀 运行"
-    Write-Host "2: ♻️  更新/部署"
+    Write-Host "`n╔══════════════════════════════════╗" -ForegroundColor Cyan
+    Write-Host "║              主菜单              ║" -ForegroundColor Cyan
+    Write-Host "╚══════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host "`n1: ♻️ 更新/部署"
+    Write-Host "2: 🚀 运行"
     Write-Host "其他任意键: 🔚 退出`n"
     Write-Host "请选择操作，5秒内无输入将自动尝试运行..."
     
@@ -297,13 +298,13 @@ while ($true) {
     
     while ($true) {
         if ([Console]::KeyAvailable) {
-            $choice = Read-Host "然后按回车"
+            $choice = Read-Host "输入后按回车"
             break
         }
         
         $elapsed = (Get-Date) - $startTime
         if ($elapsed.TotalSeconds -ge $timeout) {
-            $choice = "1"
+            $choice = "2"
             Write-Host "`n⏱️ 正在自动尝试运行..." -ForegroundColor Yellow
             break
         }
@@ -312,15 +313,7 @@ while ($true) {
     }
     
     switch ($choice) {
-        '1' { # 运行
-            if (-not (Test-Path $realProjPath)) {
-                Write-Host "❌ 未找到本地安装[$realProjPath]，请先部署" -ForegroundColor Red
-                continue
-            } else {
-                Start-RedViewer
-            }
-        }
-        '2' { # 更新
+        '1' { # 更新
             if (-not $updateInfo.UpdateAvailable) {
                 Write-Host "⏹️ 本地已是最新版本" -ForegroundColor Yellow
                 $force = Read-Host "是否强制重新安装? (y/n)"
@@ -333,6 +326,14 @@ while ($true) {
             }
             # 执行更新
             Invoke-Update
+        }
+        '2' { # 运行
+            if (-not (Test-Path $realProjPath)) {
+                Write-Host "❌ 未找到本地安装[$realProjPath]，请先部署" -ForegroundColor Red
+                continue
+            } else {
+                Start-RedViewer
+            }
         }
         default {
             exit
