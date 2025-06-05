@@ -215,6 +215,12 @@ function Invoke-Update {
         
         # 2.3 剪切覆盖到目标目录
         $tmpProjTagDir = Get-ChildItem -Path $tmpDir -Directory | Select-Object -First 1
+        # 先清理目标目录
+        if (Test-Path $realProjPath) {
+            Remove-Item -LiteralPath $realProjPath -Force -Recurse -ErrorAction SilentlyContinue
+        }
+        # 创建新目录并移动文件
+        New-Item -ItemType Directory -Path $realProjPath -Force | Out-Null
         Get-ChildItem -Path $tmpProjTagDir.FullName | Move-Item -Destination $realProjPath -Force
         Remove-Item -LiteralPath $tmpDir -Force -Recurse -ErrorAction SilentlyContinue
         Remove-Item $zipPath
