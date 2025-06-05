@@ -148,6 +148,7 @@
               offset: 100,
               duration: 7000
             })
+            handleFilter('')  // 换配置时清除筛选值
           })
           .catch(
               function (error) {

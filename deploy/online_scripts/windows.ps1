@@ -289,8 +289,27 @@ while ($true) {
     Write-Host "`n1: 🚀 运行"
     Write-Host "2: ♻️  更新/部署"
     Write-Host "其他任意键: 🔚 退出`n"
+    Write-Host "请选择操作，5秒内无输入将自动尝试运行..."
     
-    $choice = Read-Host "请选择操作，然后按回车"
+    $choice = $null
+    $timeout = 5
+    $startTime = Get-Date
+    
+    while ($true) {
+        if ([Console]::KeyAvailable) {
+            $choice = Read-Host "然后按回车"
+            break
+        }
+        
+        $elapsed = (Get-Date) - $startTime
+        if ($elapsed.TotalSeconds -ge $timeout) {
+            $choice = "1"
+            Write-Host "`n⏱️ 正在自动尝试运行..." -ForegroundColor Yellow
+            break
+        }
+        
+        Start-Sleep -Milliseconds 100
+    }
     
     switch ($choice) {
         '1' { # 运行
