@@ -217,6 +217,7 @@ function Invoke-Update {
         $tmpProjTagDir = Get-ChildItem -Path $tmpDir -Directory | Select-Object -First 1
         # 先清理目标目录
         if (Test-Path $realProjPath) {
+            Write-Output "正在清理本地redViewer"
             Remove-Item -LiteralPath $realProjPath -Force -Recurse -ErrorAction SilentlyContinue
         }
         # 创建新目录并移动文件
