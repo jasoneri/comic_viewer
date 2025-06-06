@@ -150,9 +150,9 @@ function Test-Update {
             # 使用Python比较版本
             $isNewer = python -c "from packaging.version import parse; print(parse(`'$latestTag`') > parse(`'$localVer`'))"
             if ($isNewer -eq "True") {
-                Write-Host "`n═════════════════════════════════════" -ForegroundColor Green
+                Write-Host "`n════════════════════════════════════" -ForegroundColor Green
                 Write-Host "🎁 发现新版本: $latestTag" -ForegroundColor Green -BackgroundColor Black
-                Write-Host "═════════════════════════════════════" -ForegroundColor Green
+                Write-Host "════════════════════════════════════" -ForegroundColor Green
                 $updateAvailable = $true
             }
         }
@@ -228,10 +228,7 @@ function Invoke-Update {
 
         $sourceScript = Join-Path $realProjPath "deploy\online_scripts\windows.ps1"
         Copy-Item -Path $sourceScript -Destination $ps1Script -Force
-
-        # 记录新版本到原始目录
-        $latestTag | Out-File $localVerFile -Encoding utf8
-        Write-Host "✅ 代码已更换至新版..."
+        Write-Host "代码已更换至新版..."
 
         # 获取当前项目路径
         Set-Location $realProjPath
@@ -245,7 +242,9 @@ function Invoke-Update {
         Set-Location frontend
         npm i
         Set-Location $originalWorkingDir
-        Write-Host "✅ 更新至版本: $($script:updateInfo.LatestTag)" -ForegroundColor Green
+        Write-Host "✅ 更新至版本: $($script:updateInfo.LatestTag) 完毕" -ForegroundColor Green
+        # 记录新版本到原始目录
+        $latestTag | Out-File $localVerFile -Encoding utf8
         return 
     }
     catch {

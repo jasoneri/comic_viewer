@@ -39,15 +39,28 @@
 
 ⚠️ 简化大部分流程，不过仍需阅读🚀快速开始的 0.准备 / 3.使用
 
-### windows
-
 找一个非中文目录（例如 `D:/rv`）右键打开终端，然后执行如下命令
+
+### windows
 
 ```shell
 irm https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/windows.ps1 | iex
 ```
 
-部署代码过后目录会有 `rV.bat`，往后使用此脚本操作（避免 irm 目录内重复套娃安装）  
+### macOS
+
+```shell
+curl -fsSL https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/macos.sh | zsh
+```
+
+### linux
+
+```shell
+curl -fsSL https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/linux.sh | zsh
+```
+
+部署代码过后会残留脚本，win 后续使用本地的 `./rV.bat`，macOS / linux 后续使用本地的 `zsh rV.sh`  
+后续使用避免再用远程脚本导致重复套娃安装（防呆路径错乱）  
 注：提权安装 python/nodejs 时，提示系统无法运行脚本之类的话，注意激活 win 系统  
 
 🚩 [关于脚本有任何问题直接 issue 反馈](https://github.com/jasoneri/redViewer/issues/new)
