@@ -6,7 +6,7 @@
       </el-header>
       <el-main>
         <el-empty v-if="bookList.arr.length===0"
-            image="/empty_list.png" :description="emptyList" />
+            :image="apiErr?`/empty.png`:`/empty_list.png`" :description="apiErr?backendErrText:emptyListText" />
         <el-scrollbar ref="scrollbarRef">
           <div class="demo-pagination-block">
             <el-pagination
@@ -91,11 +91,13 @@
     import { Filter } from '@element-plus/icons-vue';
 
     const isListMode = ref(true);
+    const apiErr = ref(false);
     const filterKeyword = ref('');
     const keywords_list = ref([]);
     const scrollbarRef = ref(null)
     const errorText = computed(() => '这目录..<br>没有图片...')
-    const emptyList = computed(() => '没找到书籍列表，点击右上配置修改 path 看看吧...')
+    const backendErrText = computed(() => '后端异常...')
+    const emptyListText = computed(() => '没找到书籍列表，点击右上配置修改 path 看看吧...')
 
     // 添加过滤方法
     const applyFilter = (data) => {
@@ -120,11 +122,12 @@
       const params = {sort: sortVal.value};
       await axios.get(backend + '/comic/', {params})
         .then(res => {
+          apiErr.value = false
           let result = res.data
           callBack(result)
         })
         .catch(function (error) {
-          console.log(error);
+          apiErr.value = error?.response?.data === "no books exists"?false:true
         })
     }
     const bookTotal = computed(() => {
