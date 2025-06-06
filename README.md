@@ -4,11 +4,13 @@
     <img src="frontend/public/logo.png" alt="logo">
   </a>
   <h1 id="logo">redViewer(rV)</h1>
-  <img src="https://img.shields.io/badge/-3.12%2B-brightgreen.svg?logo=python" alt="tag">
-  <img src="https://img.shields.io/badge/By-Fastapi_&_vitejs-blue.svg?colorA=abcdef" alt="tag">
-  <a href="https://github.com/jasoneri/redViewer/releases" target="_blank">
-     <img src="https://img.shields.io/github/downloads/jasoneri/redViewer/total?style=social&logo=github" alt="tag">
-  </a>
+  <img src="https://img.shields.io/badge/Platform-Win%20|%20macOS%20|%20linux-blue?color=red" alt="tag">
+  <img src="https://img.shields.io/badge/-3.12%2B-red.svg?logo=python" alt="tag">
+  <img src="https://img.shields.io/badge/-vite.js-red.svg?logo=vue.js" alt="tag">
+  <br>
+  <img src="https://img.shields.io/badge/-👉-red.svg" alt="tag">
+  <img src="https://img.shields.io/github/stars/jasoneri/redViewer?style=social&logo=github" alt="tag">
+  <img src="https://img.shields.io/badge/-👈%20CGS过来的请涨它吧%20😹-red.svg" alt="tag">
 
   <p align="center">
   <a href="#️部署更新运行多合一脚本">📦多功能脚本</a> | 
@@ -19,7 +21,7 @@
 
 ## 📑介绍
 
-用手机浏览器局域网阅读pc本地的漫画
+用手机浏览器局域网等阅读pc本地的漫画
 
 ### ▼ 📚列表/网格预览 ▼
 
