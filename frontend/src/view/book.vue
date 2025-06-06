@@ -235,22 +235,7 @@ watch(() => settingsStore.displaySettings.showSlider, (newValue, oldValue) => {
 
 <style lang="scss" scoped>
   @use '@/styles/book.scss';
-
-  .custom-empty {
-    position: fixed;
-    top: 60vh;
-    left: 50vw;
-    transform: translate(-50%, -50%);
-
-    :deep(.el-empty__description) {
-      p {
-        font-size: 1.3rem;
-      }
-    }
-    :deep(.el-empty__image) {
-      width: 40vw;
-    }
-  }
+  @use '@/styles/empty.scss';
 
   // [slider.vue] scss
   .slider-container {

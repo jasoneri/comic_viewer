@@ -1,0 +1,15 @@
+.custom-empty {
+    position: fixed;
+    top: 60vh;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+
+    :deep(.el-empty__description) {
+      p {
+        font-size: 1.3rem;
+      }
+    }
+    :deep(.el-empty__image) {
+      width: 40vw;
+    }
+  }

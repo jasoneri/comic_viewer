@@ -1,10 +1,12 @@
 <template>
     <el-container>
-      <el-header height="5vh">
+      <el-header height="5vh" :style="`min-height: 40px`">
         <TopBtnGroup :reload="reload" :items="bookList" :filtered-items="filteredBookList" :handle-conf="handleConf" 
                      :handle-filter="handleFilter" :keywords_list="keywords_list" v-model="isListMode" @send_sort="sv_sort"/>
       </el-header>
       <el-main>
+        <el-empty v-if="bookList.arr.length===0"
+            image="/empty_list.png" :description="emptyList" />
         <el-scrollbar ref="scrollbarRef">
           <div class="demo-pagination-block">
             <el-pagination
@@ -93,6 +95,7 @@
     const keywords_list = ref([]);
     const scrollbarRef = ref(null)
     const errorText = computed(() => '这目录..<br>没有图片...')
+    const emptyList = computed(() => '没找到书籍列表，点击右上配置修改 path 看看吧...')
 
     // 添加过滤方法
     const applyFilter = (data) => {
@@ -253,6 +256,7 @@
 </script>
 <style lang="scss" scoped>
     @use '@/styles/books_list.scss';
+    @use '@/styles/empty.scss';
 
 .error-container {
   position: relative;
