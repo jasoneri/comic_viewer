@@ -111,8 +111,9 @@ function Install-Environment {
     # 刷新环境变量
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
-    Write-Host "✅ 环境安装完成，请退出后运行运行目录的 rV.bat 或 rV.ps1 脚本继续" -ForegroundColor Green
-    Pause
+    Write-Host "✅ 环境安装完成，即将退出管理员终端继续" -ForegroundColor Green
+    Start-Sleep -Seconds 3
+    Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -NoExit -Command `"Set-Location '$originalWorkingDir'; & '$PSCommandPath'`"" 
     exit
 }
 # 处理环境安装参数
@@ -218,7 +219,10 @@ function Invoke-Update {
         # 先清理目标目录
         if (Test-Path $realProjPath) {
             Write-Output "正在清理本地redViewer"
-            Remove-Item -LiteralPath $realProjPath -Force -Recurse -ErrorAction SilentlyContinue
+            # 使用cmd的rd命令强制删除
+            cmd.exe /c "rd /s /q `"$realProjPath`""
+            # 等待一小段时间确保删除完成
+            Start-Sleep -Milliseconds 500
         }
         # 创建新目录并移动文件
         New-Item -ItemType Directory -Path $realProjPath -Force | Out-Null
