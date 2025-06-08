@@ -112,9 +112,10 @@ function Install-Environment {
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
     Write-Host "✅ 环境安装完成，你应该退出现在的管理员终端，然后用以下任一方式继续操作" -ForegroundColor Green
-    Write-Host "1. 直接使用此目录下的 bat"
+    Write-Host "1. 直接使用 $originalWorkingDir/rV.bat"
     Write-Host "2. 在此目录开终端并继续执行 'irm xxxxx' 这条远程命令"
     Write-Host "3. 用 CGS 绑定 ps1 然后点击 'run rV'"
+    Write-Host "3.1 并重启 CGS，因为需要刷新 CGS 进程中 rV 环境安装后的环境变量）" -ForegroundColor Blue
     Pause
     exit
 }
