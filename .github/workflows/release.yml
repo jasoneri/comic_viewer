@@ -5,14 +5,6 @@ on:
     tags:
       - 'v*.*.*'  
   workflow_dispatch:
-    inputs:
-      job:
-        description: '选择要运行的 job'
-        required: true
-        type: choice
-        options:
-          - gitee-sync
-        default: 'gitee-sync'
 
 permissions:
   contents: write
@@ -57,19 +49,3 @@ jobs:
         prerelease: ${{ steps.compose_notes.outputs.is_beta == 'true' }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  gitee-sync:
-    if: ${{ github.event.inputs.job == 'gitee-sync' || startsWith(github.ref, 'refs/tags/') }}
-    runs-on: ubuntu-latest
-    container:
-      image: python:3.12-slim
-
-    steps:
-    - name: Mirror the Github organization repos to Gitee.
-      uses: Yikun/hub-mirror-action@master
-      with:
-        src: github/jasoneri
-        dst: gitee/json_eri
-        dst_key: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
-        dst_token: ${{ secrets.GITEE_TOKEN }}
-        static_list: "redViewer"
