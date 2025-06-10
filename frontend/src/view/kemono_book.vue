@@ -1,18 +1,16 @@
 <template>
   <el-container>
     <el-header style="height: 40px">
-      <el-button-group style="width: 35%; height: 100%;">
-        <bookHandleBtn
-            :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book" :bookHandlePath="'/kemono/handle'" :handleApiBodyExtra="{u_s: u_s}"
-        />
-      </el-button-group>
-      <el-button-group style="width: 65%; height: 100%;">
+      <el-button-group style="width: 100%; height: 100%;">
         <TopBtnGroupOfBook :nextBook="nextBook" :previousBook="previousBook"/>
       </el-button-group>
     </el-header>
     <el-main class="demo-image__lazy" style="height: 100%">
         <el-image v-for="url in imgUrls.arr" :key="url" :src="url" lazy />
         <topBottom />
+        <bookHandleBtn
+            :retainCallBack="retainCallBack" :removeCallBack="removeCallBack" :delCallBack="delCallBack" :bookName="route.query.book" :bookHandlePath="'/kemono/handle'" :handleApiBodyExtra="{u_s: u_s}" :verticalMode="true"
+        />
     </el-main>
   </el-container>
 </template>

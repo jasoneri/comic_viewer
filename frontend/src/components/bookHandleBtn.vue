@@ -70,6 +70,7 @@
       left: 0vw;
       bottom: $bottom;
       opacity: 0.6;
+      margin: 0;
       &:hover {
         opacity: 1;
       }
@@ -79,7 +80,6 @@
     }
     &.vertical-btn-del {
       @include vertical-btn(10vh);
-      margin: 0;
     }
 }
 </style>
