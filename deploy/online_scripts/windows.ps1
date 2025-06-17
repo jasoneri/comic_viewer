@@ -20,6 +20,7 @@ $originalWorkingDir = Get-Location
 $owner = "jasoneri"
 $repo = "redViewer"
 $realProjPath = Join-Path $originalWorkingDir $repo
+$projPyPath = Join-Path $realProjPath "backend"
 $ps1Script = Join-Path $originalWorkingDir "rV.ps1"
 $batScript = Join-Path $originalWorkingDir "rV.bat"
 $localVerFile = Join-Path $originalWorkingDir "ver.txt"
@@ -42,15 +43,15 @@ if (-not (Test-Path $batScript)) {
 function Test-Environment {
     $envMissing = $false
     
-    # 检查Python
+    # 检查uv
     try {
-        $pythonVersion = python --version 2>&1
-        if (-not $pythonVersion -or $LASTEXITCODE -ne 0) {
+        $uvVersion = uv --version 2>&1
+        if (-not $uvVersion -or $LASTEXITCODE -ne 0) {
             throw
         }
     } 
     catch {
-        Write-Output "❌ Python未安装"
+        Write-Output "❌ uv未安装"
         $envMissing = $true
     }
     
@@ -61,6 +62,33 @@ function Test-Environment {
     }
     
     return $envMissing
+}
+function Speedgithub {
+    param (
+        [string]$originalUrl
+    )
+    # 使用静态变量缓存 speedPrefix
+    static $speedPrefix = ""
+    static $asked = $false
+    if (-not $asked) {
+        $enableSpeed = Read-Host "是否启用加速？(y/n)"
+        if ($enableSpeed -eq 'y') {
+            $speedUrl = Read-Host "请粘贴格式链接（进 github.akams.cn 输入任意字符获取，例如：https://aaaa.bbbb/https/114514）"
+            if ($speedUrl -match '(https?://[^/]+)') {
+                $speedPrefix = $Matches[1]
+                Write-Output "✈️ 加速前缀: $speedPrefix"
+            }
+            else {
+                Write-Output "❌ 链接格式无效，不使用加速"
+                return $originalUrl
+            }
+        }
+        $asked = $true
+    }
+    if ($speedPrefix) {
+        return "$speedPrefix/$originalUrl"
+    }
+    return $originalUrl
 }
 function Install-Environment {
     # 检查是否以管理员权限运行
@@ -79,18 +107,20 @@ function Install-Environment {
         exit
     }
 
-    # 安装Python
-    $pythonVersion = python --version 2>&1
-    if (-not $pythonVersion -or $LASTEXITCODE -ne 0) {
-        Write-Output "下载 Python 3.12 中..."
-        $pythonInstaller = "python-3.12.3-amd64.exe"
-        $pythonUrl = "https://mirrors.huaweicloud.com/python/3.12.3/$pythonInstaller"
-        $installerPath = Join-Path $originalWorkingDir $pythonInstaller
-        Invoke-WebRequest -Uri $pythonUrl -OutFile $installerPath
-        Write-Output "安装 Python 3.12 中..."
-        Start-Process -FilePath $installerPath -Wait
-        Remove-Item $installerPath
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+    # 安装uv
+    $uvVersion = uv --version 2>&1
+    if (-not $uvVersion -or $LASTEXITCODE -ne 0) {
+        Write-Output "安装 uv 中..."
+        $env:UV_INSTALLER_GHE_BASE_URL = Speedgithub -originalUrl "https://github.com"
+        powershell -ExecutionPolicy ByPass -Command "Invoke-RestMethod -Uri 'https://astral.sh/uv/install.ps1' | Invoke-Expression"
+        
+        Write-Output "uv安装python..."
+        $mirrorUrl = Speedgithub -originalUrl "https://github.com/astral-sh/python-build-standalone/releases/download"
+        uv python install 3.12.11 --mirror $mirrorUrl --no-cache
+        
+        # Write-Output "uv创建虚拟环境..."
+        # uv venv --python 3.12.11 .venv
+        # uv pip install packaging --index-url https://pypi.tuna.tsinghua.edu.cn/simple/ --no-cache
     }
     
     # 安装Node.js
@@ -154,9 +184,9 @@ function Test-Update {
             # 使用Python比较版本
             $isNewer = python -c "from packaging.version import parse; print(parse(`'$latestTag`') > parse(`'$localVer`'))"
             if ($isNewer -eq "True") {
-                Write-Host "`n════════════════════════════════════" -ForegroundColor Green
+                Write-Host "`n═══════════════════════════════════" -ForegroundColor Green
                 Write-Host "🎁 发现新版本: $latestTag" -ForegroundColor Green -BackgroundColor Black
-                Write-Host "════════════════════════════════════" -ForegroundColor Green
+                Write-Host "═══════════════════════════════════" -ForegroundColor Green
                 $updateAvailable = $true
             }
         }
@@ -183,24 +213,9 @@ function Invoke-Update {
     }
     
     try {
-        # 询问是否启用加速
-        $speedPrefix = ""
-        $enableSpeed = Read-Host "是否启用加速？(y/n)"
-        if ($enableSpeed -eq 'y') {
-            $speedUrl = Read-Host "请粘贴格式链接（进 github.akams.cn 输入任意字符获取，例如：https://aaaa.bbbb/https/114514）"
-            if ($speedUrl -match '(https?://[^/]+)') {
-                $speedPrefix = $Matches[1]
-                Write-Output "✈️ 加速前缀: $speedPrefix"
-            }
-            else {
-                Write-Output "❌ 链接格式无效，不使用加速"
-            }
-        }
         # 构建下载URL
         $downloadUrl = "https://github.com/$owner/$repo/archive/refs/tags/$latestTag.zip"
-        if ($speedPrefix) { 
-            $downloadUrl = "$speedPrefix/https://github.com/$owner/$repo/archive/refs/tags/$latestTag.zip"
-        }
+        $downloadUrl = Speedgithub -originalUrl $downloadUrl
         
         # 2.1 下载源码
         $zipPath = Join-Path $originalWorkingDir "$repo-$latestTag.zip"
@@ -268,12 +283,10 @@ function Start-RedViewer {
         Write-Host "`n🔖 TIP: 退出请直接关闭终端窗口" -ForegroundColor Yellow
         Write-Output "正在启动RedViewer..."
         
-        # 静默启动后端
-        $backendJob = Start-Job -ScriptBlock {
-            Set-Location $using:realProjPath
-            python backend/app.py
-        } | Out-Null
-        
+        Start-Process powershell.exe -ArgumentList @"
+-NoExit -Command "cd '$realProjPath'; python backend/app.py"
+"@
+
         # 等待后端启动
         Start-Sleep -Seconds 1
         

@@ -60,3 +60,7 @@ conf.yml
 _bug_log
 # ide
 .cursor
+
+# uv
+.python-version
+uv.lock
