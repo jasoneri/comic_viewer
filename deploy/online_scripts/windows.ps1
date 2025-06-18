@@ -42,7 +42,6 @@ if (-not (Test-Path $batScript)) {
 # ===== 环境检查函数 =====
 function Test-Environment {
     $envMissing = $false
-    
     # 检查uv
     try {
         $uvVersion = uv --version 2>&1
@@ -51,44 +50,43 @@ function Test-Environment {
         }
     } 
     catch {
-        Write-Output "❌ uv未安装"
+        Write-Output "[Test-Environment]❌ uv未安装"
         $envMissing = $true
     }
-    
     # 检查Node.js
     if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-        Write-Output "❌ Node.js未安装"
+        Write-Output "[Test-Environment]❌ Node.js未安装"
         $envMissing = $true
     }
-    
     return $envMissing
 }
 function Speedgithub {
     param (
         [string]$originalUrl
     )
-    # 使用静态变量缓存 speedPrefix
-    static $speedPrefix = ""
-    static $asked = $false
-    if (-not $asked) {
+    # 使用脚本作用域变量
+    if (-not $script:asked) {
         $enableSpeed = Read-Host "是否启用加速？(y/n)"
         if ($enableSpeed -eq 'y') {
             $speedUrl = Read-Host "请粘贴格式链接（进 github.akams.cn 输入任意字符获取，例如：https://aaaa.bbbb/https/114514）"
             if ($speedUrl -match '(https?://[^/]+)') {
-                $speedPrefix = $Matches[1]
-                Write-Output "✈️ 加速前缀: $speedPrefix"
+                $script:speedPrefix = $Matches[1]
+                Write-Host "✈️ 加速前缀: $script:speedPrefix"  # 使用 Write-Host 避免返回值
             }
             else {
-                Write-Output "❌ 链接格式无效，不使用加速"
-                return $originalUrl
+                Write-Host "❌ 链接格式无效，不使用加速"  # 使用 Write-Host
             }
         }
-        $asked = $true
+        $script:asked = $true
     }
-    if ($speedPrefix) {
-        return "$speedPrefix/$originalUrl"
+    
+    # 明确返回单个值
+    if ($script:speedPrefix) {
+        return "$script:speedPrefix/$originalUrl"
     }
-    return $originalUrl
+    else {
+        return $originalUrl
+    }
 }
 function Install-Environment {
     # 检查是否以管理员权限运行
@@ -106,38 +104,36 @@ function Install-Environment {
         }   
         exit
     }
-
     # 安装uv
     $uvVersion = uv --version 2>&1
     if (-not $uvVersion -or $LASTEXITCODE -ne 0) {
-        Write-Output "安装 uv 中..."
+        Write-Output "[Install-Environment]安装 uv 中..."
         $env:UV_INSTALLER_GHE_BASE_URL = Speedgithub -originalUrl "https://github.com"
         powershell -ExecutionPolicy ByPass -Command "Invoke-RestMethod -Uri 'https://astral.sh/uv/install.ps1' | Invoke-Expression"
         
-        Write-Output "uv安装python..."
+        Write-Output "[Install-Environment]uv安装python..."
         $mirrorUrl = Speedgithub -originalUrl "https://github.com/astral-sh/python-build-standalone/releases/download"
-        uv python install 3.12.11 --mirror $mirrorUrl --no-cache
+        uv python install 3.12 --mirror $mirrorUrl --no-cache
         
-        # Write-Output "uv创建虚拟环境..."
-        # uv venv --python 3.12.11 .venv
-        # uv pip install packaging --index-url https://pypi.tuna.tsinghua.edu.cn/simple/ --no-cache
+        Write-Output "[Install-Environment]uv创建虚拟环境..."
+        uv venv --python 3.12 .venv
+        uv pip install packaging --index-url https://pypi.tuna.tsinghua.edu.cn/simple/ --no-cache
     }
     
     # 安装Node.js
     if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-        Write-Output "下载 Node.js 中..."
+        Write-Output "[Install-Environment]下载 Node.js 中..."
         $nodeInstaller = "node-v22.16.0-x64.msi"
         $nodeUrl = "https://npmmirror.com/mirrors/node/v22.16.0/$nodeInstaller"
         $installerPath = Join-Path $originalWorkingDir $nodeInstaller
         Invoke-WebRequest -Uri $nodeUrl -OutFile $installerPath
 
-        Write-Output "安装 Node.js 中..."
+        Write-Output "[Install-Environment]安装 Node.js 中..."
         Start-Process -FilePath "msiexec.exe" -ArgumentList "/i", $installerPath -Wait
         Remove-Item $installerPath
         $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
         npm config set registry https://mirrors.huaweicloud.com/repository/npm/ 
     }
-
     # 刷新环境变量
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
@@ -160,29 +156,22 @@ if (Test-Environment) {
     Install-Environment
 }
 
-# ===== 0.1 最小化安装uv和packaging =====
-$env:PIP_DISABLE_PIP_VERSION_CHECK = 1
-$hasUv = python -m pip list|findstr uv 2>$null
-if (-not $hasUv) {
-    python -m pip install uv -i https://pypi.tuna.tsinghua.edu.cn/simple
-}
-$hasPackaging = python -m pip list|findstr packaging 2>$null
-if (-not $hasPackaging) {
-    python -m uv pip install packaging --index-url https://pypi.tuna.tsinghua.edu.cn/simple
-}
-
 # ===== 1. 检查更新函数 =====
+function Get-LatestTag {
+    $response = Invoke-RestMethod -Uri $releasesApiUrl -Method Get -ErrorAction Stop
+    $latestTag = $response[0].tag_name
+    return $latestTag
+}
 function Test-Update {
     try {
-        $response = Invoke-RestMethod -Uri $releasesApiUrl -Method Get -ErrorAction Stop
-        $latestTag = $response[0].tag_name
-        # 检查本地版本image.png
+        $latestTag = Get-LatestTag
+        # 检查本地版本
         $updateAvailable = $false
 
         if (Test-Path $localVerFile) {
             $localVer = (Get-Content $localVerFile -Raw).Trim()
             # 使用Python比较版本
-            $isNewer = python -c "from packaging.version import parse; print(parse(`'$latestTag`') > parse(`'$localVer`'))"
+            $isNewer = uvx python@3.12 -c "from packaging.version import parse; print(parse(`'$latestTag`') > parse(`'$localVer`'))"
             if ($isNewer -eq "True") {
                 Write-Host "`n═══════════════════════════════════" -ForegroundColor Green
                 Write-Host "🎁 发现新版本: $latestTag" -ForegroundColor Green -BackgroundColor Black
@@ -199,11 +188,23 @@ function Test-Update {
         }
     }
     catch {
-        Write-Output "❌ 检查更新失败: $($_.Exception.Message)"
+        Write-Output "[Test-Update]❌ 检查更新失败: $($_.Exception.Message)"
     }
 }
 
 # ===== 2. 更新函数 =====
+function Install-Dependencies {
+    # 2.4 使用uv安装后端依赖
+    Write-Output "[Install-Dependencies]正在安装后端依赖..."
+    Set-Location $realProjPath
+    uv sync
+    
+    # 2.5 安装前端依赖
+    Write-Output "[Install-Dependencies]正在安装前端依赖..."
+    Set-Location frontend
+    npm i
+}
+
 function Invoke-Update {
     # 使用全局变量获取最新版本
     $latestTag = $script:updateInfo.LatestTag
@@ -219,7 +220,7 @@ function Invoke-Update {
         
         # 2.1 下载源码
         $zipPath = Join-Path $originalWorkingDir "$repo-$latestTag.zip"
-        Write-Output "正在下载源码..."
+        Write-Output "[Invoke-Update]正在下载源码..."
         Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath
         
         # 2.2 解压源码
@@ -236,33 +237,24 @@ function Invoke-Update {
         $tmpProjTagDir = Get-ChildItem -Path $tmpDir -Directory | Select-Object -First 1
         # 先清理目标目录
         if (Test-Path $realProjPath) {
-            Write-Output "正在清理本地redViewer"
+            Write-Output "[Invoke-Update]正在清理本地redViewer"
             # 使用cmd的rd命令强制删除
             cmd.exe /c "rd /s /q `"$realProjPath`""
             # 等待一小段时间确保删除完成
             Start-Sleep -Milliseconds 500
         }
-        # 创建新目录并移动文件
-        New-Item -ItemType Directory -Path $realProjPath -Force | Out-Null
-        Get-ChildItem -Path $tmpProjTagDir.FullName | Move-Item -Destination $realProjPath -Force
+        # 直接移动整个目录
+        Move-Item -Path $tmpProjTagDir.FullName -Destination $realProjPath -Force
+        Write-Host "代码已更换至新版..."
         Remove-Item -LiteralPath $tmpDir -Force -Recurse -ErrorAction SilentlyContinue
         Remove-Item $zipPath
 
         $sourceScript = Join-Path $realProjPath "deploy\online_scripts\windows.ps1"
         Copy-Item -Path $sourceScript -Destination $ps1Script -Force
-        Write-Host "代码已更换至新版..."
 
         # 获取当前项目路径
-        Set-Location $realProjPath
-        
-        # 2.4 使用uv安装后端依赖
-        Write-Output "正在安装后端依赖..."
-        python -m uv pip install -r "backend/requirements/windows.txt" --index-url https://pypi.tuna.tsinghua.edu.cn/simple
-        
-        # 2.5 安装前端依赖
-        Write-Output "正在安装前端依赖..."
-        Set-Location frontend
-        npm i
+        Install-Dependencies
+
         Set-Location $originalWorkingDir
         Write-Host "✅ 更新至版本: $($script:updateInfo.LatestTag) 完毕" -ForegroundColor Green
         # 记录新版本到原始目录
@@ -270,7 +262,7 @@ function Invoke-Update {
         return 
     }
     catch {
-        Write-Output "❌ 更新失败: $($_.Exception.Message)"
+        Write-Output "[Invoke-Update]❌ 更新失败: $($_.Exception.Message)"
         return $null
     }
 }
@@ -280,17 +272,22 @@ function Start-RedViewer {
     
     try {
         Set-Location $realProjPath
-        Write-Host "`n🔖 TIP: 退出请直接关闭终端窗口" -ForegroundColor Yellow
-        Write-Output "正在启动RedViewer..."
+        Write-Host "`n🔖 TIP: 退出时请直接关闭终端窗口`n" -ForegroundColor Yellow
         
-        Start-Process powershell.exe -ArgumentList @"
--NoExit -Command "cd '$realProjPath'; python backend/app.py"
-"@
-
+#         Start-Process powershell.exe -ArgumentList @"
+# -NoExit -Command "cd '$realProjPath'; echo '$realProjPath'; uv run backend/app.py"
+# "@
+        # 静默启动后端
+        Write-Output "[Start-RedViewer]正在静默启动 rV 后端..."
+        $backendJob = Start-Job -ScriptBlock {
+            Set-Location $using:realProjPath
+            uv run backend/app.py
+        } | Out-Null
         # 等待后端启动
         Start-Sleep -Seconds 1
         
         # 启动前端并显示输出
+        Write-Output "[Start-RedViewer]正在启动 rV 前端..."
         Set-Location (Join-Path $realProjPath "frontend")
         npm run dev
         
@@ -299,13 +296,25 @@ function Start-RedViewer {
         Remove-Job $backendJob
     }
     catch {
-        Write-Output "❌ 启动失败: $($_.Exception.Message)"
+        Write-Output "[Start-RedViewer]❌ 启动失败: $($_.Exception.Message)"
     }
 }
 
 # ===== 主程序 =====
-# 检查更新
-Test-Update
+if (-not (Test-Path $realProjPath))  {
+    # 检查代码部署
+    Write-Output "缺失 rV 代码，将进行代码部署..."
+    $updateAvailable = $true
+    $latestTag = Get-LatestTag
+    $script:updateInfo = @{
+        UpdateAvailable = $updateAvailable
+        LatestTag = $latestTag
+    }
+    Invoke-Update
+} else {
+    # 检查更新
+    Test-Update
+}
 
 # 用户选择菜单
 while ($true) {
@@ -346,7 +355,7 @@ while ($true) {
                 if ($force -ne 'y') {
                     continue
                 } else {
-                    Write-Output "正在清理本地redViewer"
+                    Write-Output "[switch 1]正在清理本地redViewer"
                     Remove-Item -LiteralPath $realProjPath -Force -Recurse -ErrorAction SilentlyContinue
                 }
             }

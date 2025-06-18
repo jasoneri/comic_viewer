@@ -2,10 +2,11 @@
 name = "backend"
 version = "1.2.3"
 description = "Add your description here"
-requires-python = ""
+requires-python = ">=3.12"
 dependencies = [
     "fastapi",
     "httpx",
+    "packaging>=25.0",
     "py7zr",
     "pydantic",
     "pyyaml",
@@ -15,6 +16,3 @@ dependencies = [
     "uvicorn>=0.30.1",
     "watchfiles",
 ]
-[[tool.uv.index]]
-url = "https://repo.huaweicloud.com/repository/pypi/simple"
-default = true
