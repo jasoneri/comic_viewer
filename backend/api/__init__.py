@@ -6,6 +6,7 @@ from api.routes.comic import index_router, conf
 from api.routes.kemono import index_router as kemono_index_router
 
 global_whitelist = ['']
+staticFiles = StaticFiles(directory=str(conf.comic_path))
 
 
 def create_app() -> FastAPI:
@@ -42,7 +43,7 @@ def register_static_file(app: FastAPI) -> None:
     生产使用 nginx 静态资源服务
     这里是开发是方便本地
     """
-    app.mount("/static", StaticFiles(directory=str(conf.comic_path)), name="static")
+    app.mount("/static", staticFiles, name="static")
     app.mount("/static_kemono", StaticFiles(directory=str(conf.kemono_path)), name="static_kemono")
 
 
@@ -83,5 +84,6 @@ def register_hook(app: FastAPI) -> None:
     async def logger_request(request: Request, call_next) -> Response:
         response = await call_next(request)
         if request.url.path.startswith("/comic/conf") and request.method == "POST" and response.status_code == 200:
-            app.mount("/static", StaticFiles(directory=str(conf.comic_path)), name="static")
+            staticFiles.directory = str(conf.comic_path)
+            staticFiles.all_directories = staticFiles.get_directories(staticFiles.directory, None)
         return response

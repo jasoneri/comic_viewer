@@ -104,6 +104,10 @@ curl -fsSL https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts
 
 ## 📢更新
 
+✅ 区分空列表/后端异常  
+✅ 修复/优化配置读取目录切换时的静态资源访问问题  
+✅ 全面使用 uv 代替 纯python 运行  
+
 ### TODO LIST
 
 🔳方向：前端部分通过Capacitor往app发展，重点为离线缓存/在线激活后同步离线操作  

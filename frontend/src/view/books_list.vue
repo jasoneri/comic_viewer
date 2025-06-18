@@ -150,7 +150,7 @@
             reload();
             ElNotification.success({
               title: '配置更改已成功',
-              message: h('i', { style: 'white-space: pre-wrap; word-wrap: break-word;' }, `改配置后端会对静态资源锚点进行更新\n切换后点第一遍点书读图会404，再点下书就好了\n（目前未解，操作多了一点点而已）`),
+              message: h('i', { style: 'white-space: pre-wrap; word-wrap: break-word;' }, `配置后端的静态资源锚点已更新`),
               offset: 100,
               duration: 7000
             })
