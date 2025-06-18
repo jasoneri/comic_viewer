@@ -197,7 +197,7 @@ function Install-Dependencies {
     # 2.4 使用uv安装后端依赖
     Write-Output "[Install-Dependencies]正在安装后端依赖..."
     Set-Location $realProjPath
-    uv sync
+    uv sync --index-url https://repo.huaweicloud.com/repository/pypi/simple
     
     # 2.5 安装前端依赖
     Write-Output "[Install-Dependencies]正在安装前端依赖..."

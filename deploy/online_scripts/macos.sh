@@ -28,6 +28,8 @@ shScript="$originalWorkingDir/rV.sh"
 localVerFile="$originalWorkingDir/ver.txt"
 releasesApiUrl="https://api.github.com/repos/$owner/$repo/releases"
 updateInfo=("false" "")
+SPEED_ASKED=""
+SPEED_PREFIX=""
 
 source $HOME/.zshrc
 
@@ -54,19 +56,29 @@ test_environment() {
 }
 speed_gtihub() {
     ori_url=$1
-    speedPrefix=""
-    read -r "enableSpeed?是否启用下载加速？(y/n) "
-    if [[ "$enableSpeed" =~ ^[Yy]$ ]]; then
-        read -r "speedUrl?请粘贴格式链接（进 github.akams.cn 输入任意字符获取，例如：https://aaaa.bbbb/https/114514）"
-        if [[ "$speedUrl" =~ (https?://[^/]+) ]]; then
-            speedPrefix=${match[1]}
-            printf "✈️ 加速前缀: %s\n" "$speedPrefix" >&2
+    # 检查是否已经询问过用户
+    if [ -z "$SPEED_ASKED" ]; then
+        read -r "enableSpeed?是否启用下载加速？(y/n) "
+        if [[ "$enableSpeed" =~ ^[Yy]$ ]]; then
+            read -r "speedUrl?请粘贴格式链接（进 github.akams.cn 输入任意字符获取，例如：https://aaaa.bbbb/https/114514）"
+            if [[ "$speedUrl" =~ (https?://[^/]+) ]]; then
+                SPEED_PREFIX=${match[1]}
+                printf "✈️ 加速前缀: %s\n" "$SPEED_PREFIX" >&2
+            else
+                printf "❌ 链接格式无效，不使用加速\n" >&2
+                SPEED_PREFIX=""
+            fi
         else
-            printf "❌ 链接格式无效，不使用加速\n" >&2
-            speedPrefix=""
+            SPEED_PREFIX=""
         fi
+        SPEED_ASKED="true"
     fi
-    echo "${speedPrefix}/$ori_url"
+    # 返回处理后的URL
+    if [ -n "$SPEED_PREFIX" ]; then
+        echo "${SPEED_PREFIX}/$ori_url"
+    else
+        echo "$ori_url"
+    fi
 }
 
 install_environment() {
@@ -86,10 +98,10 @@ install_environment() {
 
         echo "uv安装python..."
         mirrorUrl=$(speed_gtihub "https://github.com/astral-sh/python-build-standalone/releases/download")
-        uv python install 3.12.11 --mirror "$mirrorUrl" --no-cache
+        uv python install 3.12 --mirror "$mirrorUrl" --no-cache
         echo 'export UV_MANAGED_PYTHON=1' >> $HOME/.zshrc
         echo "uv创建虚拟环境..."
-        uv venv --python 3.12.11 .venv
+        uv venv --python 3.12 .venv
         uv pip install packaging --index-url https://repo.huaweicloud.com/repository/pypi/simple/ --no-cache
         source $HOME/.zshrc
     fi
@@ -105,15 +117,20 @@ install_environment() {
 }
 
 # ===== 1. 检查更新函数 =====
-test_update() {
+get_latestTag() {
     tmpRespFile="$originalWorkingDir/tmp_response.json"
     response=$(curl -s $releasesApiUrl > "$tmpRespFile")
-    source .venv/bin/activate
-    latestTag=$(python -c "import json; f=open('$tmpRespFile'); releases=json.load(f); print(releases[0]['tag_name'] if releases else '')")
+    latestTag=$(echo "import json; f=open('$tmpRespFile'); releases=json.load(f); print(releases[0]['tag_name'] if releases else '')" | uv run -)
     rm -f "$tmpRespFile"
+    echo "$latestTag"
+}
+
+test_update() {
+    cd "$realProjPath"
+    latestTag=$(get_latestTag)
     if [ -f "$localVerFile" ]; then
         localVer=$(sed -e 's/^\xEF\xBB\xBF//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' "$localVerFile")
-        isNewer=$(python -c "from packaging.version import parse; new=parse('$latestTag');local=parse('$localVer');print(new>local)")
+        isNewer=$(echo "from packaging.version import parse; new=parse('$latestTag');local=parse('$localVer');print(new>local)" | uv run -)
         if [ "$isNewer" = "True" ]; then
             printf "\n\033[32m════════════════════════════════════\033[0m\n"
             printf "\033[32;40m🎁 发现新版本: $latestTag\033[0m\n"
@@ -123,7 +140,6 @@ test_update() {
     else
         updateInfo=("true" "$latestTag")
     fi
-    deactivate
 }
 
 # ===== 2. 更新函数 =====
@@ -165,10 +181,11 @@ invoke_update() {
     # 安装依赖
     cd "$realProjPath" || exit
     echo "正在安装后端依赖..."
-    uv pip install -r "backend/requirements/macos.txt" --index-url https://repo.huaweicloud.com/repository/pypi/simple/
+    uv sync --index-url https://repo.huaweicloud.com/repository/pypi/simple
     echo "正在安装前端依赖..."
     cd frontend || exit
     npm i
+
     cd "$originalWorkingDir" || exit
     echo $latestTag > $localVerFile
     echo "✅ 更新至版本: $latestTag"
@@ -178,15 +195,13 @@ invoke_update() {
 start_redviewer() {
     [ ! -d "$realProjPath" ] && echo "❌ 项目目录不存在" && return
     cd "$originalWorkingDir"
-    source .venv/bin/activate
     cd "$realProjPath" || exit
     printf "\n\033[33m🔖 TIP: 退出请直接关闭终端窗口\033[0m\n"
     echo "正在启动RedViewer..."
     
     # 启动后端
-    python backend/app.py &
+    uv run backend/app.py &
     backend_pid=$!
-    deactivate
     
     # 启动前端
     cd frontend || exit
@@ -205,7 +220,13 @@ if test_environment; then
 fi
 
 # 检查更新
+if [ ! -d "$realProjPath" ]; then
+    latestTag=$(get_latestTag)
+    updateInfo=("true" "$latestTag")
+    invoke_update
+else
 test_update
+fi
 
 # 用户选择菜单
 while true; do
