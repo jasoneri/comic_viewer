@@ -11,8 +11,6 @@ export const kemonoData = {
   ArtistsList: reactive({arr: []}),
   BookList: reactive({arr: []})
 }
-export let scrollIntervalTime = ref(0)
-export let scrollIntervalPixel = ref(0)
 
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
@@ -25,6 +23,10 @@ export const useSettingsStore = defineStore('settings', {
       showSlider: false,
       showNavBtn: true,
       showCenterNextPrev: true
+    })),
+    scrollConf: JSON.parse(localStorage.getItem('scrollConf') || JSON.stringify({
+      intervalTime: 15,
+      intervalPixel: 1
     })),
     sortValue: localStorage.getItem('sortValue') || '',
     customSorts: JSON.parse(localStorage.getItem('customSorts') || '[]'),
@@ -69,6 +71,11 @@ export const useSettingsStore = defineStore('settings', {
     },
     getScrollTopRecord(bookName) {
       return this.scrollTopRecords[bookName] || 0
+    },
+    setScrollConf(intervalTime, intervalPixel) {
+      this.scrollConf.intervalTime = intervalTime
+      this.scrollConf.intervalPixel = intervalPixel
+      localStorage.setItem('scrollConf', JSON.stringify(this.scrollConf))
     }
   }
 })

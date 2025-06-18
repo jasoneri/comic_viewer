@@ -12,9 +12,9 @@
 <script setup>
 import {ArrowDownBold, ArrowUpBold, VideoPause} from "@element-plus/icons-vue";
 import { ref } from 'vue';
-import {scrollIntervalTime, scrollIntervalPixel, backend} from "@/static/store.js";
-import axios from "axios";
+import {useSettingsStore} from "@/static/store.js";
 
+const settingsStore = useSettingsStore()
 const props = defineProps({
   scrollbarRef: {type: [Object, null], required: true},
   hideDown: {type:Boolean, required: false},
@@ -26,7 +26,6 @@ let currScrollHeight = ref(0)
 
 const scrollToTop = () => props.scrollbarRef?.setScrollTop(0);
 
-
 const toggleScroll = () => {
   isScrolling.value = !isScrolling.value;
   if (!isScrolling.value) return;
@@ -34,14 +33,14 @@ const toggleScroll = () => {
   toggledScrolling.value = true;
   
   // 判断是动画式还是PPT式
-  const isAnimationMode = scrollIntervalTime.value <= 200 && scrollIntervalPixel.value <= 20;
+  const isAnimationMode = settingsStore.scrollConf.intervalTime <= 200 && settingsStore.scrollConf.intervalPixel <= 20;
   
   isAnimationMode ? animateScroll() : pptScroll();
 };
 
 const animateScroll = () => {
   let lastTimestamp = 0;
-  const targetSpeed = scrollIntervalPixel.value / scrollIntervalTime.value;
+  const targetSpeed = settingsStore.scrollConf.intervalPixel / settingsStore.scrollConf.intervalTime;
   let currentSpeed = 0;
   const acceleration = 0.002;
   const maxSpeed = targetSpeed * 1.2;
@@ -100,24 +99,10 @@ const pptScroll = () => {
       return;
     }
     
-    currScrollHeight.value += scrollIntervalPixel.value;
-    scrollbar.setScrollTop(currentScrollTop + scrollIntervalPixel.value);
-  }, scrollIntervalTime.value);
+    currScrollHeight.value += settingsStore.scrollConf.intervalPixel;
+    scrollbar.setScrollTop(currentScrollTop + settingsStore.scrollConf.intervalPixel);
+  }, settingsStore.scrollConf.intervalTime);
 };
-
-const _getScrollConf = async() => {
-  await axios.get(backend + '/comic/conf_scroll')
-    .then(res => {
-      scrollIntervalTime.value = parseInt(res.data.IntervalTime)
-      scrollIntervalPixel.value = parseInt(res.data.IntervalPixel)
-    })
-};
-
-const getScrollConf = () => _getScrollConf();
-
-if (scrollIntervalPixel.value === 0 && scrollIntervalPixel.value === 0) {
-  getScrollConf()
-}
 </script>
 
 <style lang="scss" scoped>

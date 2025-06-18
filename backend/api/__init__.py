@@ -16,7 +16,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="demo_api",
         description="https://www.comic.com",
-        version="3.0.0",
+        version="1.2.2",
         docs_url="/api/docs",  # 自定义文档地址
         openapi_url="/api/openapi.json",
         redoc_url=None,   # 禁用redoc文档

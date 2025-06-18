@@ -41,12 +41,12 @@
   </el-dropdown>
   </el-button-group>
   <el-dialog v-model="dialogFormVisible" title="调速" width="70vw" align-center>
-    <el-form :model="form">
+    <el-form>
       <el-form-item label="间隔时间毫秒" :label-width="formLabelWidth">
-        <el-input v-model="form.IntervalTime" autocomplete="off"  :clearable="true"/>
+        <el-input v-model="settingsStore.scrollConf.intervalTime" autocomplete="off"  :clearable="true"/>
       </el-form-item>
       <el-form-item label="下滑像素" :label-width="formLabelWidth">
-        <el-input v-model="form.IntervalPixel" autocomplete="off" :clearable="true"/>
+        <el-input v-model="settingsStore.scrollConf.intervalPixel" autocomplete="off" :clearable="true"/>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -72,10 +72,9 @@
 </template>
 
 <script setup>
-import axios from "axios";
 import {ArrowDownBold, ArrowLeft, ArrowRight, Operation, InfoFilled, Hide, View} from "@element-plus/icons-vue";
-import {reactive, ref, watch} from "vue";
-import {backend, scrollIntervalPixel, scrollIntervalTime, useSettingsStore} from "@/static/store.js";
+import {ref, watch} from "vue";
+import {useSettingsStore} from "@/static/store.js";
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -102,34 +101,14 @@ const props = defineProps({
 })
 const dialogFormVisible = ref(false)
 const formLabelWidth = '140px'
-const form = reactive({
-  IntervalTime: 0,
-  IntervalPixel: 0,
-})
 
 const showScrollConfDia = () => {
-  getScrollConf(callback)
-  function callback() {
-    dialogFormVisible.value = true
-  }
+  dialogFormVisible.value = true
 }
-const getScrollConf = async(callback) => {
-  await axios.get(backend + '/comic/conf_scroll')
-    .then(res => {
-      form.IntervalTime = res.data.IntervalTime
-      form.IntervalPixel = res.data.IntervalPixel
-      callback()
-    })
-    .catch(function (error) {console.log(error);})
-}
-const setScrollConf = async() => {
-  await axios.post(backend + '/comic/conf_scroll', form)
-    .then(res => {
-      dialogFormVisible.value = false
-      scrollIntervalTime.value = form.IntervalTime
-      scrollIntervalPixel.value = form.IntervalPixel
-    })
-    .catch(function (error) {console.log(error);})
+
+const setScrollConf = () => {
+  settingsStore.setScrollConf(settingsStore.scrollConf.intervalTime, settingsStore.scrollConf.intervalPixel)
+  dialogFormVisible.value = false
 }
 
 const goBack = () => {

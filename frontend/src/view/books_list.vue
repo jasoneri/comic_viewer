@@ -140,12 +140,12 @@
     });
     const handleConf = async(param) => {
       if (typeof param === "function") {
-        await axios.get(backend + '/comic/conf/')
+        await axios.get(backend + '/comic/conf')
           .then(res => {param(res.data);})
           .catch(function (error) {console.log(error);})
       } else if (typeof param === "string") {
         let body = {text: param};
-        await axios.post(backend + '/comic/conf/', body)
+        await axios.post(backend + '/comic/conf', body)
           .then(res => {
             reload();
             ElNotification.success({

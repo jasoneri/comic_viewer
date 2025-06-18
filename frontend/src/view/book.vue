@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-header height="5vh" v-show="showBtn">
+    <el-header height="5vh" :style="`min-height: 40px`" v-show="showBtn">
       <el-button-group style="width: 100%; height: 100%;" id="top-btn-group">
         <TopBtnGroupOfBook :nextBook="nextBook" :previousBook="previousBook" />
       </el-button-group>
