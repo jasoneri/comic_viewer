@@ -114,10 +114,6 @@ function Install-Environment {
         Write-Output "[Install-Environment]uv安装python..."
         $mirrorUrl = Speedgithub -originalUrl "https://github.com/astral-sh/python-build-standalone/releases/download"
         uv python install 3.12 --mirror $mirrorUrl --no-cache
-        
-        Write-Output "[Install-Environment]uv创建虚拟环境..."
-        uv venv --python 3.12 .venv
-        uv pip install packaging --index-url https://pypi.tuna.tsinghua.edu.cn/simple/ --no-cache
     }
     
     # 安装Node.js

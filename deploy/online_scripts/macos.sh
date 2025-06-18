@@ -100,9 +100,6 @@ install_environment() {
         mirrorUrl=$(speed_gtihub "https://github.com/astral-sh/python-build-standalone/releases/download")
         uv python install 3.12 --mirror "$mirrorUrl" --no-cache
         echo 'export UV_MANAGED_PYTHON=1' >> $HOME/.zshrc
-        echo "uv创建虚拟环境..."
-        uv venv --python 3.12 .venv
-        uv pip install packaging --index-url https://repo.huaweicloud.com/repository/pypi/simple/ --no-cache
         source $HOME/.zshrc
     fi
     
@@ -120,7 +117,7 @@ install_environment() {
 get_latestTag() {
     tmpRespFile="$originalWorkingDir/tmp_response.json"
     response=$(curl -s $releasesApiUrl > "$tmpRespFile")
-    latestTag=$(echo "import json; f=open('$tmpRespFile'); releases=json.load(f); print(releases[0]['tag_name'] if releases else '')" | uv run -)
+    latestTag=$(echo "import json;print(json.load(open('$tmpRespFile'))[0]['tag_name'])" | uv run -)
     rm -f "$tmpRespFile"
     echo "$latestTag"
 }
@@ -130,7 +127,7 @@ test_update() {
     latestTag=$(get_latestTag)
     if [ -f "$localVerFile" ]; then
         localVer=$(sed -e 's/^\xEF\xBB\xBF//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' "$localVerFile")
-        isNewer=$(echo "from packaging.version import parse; new=parse('$latestTag');local=parse('$localVer');print(new>local)" | uv run -)
+        isNewer=$(echo "from packaging.version import parse;print(parse('$latestTag')>parse('$localVer'))" | uv run -)
         if [ "$isNewer" = "True" ]; then
             printf "\n\033[32m════════════════════════════════════\033[0m\n"
             printf "\033[32;40m🎁 发现新版本: $latestTag\033[0m\n"
