@@ -7,6 +7,7 @@ dependencies = [
     "fastapi",
     "httpx",
     "packaging>=25.0",
+    "platformdirs",
     "py7zr",
     "pydantic",
     "pyyaml",

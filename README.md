@@ -37,39 +37,6 @@
 > [!Tip]  
 > - 建议保留导航按钮或滚动条可视，除非对纯图片阅读有极高要求，否则大页数途中会缺少可动操作  
 
-## ♦️部署/更新/运行—多合一脚本
-
-⚠️ 简化大部分流程，不过仍需阅读🚀快速开始的 0.准备 / 3.使用
-
-找一个非中文目录（例如 `D:/rv`）右键打开终端，然后执行如下命令
-
-### windows
-
-```shell
-irm https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/windows.ps1 | iex
-```
-
-### macOS
-
-```shell
-curl -fsSL https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/macos.sh | zsh
-```
-
-### linux
-
-```shell
-curl -fsSL https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/linux.sh | zsh
-```
-
-部署代码过后会残留脚本，win 后续使用本地的 `./rV.bat`，macOS / linux 后续使用本地的 `zsh rV.sh`  
-后续使用避免再用远程脚本导致重复套娃安装（防呆路径错乱）  
-
-> [!Warning]  
-> win 报错相关：①激活 win 系统；  
-> ②`控制面板 > 时钟与区域 > 区域 > 更改系统区域设置 > 勾选beta版 unicode UTF-8 > 重启`  
-
-🚩 [关于脚本有任何问题直接 issue 反馈](https://github.com/jasoneri/redViewer/issues/new)
-
 ## 🚀快速开始
 
 ### 0. 准备
@@ -96,30 +63,38 @@ D:\Comic
 
 </details>
 
-### 1.部署
+### ♦️1. 部署/更新/运行—多合一脚本
 
-[Python>=3.12](https://python.p2hp.com/downloads/)
+找一个非中文目录（例如 `D:/rv`）右键打开终端，然后执行如下命令
 
-```shell
-python -m pip install uv -i https://pypi.tuna.tsinghua.edu.cn/simple
-python -m uv pip install -r "backend/requirements/windows.txt" --index-url https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn
-```
-
-[nodejs>=22](https://nodejs.cn/en/download)
+#### windows
 
 ```shell
-cd frontend
-npm i
+irm https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/windows.ps1 | iex
 ```
 
-### 2.运行
+#### macOS
 
 ```shell
-cd frontend
-npm start
+curl -fsSL https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/macos.sh | zsh
 ```
 
-### 3.使用
+#### linux
+
+```shell
+curl -fsSL https://gitee.com/json_eri/redViewer/raw/master/deploy/online_scripts/linux.sh | zsh
+```
+
+部署代码过后会残留脚本，win 后续使用本地的 `./rV.bat`，macOS / linux 后续使用本地的 `zsh rV.sh`  
+后续使用避免再用远程脚本导致重复套娃安装（防呆路径错乱）  
+
+> [!Warning]  
+> win 报错相关：①激活 win 系统；  
+> ②`控制面板 > 时钟与区域 > 区域 > 更改系统区域设置 > 勾选beta版 unicode UTF-8 > 重启`  
+
+🚩 [关于脚本有任何问题直接 issue 反馈](https://github.com/jasoneri/redViewer/issues/new)
+
+### 2.使用
 
 启动后终端会显示局域网ip与端口 `Network:`行，手机进浏览器照样填地址即可  
 例如 `192.168.xxx.xx`, 尾号非1  

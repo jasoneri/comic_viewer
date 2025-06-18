@@ -2,13 +2,26 @@
 # -*- coding: utf-8 -*-
 import re
 import pathlib
-from urllib.parse import quote
-import yaml
+import shutil
 import typing as t
+from urllib.parse import quote
 from dataclasses import dataclass, asdict, field
+
+import yaml
+from platformdirs import user_config_path
 
 basepath = pathlib.Path(__file__).parent
 yaml.warnings({'YAMLLoadWarning': False})
+conf_dir = user_config_path("redViewer", ensure_exists=False).parent
+conf_dir.mkdir(parents=True, exist_ok=True)
+
+
+def toAppConfigLocation(ori_file: pathlib.Path):
+    file = ori_file.name
+    location_file = conf_dir.joinpath(file)
+    if ori_file.exists() and not location_file.exists():
+        shutil.move(str(ori_file), str(location_file))
+    return location_file
 
 
 def yaml_update(_f, yaml_string):
@@ -22,7 +35,7 @@ def yaml_update(_f, yaml_string):
 class Conf:
     comic_path = None
     handle_path = None
-    file = basepath.parent.joinpath('conf.yml')
+    file = toAppConfigLocation(basepath.parent.joinpath('conf.yml'))
     path: t.Union[str, pathlib.Path] = None
     kemono_path: t.Union[str, pathlib.Path] = None
     scrollConf: dict = field(default_factory=dict)
@@ -62,10 +75,8 @@ class Conf:
             setattr(Conf, "_instance", object.__new__(cls))
         return getattr(Conf, "_instance")
 
-
-    @staticmethod
-    def get_content():
-        return basepath.parent.joinpath('conf.yml').read_text()
+    def get_content(self):
+        return self.file.read_text()
 
     def update(self, cfg):
         if isinstance(cfg, str):
@@ -138,3 +149,7 @@ class KemonoBookCursor(BookCursor):
         self.u_s = u_s
         super(KemonoBookCursor, self).__init__(book_name, pages, sort_func)
         self.static = f"/static_kemono/{u_s}/"
+
+
+if __name__ == '__main__':
+    print(conf)
