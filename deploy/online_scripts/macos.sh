@@ -86,7 +86,16 @@ install_environment() {
     if ! command -v brew &> /dev/null; then
         echo "❌ Homebrew未安装，正在安装..."
         /bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"
-        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> $HOME/.zshrc
+        
+        # 检测系统架构并设置Homebrew路径
+        arch=$(uname -m)
+        if [ "$arch" = "arm64" ]; then
+            brew_path="/opt/homebrew/bin/brew"
+        else
+            brew_path="/usr/local/bin/brew"
+        fi
+        
+        echo "eval \"(\$brew_path shellenv)\"" >> $HOME/.zshrc
         source $HOME/.zshrc
     fi
     
@@ -222,7 +231,7 @@ if [ ! -d "$realProjPath" ]; then
     updateInfo=("true" "$latestTag")
     invoke_update
 else
-test_update
+    test_update
 fi
 
 # 用户选择菜单

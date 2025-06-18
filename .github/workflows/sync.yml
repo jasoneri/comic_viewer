@@ -15,6 +15,7 @@ jobs:
     outputs:
       online_scripts: ${{ steps.filter.outputs.online_scripts }}
     steps:
+    - uses: actions/checkout@v4
     - name: paths filter
       uses: dorny/paths-filter@v3
       id: filter
